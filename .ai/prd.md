@@ -210,31 +210,8 @@ REQ-VAL-003: Success Messages
 - After successful action execution, confirmation message is displayed
 - Examples: "Apartment added", "Payment marked as paid", "Payments generated"
 
-### 3.7. Data Model and Constraints
 
-REQ-DATA-001: User Table
-- Columns: id (PK), email (unique, not null), password_hash (not null), created_at (timestamp)
-- Users are seeded during database initialization
-
-REQ-DATA-002: Flat Table
-- Columns: id (PK), user_id (FK -> User, not null), name (not null), address (not null), created_at (timestamp)
-- Relationship: User -> Flats (1:N)
-- Cascade delete: deleting User deletes Flats
-
-REQ-DATA-003: PaymentType Table
-- Columns: id (PK), flat_id (FK -> Flat, not null), name (not null), base_amount (decimal >= 0, not null), created_at (timestamp)
-- Relationship: Flat -> PaymentTypes (1:N)
-- Cascade delete: deleting Flat deletes PaymentTypes
-- Check constraint: base_amount >= 0
-
-REQ-DATA-004: Payment Table
-- Columns: id (PK), payment_type_id (FK -> PaymentType, not null), flat_id (FK -> Flat, not null), month (integer 1-12, not null), year (integer, not null), amount (decimal >= 0, not null), is_paid (boolean, default false), paid_at (timestamp, nullable), created_at (timestamp)
-- Relationships: PaymentType -> Payments (1:N), Flat -> Payments (1:N)
-- Cascade delete: deleting Flat deletes Payments
-- Unique constraint: (payment_type_id, month, year)
-- Check constraint: amount >= 0
-
-### 3.8. Non-functional Requirements
+### 3.7. Non-functional Requirements
 
 REQ-UX-001: User Interface
 - Interface is responsive only for desktop (min-width: 1024px)
