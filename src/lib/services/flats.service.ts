@@ -39,7 +39,6 @@ export class FlatsService {
     }
 
     // Fetch all flats for the user
-    console.log("[FlatsService.getFlatsWithDebt] userId:", userId);
     const { data: flats, error: flatsError } = await this.supabase
       .from("flats")
       .select("id, name, address, created_at, updated_at")

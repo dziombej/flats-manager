@@ -8,6 +8,8 @@ import type {
 } from "../../types";
 import { transformFlatDetailData } from "../../lib/flat-detail-transformers";
 import FlatDetailHeader from "../../components/FlatDetailHeader";
+import PaymentTypesSection from "../../components/PaymentTypesSection";
+import PaymentsSection from "../../components/PaymentsSection";
 
 export const prerender = false;
 
@@ -157,34 +159,19 @@ const viewModel: FlatDetailViewModel = transformFlatDetailData(
       </div>
     </section>
 
-    <!-- Payment Types Section (placeholder) -->
-    <section class="mb-8">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-bold">Payment Types</h2>
-        <button class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
-          Add Payment Type
-        </button>
-      </div>
-      <div class="bg-card text-card-foreground rounded-lg border p-6">
-        <p class="text-muted-foreground">Payment types table will be implemented in next step</p>
-      </div>
-    </section>
+    <!-- Payment Types Section -->
+    <PaymentTypesSection
+      paymentTypes={viewModel.paymentTypes}
+      flatId={flat.id}
+      client:load
+    />
 
-    <!-- Payments Section (placeholder) -->
-    <section>
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-bold">Payments</h2>
-        <a
-          href={`/flats/${id}/payments/generate`}
-          class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 inline-block"
-        >
-          Generate Payments
-        </a>
-      </div>
-      <div class="bg-card text-card-foreground rounded-lg border p-6">
-        <p class="text-muted-foreground">Payments table will be implemented in next step</p>
-      </div>
-    </section>
+    <!-- Payments Section -->
+    <PaymentsSection
+      payments={viewModel.payments}
+      flatId={flat.id}
+      client:load
+    />
   </main>
 </Layout>
 

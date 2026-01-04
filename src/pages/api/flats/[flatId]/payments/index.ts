@@ -54,12 +54,20 @@ export const GET: APIRoute = async ({ params, url, locals }) => {
       });
     }
 
-    // Parse query parameters
-    const queryParams = {
+    // Parse query parameters - filter out null values
+    const rawQueryParams = {
       month: url.searchParams.get("month"),
       year: url.searchParams.get("year"),
       is_paid: url.searchParams.get("is_paid"),
     };
+
+    // Filter out null values to create clean query params object
+    const queryParams: Record<string, string> = {};
+    Object.entries(rawQueryParams).forEach(([key, value]) => {
+      if (value !== null) {
+        queryParams[key] = value;
+      }
+    });
 
     // Validate query parameters
     const validation = paymentsQuerySchema.safeParse(queryParams);
