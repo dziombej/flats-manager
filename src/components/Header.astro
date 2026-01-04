@@ -3,6 +3,7 @@
  * Header Component
  * Main navigation header with branding and user actions
  */
+import ThemeToggle from "./ThemeToggle";
 ---
 
 <header class="border-b bg-background">
@@ -43,6 +44,9 @@
           </svg>
           Add Flat
         </a>
+
+        <!-- Theme Toggle -->
+        <ThemeToggle client:load />
 
         <!-- User Profile Button (placeholder) -->
         <button
