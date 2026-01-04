@@ -1,15 +1,16 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import type { FlatsResponseDto, CreateFlatCommand, FlatDto, ValidationErrorResponseDto } from "../../../types";
+import { FlatsService } from "../../../lib/services/flats.service";
 
 /**
  * GET /api/flats
  * Returns all flats for the current user
- * Auth Required: Yes (mocked)
+ * Auth Required: Yes
  *
  * POST /api/flats
  * Creates a new flat
- * Auth Required: Yes (mocked)
+ * Auth Required: Yes
  */
 export const prerender = false;
 
@@ -19,33 +20,40 @@ const createFlatSchema = z.object({
   address: z.string().min(1, "Address is required").max(200, "Address must be at most 200 characters"),
 });
 
-// Mock data store
-const mockFlats: FlatDto[] = [
-  {
-    id: "550e8400-e29b-41d4-a716-446655440000",
-    user_id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-    name: "Żoliborz 1",
-    address: "ul. Słowackiego 1",
-    created_at: "2024-01-15T10:30:00Z",
-    updated_at: "2024-01-15T10:30:00Z",
-  },
-  {
-    id: "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-    user_id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-    name: "Mokotów 2",
-    address: "ul. Puławska 2",
-    created_at: "2024-01-16T11:00:00Z",
-    updated_at: "2024-01-16T11:00:00Z",
-  },
-];
-
 /**
  * GET handler - Returns all flats for the current user
  */
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ locals }) => {
+  const supabase = locals.supabase;
+
+  if (!supabase) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // Get authenticated user
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   try {
+
+    const flatsService = new FlatsService(supabase);
+
+    const flats = await flatsService.getAllFlats(user.id);
     const response: FlatsResponseDto = {
-      flats: mockFlats,
+      flats,
     };
 
     return new Response(JSON.stringify(response), {

@@ -1,37 +1,43 @@
 import type { APIRoute } from "astro";
-import type { DashboardResponseDto, DashboardFlatDto } from "../../types";
+import type { DashboardResponseDto } from "../../types";
+import { FlatsService } from "../../lib/services/flats.service";
 
 /**
  * GET /api/dashboard
  * Returns all flats with calculated debt for the current user
- * Auth Required: Yes (mocked)
+ * Auth Required: Yes
  */
 export const prerender = false;
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ locals }) => {
+  const supabase = locals.supabase;
+
+  if (!supabase) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // Get authenticated user
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   try {
-    // Mock data - simulates flats with debt calculation
-    const mockFlats: DashboardFlatDto[] = [
-      {
-        id: "550e8400-e29b-41d4-a716-446655440000",
-        name: "Mokotów 2",
-        address: "ul. Puławska 2",
-        debt: 0.0,
-        created_at: "2024-01-16T11:00:00Z",
-        updated_at: "2024-01-16T11:00:00Z",
-      },
-      {
-        id: "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-        name: "Żoliborz 1",
-        address: "ul. Słowackiego 1",
-        debt: 1200.0,
-        created_at: "2024-01-15T10:30:00Z",
-        updated_at: "2024-01-15T10:30:00Z",
-      },
-    ];
+    const flatsService = new FlatsService(supabase);
+    const flats = await flatsService.getFlatsWithDebt(user.id);
 
     const response: DashboardResponseDto = {
-      flats: mockFlats,
+      flats,
     };
 
     return new Response(JSON.stringify(response), {
