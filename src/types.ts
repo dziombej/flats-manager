@@ -208,3 +208,77 @@ export interface ConflictErrorResponseDto {
   skipped_count?: number;
   details?: Record<string, unknown>;
 }
+
+// ============================================================================
+// Flat Detail View Models
+// ============================================================================
+
+/**
+ * Flat Stats View Model
+ * Statistics for flat detail view
+ */
+export interface FlatStatsViewModel {
+  /** Total debt (sum of unpaid payments) */
+  totalDebt: number;
+  /** Number of payment types defined */
+  paymentTypesCount: number;
+  /** Number of pending (unpaid) payments */
+  pendingPaymentsCount: number;
+}
+
+/**
+ * Payment Type View Model
+ * View model for payment type in flat detail view
+ */
+export interface PaymentTypeViewModel {
+  id: string;
+  name: string;
+  baseAmount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Payment View Model
+ * View model for payment in flat detail view
+ */
+export interface PaymentViewModel {
+  id: string;
+  paymentTypeId: string;
+  paymentTypeName: string;
+  amount: number;
+  dueDate: string;
+  isPaid: boolean;
+  paidAt: string | null;
+  month: number;
+  year: number;
+  /** True if payment can be edited (i.e., not paid) */
+  canEdit: boolean;
+  /** True if payment is overdue (due date passed and not paid) */
+  isOverdue: boolean;
+}
+
+/**
+ * Payment Filters State
+ * Filter state for payments section
+ */
+export interface PaymentFiltersState {
+  /** Filter by month (1-12), undefined for all */
+  month?: number;
+  /** Filter by year (YYYY), undefined for all */
+  year?: number;
+  /** Filter by payment status, undefined for all */
+  isPaid?: boolean;
+}
+
+/**
+ * Flat Detail View Model
+ * Complete view model for flat detail page
+ */
+export interface FlatDetailViewModel {
+  flat: FlatDto;
+  stats: FlatStatsViewModel;
+  paymentTypes: PaymentTypeViewModel[];
+  payments: PaymentViewModel[];
+}
+
