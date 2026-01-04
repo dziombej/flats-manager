@@ -1,0 +1,117 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import PaymentTypeForm from "../../../components/PaymentTypeForm";
+import type { PaymentTypeDto } from "../../../types";
+
+export const prerender = false;
+
+// Get payment type ID from URL params
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect("/dashboard");
+}
+
+// Validate UUID format (basic check)
+const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+if (!uuidRegex.test(id)) {
+  return Astro.redirect("/dashboard");
+}
+
+// Fetch payment type details
+let paymentType: PaymentTypeDto;
+try {
+  const response = await fetch(`${Astro.url.origin}/api/payment-types/${id}`, {
+    headers: {
+      Cookie: Astro.request.headers.get("Cookie") || "",
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      return Astro.redirect("/dashboard?error=payment_type_not_found");
+    }
+    if (response.status === 401) {
+      return Astro.redirect("/login");
+    }
+    throw new Error("Failed to fetch payment type");
+  }
+
+  paymentType = await response.json();
+} catch (error) {
+  console.error("Error fetching payment type:", error);
+  return Astro.redirect("/dashboard?error=fetch_failed");
+}
+
+// Fetch the flat details to get the flat name and for navigation
+let flatName = "Unknown Flat";
+let flatId = paymentType.flat_id;
+try {
+  const flatResponse = await fetch(`${Astro.url.origin}/api/flats/${flatId}`, {
+    headers: {
+      Cookie: Astro.request.headers.get("Cookie") || "",
+    },
+  });
+
+  if (flatResponse.ok) {
+    const flat = await flatResponse.json();
+    flatName = flat.name;
+  }
+} catch (error) {
+  console.error("Error fetching flat:", error);
+}
+---
+
+<Layout title={`Edit ${paymentType.name} - Flats Manager`}>
+  <main class="min-h-[calc(100vh-4rem)]">
+    <div class="container mx-auto px-4 py-8">
+      <!-- Breadcrumb Navigation -->
+      <nav class="mb-6 text-sm text-muted-foreground" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2">
+          <li>
+            <a href="/dashboard" class="hover:text-foreground transition-colors">
+              Dashboard
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <a href="/flats" class="hover:text-foreground transition-colors">
+              Flats
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <a href={`/flats/${flatId}`} class="hover:text-foreground transition-colors">
+              {flatName}
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li aria-current="page" class="text-foreground font-medium">
+            Edit Payment Type
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Page Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold mb-2">Edit Payment Type</h1>
+        <p class="text-muted-foreground">
+          Update the details of {paymentType.name}.
+        </p>
+      </div>
+
+      <!-- Payment Type Form -->
+      <PaymentTypeForm
+        client:load
+        mode="edit"
+        flatId={flatId}
+        paymentTypeId={paymentType.id}
+        initialData={{
+          name: paymentType.name,
+          base_amount: paymentType.base_amount,
+        }}
+      />
+    </div>
+  </main>
+</Layout>
+

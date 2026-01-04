@@ -1,0 +1,97 @@
+---
+import Layout from "../../../../layouts/Layout.astro";
+import type {
+  FlatDto,
+  PaymentsResponseDto,
+} from "../../../../types";
+import { transformPaymentToViewModel } from "../../../../lib/flat-detail-transformers";
+import PaymentsSection from "../../../../components/PaymentsSection";
+
+export const prerender = false;
+
+// Get flat ID from URL params
+const { flatId } = Astro.params;
+
+if (!flatId) {
+  return Astro.redirect("/dashboard");
+}
+
+// Validate UUID format (basic check)
+const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+if (!uuidRegex.test(flatId)) {
+  return Astro.redirect("/dashboard");
+}
+
+// Fetch flat details
+let flat: FlatDto;
+try {
+  const flatResponse = await fetch(`${Astro.url.origin}/api/flats/${flatId}`, {
+    headers: {
+      Cookie: Astro.request.headers.get("Cookie") || "",
+    },
+  });
+
+  if (!flatResponse.ok) {
+    if (flatResponse.status === 404) {
+      return Astro.redirect("/dashboard?error=flat_not_found");
+    }
+    if (flatResponse.status === 401) {
+      return Astro.redirect("/login");
+    }
+    throw new Error("Failed to fetch flat");
+  }
+
+  flat = await flatResponse.json();
+} catch (error) {
+  console.error("Error fetching flat:", error);
+  return Astro.redirect("/dashboard?error=fetch_failed");
+}
+
+// Fetch payments (default: unpaid only)
+let paymentsData: PaymentsResponseDto;
+try {
+  const paymentsResponse = await fetch(
+    `${Astro.url.origin}/api/flats/${flatId}/payments?is_paid=false`,
+    {
+      headers: {
+        Cookie: Astro.request.headers.get("Cookie") || "",
+      },
+    }
+  );
+
+  if (!paymentsResponse.ok) {
+    throw new Error("Failed to fetch payments");
+  }
+
+  paymentsData = await paymentsResponse.json();
+} catch (error) {
+  console.error("Error fetching payments:", error);
+  paymentsData = { payments: [] };
+}
+
+// Transform data to view model
+const payments = paymentsData.payments.map(transformPaymentToViewModel);
+---
+
+<Layout title={`Payments - ${flat.name}`}>
+  <div class="container mx-auto px-4 py-8">
+    <!-- Breadcrumb -->
+    <nav class="mb-6 text-sm text-muted-foreground">
+      <a href="/dashboard" class="hover:text-foreground">Dashboard</a>
+      <span class="mx-2">/</span>
+      <a href={`/flats/${flatId}`} class="hover:text-foreground">{flat.name}</a>
+      <span class="mx-2">/</span>
+      <span class="text-foreground">Payments</span>
+    </nav>
+
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold mb-2">{flat.name}</h1>
+      <p class="text-muted-foreground">{flat.address}</p>
+    </div>
+
+    <!-- Payments Section -->
+    <PaymentsSection payments={payments} flatId={flatId} client:load />
+  </div>
+</Layout>
+

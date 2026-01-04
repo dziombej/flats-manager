@@ -319,6 +319,46 @@ export class FlatsService {
   }
 
   /**
+   * Get a single payment type by ID
+   * Used by GET /api/payment-types/:id
+   * Returns null if payment type doesn't exist or doesn't belong to user's flat
+   */
+  async getPaymentTypeById(paymentTypeId: string, userId: string): Promise<PaymentTypeDto | null> {
+    // Validate UUID formats
+    if (!isValidUUID(paymentTypeId)) {
+      console.error("[FlatsService.getPaymentTypeById] Invalid payment type ID format:", paymentTypeId);
+      throw new Error(`Invalid payment type ID format: ${paymentTypeId}`);
+    }
+    if (!isValidUUID(userId)) {
+      console.error("[FlatsService.getPaymentTypeById] Invalid user ID format:", userId);
+      throw new Error(`Invalid user ID format: ${userId}`);
+    }
+
+    // Fetch the payment type with a join to verify ownership through the flat
+    const { data, error } = await this.supabase
+      .from("payment_types")
+      .select(`
+        *,
+        flats!inner(user_id)
+      `)
+      .eq("id", paymentTypeId)
+      .eq("flats.user_id", userId)
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116") {
+        // Not found or no access
+        return null;
+      }
+      throw new Error(`Failed to fetch payment type: ${error.message}`);
+    }
+
+    // Remove the join data before returning
+    const { flats, ...paymentType } = data as any;
+    return paymentType as PaymentTypeDto;
+  }
+
+  /**
    * Create a payment type for a flat
    * Used by POST /api/flats/:flatId/payment-types
    * Returns null if flat doesn't belong to user

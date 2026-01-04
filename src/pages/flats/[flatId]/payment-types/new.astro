@@ -1,0 +1,94 @@
+---
+import Layout from "../../../../layouts/Layout.astro";
+import PaymentTypeForm from "../../../../components/PaymentTypeForm";
+import type { FlatDto } from "../../../../types";
+
+export const prerender = false;
+
+// Get flat ID from URL params
+const { flatId } = Astro.params;
+
+if (!flatId) {
+  return Astro.redirect("/dashboard");
+}
+
+// Validate UUID format (basic check)
+const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+if (!uuidRegex.test(flatId)) {
+  return Astro.redirect("/dashboard");
+}
+
+// Fetch flat details to get the flat name for the header
+let flat: FlatDto;
+try {
+  const flatResponse = await fetch(`${Astro.url.origin}/api/flats/${flatId}`, {
+    headers: {
+      Cookie: Astro.request.headers.get("Cookie") || "",
+    },
+  });
+
+  if (!flatResponse.ok) {
+    if (flatResponse.status === 404) {
+      return Astro.redirect("/dashboard?error=flat_not_found");
+    }
+    if (flatResponse.status === 401) {
+      return Astro.redirect("/login");
+    }
+    throw new Error("Failed to fetch flat");
+  }
+
+  flat = await flatResponse.json();
+} catch (error) {
+  console.error("Error fetching flat:", error);
+  return Astro.redirect("/dashboard?error=fetch_failed");
+}
+---
+
+<Layout title={`Add Payment Type - ${flat.name} - Flats Manager`}>
+  <main class="min-h-[calc(100vh-4rem)]">
+    <div class="container mx-auto px-4 py-8">
+      <!-- Breadcrumb Navigation -->
+      <nav class="mb-6 text-sm text-muted-foreground" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2">
+          <li>
+            <a href="/dashboard" class="hover:text-foreground transition-colors">
+              Dashboard
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <a href="/flats" class="hover:text-foreground transition-colors">
+              Flats
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <a href={`/flats/${flat.id}`} class="hover:text-foreground transition-colors">
+              {flat.name}
+            </a>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li aria-current="page" class="text-foreground font-medium">
+            New Payment Type
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Page Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold mb-2">Add Payment Type</h1>
+        <p class="text-muted-foreground">
+          Create a new payment type for {flat.name}.
+        </p>
+      </div>
+
+      <!-- Payment Type Form -->
+      <PaymentTypeForm
+        client:load
+        mode="create"
+        flatId={flat.id}
+      />
+    </div>
+  </main>
+</Layout>
+
