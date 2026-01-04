@@ -43,7 +43,7 @@ set email = excluded.email;
 -- Seed Flats and Payment Types for User 1 (admin@flatmanager.local)
 -- Only insert if user exists in auth.users
 
--- Flat 1: Żoliborz 1
+-- Flat 1: Cynarka
 -- Insert flat only if it doesn't already exist for this user
 -- Uses a DO block to handle conditional insertion
 do $$
@@ -60,7 +60,7 @@ begin
   if v_user_id is not null then
     -- Insert or get existing flat
     insert into public.flats (user_id, name, address)
-    values (v_user_id, 'Żoliborz 1', 'ul. Słowackiego 1')
+    values (v_user_id, 'Cynarka', 'ul. Cynarskiego 5')
     on conflict on constraint flats_pkey do nothing
     returning id into v_flat_id;
 
@@ -69,7 +69,7 @@ begin
       select id into v_flat_id
       from public.flats
       where user_id = v_user_id
-      and name = 'Żoliborz 1'
+      and name = 'Cynarka'
       limit 1;
     end if;
 
@@ -86,7 +86,7 @@ begin
   end if;
 end $$;
 
--- Flat 2: Mokotów 2
+-- Flat 2: Świeteź
 do $$
 declare
   v_user_id uuid;
@@ -101,7 +101,7 @@ begin
   if v_user_id is not null then
     -- Insert or get existing flat
     insert into public.flats (user_id, name, address)
-    values (v_user_id, 'Mokotów 2', 'ul. Puławska 2')
+    values (v_user_id, 'Świeteź', 'ul. Świtezianki 54A')
     on conflict on constraint flats_pkey do nothing
     returning id into v_flat_id;
 
@@ -110,7 +110,7 @@ begin
       select id into v_flat_id
       from public.flats
       where user_id = v_user_id
-      and name = 'Mokotów 2'
+      and name = 'Świteź'
       limit 1;
     end if;
 
