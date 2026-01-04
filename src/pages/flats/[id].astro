@@ -174,9 +174,12 @@ const viewModel: FlatDetailViewModel = transformFlatDetailData(
     <section>
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-bold">Payments</h2>
-        <button class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
+        <a
+          href={`/flats/${id}/payments/generate`}
+          class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 inline-block"
+        >
           Generate Payments
-        </button>
+        </a>
       </div>
       <div class="bg-card text-card-foreground rounded-lg border p-6">
         <p class="text-muted-foreground">Payments table will be implemented in next step</p>

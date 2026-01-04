@@ -1,0 +1,149 @@
+---
+import Layout from "../../../../layouts/Layout.astro";
+import type { FlatDto, PaymentTypesResponseDto } from "../../../../types";
+import GeneratePaymentsForm from "../../../../components/GeneratePaymentsForm";
+
+export const prerender = false;
+
+// Get flat ID from URL params
+const { flatId } = Astro.params;
+
+if (!flatId) {
+  return Astro.redirect("/dashboard");
+}
+
+// Validate UUID format (basic check)
+const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+if (!uuidRegex.test(flatId)) {
+  return Astro.redirect("/dashboard");
+}
+
+// Fetch flat details
+let flat: FlatDto;
+try {
+  const flatResponse = await fetch(`${Astro.url.origin}/api/flats/${flatId}`, {
+    headers: {
+      Cookie: Astro.request.headers.get("Cookie") || "",
+    },
+  });
+
+  if (!flatResponse.ok) {
+    if (flatResponse.status === 404) {
+      return Astro.redirect("/dashboard?error=flat_not_found");
+    }
+    if (flatResponse.status === 401) {
+      return Astro.redirect("/login");
+    }
+    throw new Error("Failed to fetch flat");
+  }
+
+  flat = await flatResponse.json();
+} catch (error) {
+  console.error("Error fetching flat:", error);
+  return Astro.redirect("/dashboard?error=fetch_failed");
+}
+
+// Fetch payment types
+let paymentTypesData: PaymentTypesResponseDto;
+try {
+  const paymentTypesResponse = await fetch(
+    `${Astro.url.origin}/api/flats/${flatId}/payment-types`,
+    {
+      headers: {
+        Cookie: Astro.request.headers.get("Cookie") || "",
+      },
+    }
+  );
+
+  if (!paymentTypesResponse.ok) {
+    throw new Error("Failed to fetch payment types");
+  }
+
+  paymentTypesData = await paymentTypesResponse.json();
+} catch (error) {
+  console.error("Error fetching payment types:", error);
+  paymentTypesData = { payment_types: [] };
+}
+
+// Get current month and year for defaults
+const currentDate = new Date();
+const currentMonth = currentDate.getMonth() + 1; // 1-based
+const currentYear = currentDate.getFullYear();
+
+// Check if flat has payment types
+const hasPaymentTypes = paymentTypesData.payment_types.length > 0;
+---
+
+<Layout title={`Generate Payments - ${flat.name}`}>
+  <div class="mx-auto max-w-4xl px-4 py-8">
+    <!-- Breadcrumb -->
+    <nav class="mb-6 text-sm text-gray-600">
+      <a href="/dashboard" class="hover:text-gray-900">Dashboard</a>
+      <span class="mx-2">/</span>
+      <a href="/flats" class="hover:text-gray-900">Flats</a>
+      <span class="mx-2">/</span>
+      <a href={`/flats/${flatId}`} class="hover:text-gray-900">{flat.name}</a>
+      <span class="mx-2">/</span>
+      <span class="font-medium text-gray-900">Generate Payments</span>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">Generate Payments</h1>
+      <p class="mt-2 text-gray-600">
+        Create monthly payment instances for <span class="font-medium">{flat.name}</span>
+      </p>
+    </div>
+
+    {
+      !hasPaymentTypes ? (
+        <!-- No payment types error state -->
+        <div class="rounded-lg border border-red-200 bg-red-50 p-6">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg
+                class="h-6 w-6 text-red-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-lg font-medium text-red-800">Cannot Generate Payments</h3>
+              <p class="mt-2 text-red-700">
+                This flat has no payment types. Please add at least one payment type before
+                generating payments.
+              </p>
+              <div class="mt-4">
+                <a
+                  href={`/flats/${flatId}`}
+                  class="inline-flex items-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                >
+                  Go to Flat Details
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <!-- Form -->
+        <GeneratePaymentsForm
+          client:load
+          flatId={flatId}
+          flatName={flat.name}
+          paymentTypes={paymentTypesData.payment_types}
+          currentMonth={currentMonth}
+          currentYear={currentYear}
+        />
+      )
+    }
+  </div>
+</Layout>
+
