@@ -1,6 +1,6 @@
-import type { APIRoute } from 'astro';
-import { z } from 'zod';
-import type { FlatsResponseDto, CreateFlatCommand, FlatDto, ValidationErrorResponseDto } from '../../../types';
+import type { APIRoute } from "astro";
+import { z } from "zod";
+import type { FlatsResponseDto, CreateFlatCommand, FlatDto, ValidationErrorResponseDto } from "../../../types";
 
 /**
  * GET /api/flats
@@ -15,8 +15,8 @@ export const prerender = false;
 
 // Validation schema for creating a flat
 const createFlatSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100, 'Name must be at most 100 characters'),
-  address: z.string().min(1, 'Address is required').max(200, 'Address must be at most 200 characters'),
+  name: z.string().min(1, "Name is required").max(100, "Name must be at most 100 characters"),
+  address: z.string().min(1, "Address is required").max(200, "Address must be at most 200 characters"),
 });
 
 // Mock data store
@@ -27,7 +27,7 @@ const mockFlats: FlatDto[] = [
     name: "Żoliborz 1",
     address: "ul. Słowackiego 1",
     created_at: "2024-01-15T10:30:00Z",
-    updated_at: "2024-01-15T10:30:00Z"
+    updated_at: "2024-01-15T10:30:00Z",
   },
   {
     id: "7c9e6679-7425-40de-944b-e07fc1f90ae7",
@@ -35,8 +35,8 @@ const mockFlats: FlatDto[] = [
     name: "Mokotów 2",
     address: "ul. Puławska 2",
     created_at: "2024-01-16T11:00:00Z",
-    updated_at: "2024-01-16T11:00:00Z"
-  }
+    updated_at: "2024-01-16T11:00:00Z",
+  },
 ];
 
 /**
@@ -45,23 +45,20 @@ const mockFlats: FlatDto[] = [
 export const GET: APIRoute = async () => {
   try {
     const response: FlatsResponseDto = {
-      flats: mockFlats
+      flats: mockFlats,
     };
 
     return new Response(JSON.stringify(response), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error('Error in GET /api/flats:', error);
+    console.error("Error in GET /api/flats:", error);
 
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 };
 
@@ -75,13 +72,10 @@ export const POST: APIRoute = async ({ request }) => {
     try {
       body = await request.json();
     } catch (error) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid JSON in request body' }),
-        {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      );
+      return new Response(JSON.stringify({ error: "Invalid JSON in request body" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // Validate request body
@@ -96,13 +90,13 @@ export const POST: APIRoute = async ({ request }) => {
       });
 
       const errorResponse: ValidationErrorResponseDto = {
-        error: 'Validation failed',
-        details: errors
+        error: "Validation failed",
+        details: errors,
       };
 
       return new Response(JSON.stringify(errorResponse), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -115,7 +109,7 @@ export const POST: APIRoute = async ({ request }) => {
       name: command.name,
       address: command.address,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     // Add to mock store
@@ -123,18 +117,14 @@ export const POST: APIRoute = async ({ request }) => {
 
     return new Response(JSON.stringify(newFlat), {
       status: 201,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error('Error in POST /api/flats:', error);
+    console.error("Error in POST /api/flats:", error);
 
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 };
-

@@ -1,11 +1,14 @@
 ---
 import "../styles/global.css";
+import Header from "../components/Header.astro";
+import { ViewTransitions } from "astro:transitions";
 
 interface Props {
   title?: string;
+  showHeader?: boolean;
 }
 
-const { title = "10x Astro Starter" } = Astro.props;
+const { title = "Flats Manager", showHeader = true } = Astro.props;
 ---
 
 <!doctype html>
@@ -16,8 +19,10 @@ const { title = "10x Astro Starter" } = Astro.props;
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <ViewTransitions />
   </head>
   <body>
+    {showHeader && <Header />}
     <slot />
   </body>
 </html>

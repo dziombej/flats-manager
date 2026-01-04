@@ -1,11 +1,11 @@
-import type { APIRoute } from 'astro';
-import { z } from 'zod';
+import type { APIRoute } from "astro";
+import { z } from "zod";
 import type {
   GeneratePaymentsCommand,
   GeneratePaymentsResponseDto,
   PaymentWithTypeNameDto,
-  ValidationErrorResponseDto
-} from '../../../../../types';
+  ValidationErrorResponseDto,
+} from "../../../../../types";
 
 /**
  * POST /api/flats/:flatId/payments/generate
@@ -16,8 +16,12 @@ export const prerender = false;
 
 // Validation schema for generating payments
 const generatePaymentsSchema = z.object({
-  month: z.number().int().min(1, 'Month must be between 1 and 12').max(12, 'Month must be between 1 and 12'),
-  year: z.number().int().min(1900, 'Year must be between 1900 and 2100').max(2100, 'Year must be between 1900 and 2100'),
+  month: z.number().int().min(1, "Month must be between 1 and 12").max(12, "Month must be between 1 and 12"),
+  year: z
+    .number()
+    .int()
+    .min(1900, "Year must be between 1900 and 2100")
+    .max(2100, "Year must be between 1900 and 2100"),
 });
 
 // Mock payment types data
@@ -26,20 +30,20 @@ const mockPaymentTypes = [
     id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
     flat_id: "550e8400-e29b-41d4-a716-446655440000",
     name: "Czynsz",
-    base_amount: 1000.00
+    base_amount: 1000.0,
   },
   {
     id: "7c9e6679-7425-40de-944b-e07fc1f90ae7",
     flat_id: "550e8400-e29b-41d4-a716-446655440000",
     name: "Administracja",
-    base_amount: 200.00
+    base_amount: 200.0,
   },
   {
     id: "8d9e6679-7425-40de-944b-e07fc1f90ae8",
     flat_id: "7c9e6679-7425-40de-944b-e07fc1f90ae7",
     name: "Czynsz",
-    base_amount: 1200.00
-  }
+    base_amount: 1200.0,
+  },
 ];
 
 // Mock existing payments to check for duplicates
@@ -54,13 +58,10 @@ export const POST: APIRoute = async ({ params, request }) => {
 
     // Validate flatId parameter
     if (!flatId) {
-      return new Response(
-        JSON.stringify({ error: 'Flat ID is required' }),
-        {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      );
+      return new Response(JSON.stringify({ error: "Flat ID is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // Parse request body
@@ -68,13 +69,10 @@ export const POST: APIRoute = async ({ params, request }) => {
     try {
       body = await request.json();
     } catch (error) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid JSON in request body' }),
-        {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      );
+      return new Response(JSON.stringify({ error: "Invalid JSON in request body" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // Validate request body
@@ -89,29 +87,29 @@ export const POST: APIRoute = async ({ params, request }) => {
       });
 
       const errorResponse: ValidationErrorResponseDto = {
-        error: 'Validation failed',
-        details: errors
+        error: "Validation failed",
+        details: errors,
       };
 
       return new Response(JSON.stringify(errorResponse), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { "Content-Type": "application/json" },
       });
     }
 
     const command: GeneratePaymentsCommand = validation.data;
 
     // Get payment types for this flat
-    const flatPaymentTypes = mockPaymentTypes.filter(pt => pt.flat_id === flatId);
+    const flatPaymentTypes = mockPaymentTypes.filter((pt) => pt.flat_id === flatId);
 
     if (flatPaymentTypes.length === 0) {
       return new Response(
         JSON.stringify({
-          error: 'No payment types found for this flat. Create payment types first.'
+          error: "No payment types found for this flat. Create payment types first.",
         }),
         {
           status: 400,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { "Content-Type": "application/json" },
         }
       );
     }
@@ -123,9 +121,7 @@ export const POST: APIRoute = async ({ params, request }) => {
     for (const paymentType of flatPaymentTypes) {
       // Check if payment already exists for this type/month/year
       const exists = existingPayments.some(
-        p => p.payment_type_id === paymentType.id &&
-             p.month === command.month &&
-             p.year === command.year
+        (p) => p.payment_type_id === paymentType.id && p.month === command.month && p.year === command.year
       );
 
       if (exists) {
@@ -143,7 +139,7 @@ export const POST: APIRoute = async ({ params, request }) => {
         is_paid: false,
         paid_at: null,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
       generatedPayments.push(newPayment);
@@ -151,13 +147,11 @@ export const POST: APIRoute = async ({ params, request }) => {
     }
 
     const response: GeneratePaymentsResponseDto = {
-      message: skippedCount > 0
-        ? 'Some payments already exist for this period'
-        : 'Payments generated successfully',
+      message: skippedCount > 0 ? "Some payments already exist for this period" : "Payments generated successfully",
       generated_count: generatedPayments.length,
       month: command.month,
       year: command.year,
-      payments: generatedPayments
+      payments: generatedPayments,
     };
 
     // Return 409 if some payments were skipped, otherwise 201
@@ -165,18 +159,14 @@ export const POST: APIRoute = async ({ params, request }) => {
 
     return new Response(JSON.stringify(response), {
       status: statusCode,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error('Error in POST /api/flats/:flatId/payments/generate:', error);
+    console.error("Error in POST /api/flats/:flatId/payments/generate:", error);
 
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 };
-
