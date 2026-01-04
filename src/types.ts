@@ -282,3 +282,18 @@ export interface FlatDetailViewModel {
   payments: PaymentViewModel[];
 }
 
+// ============================================================================
+// Flat Form View Models
+// ============================================================================
+
+/**
+ * Flat Form View Model
+ * View model for flat form component
+ */
+export interface FlatFormViewModel {
+  mode: 'create' | 'edit';
+  flatId?: string;
+  initialName: string;
+  initialAddress: string;
+}
+
