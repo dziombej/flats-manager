@@ -73,7 +73,7 @@ begin
       limit 1;
     end if;
 
-    -- Insert payment types for Żoliborz 1
+    -- Insert payment types for Cynarka
     -- Czynsz (Rent): 1000.00 PLN
     insert into public.payment_types (flat_id, name, base_amount)
     values (v_flat_id, 'Czynsz', 1000.00)
@@ -114,10 +114,15 @@ begin
       limit 1;
     end if;
 
-    -- Insert payment types for Mokotów 2
+    -- Insert payment types for Świeteź
     -- Czynsz (Rent): 1500.00 PLN
     insert into public.payment_types (flat_id, name, base_amount)
     values (v_flat_id, 'Czynsz', 1500.00)
+    on conflict on constraint payment_types_pkey do nothing;
+
+    -- Administracja (Administration): 250.00 PLN
+    insert into public.payment_types (flat_id, name, base_amount)
+    values (v_flat_id, 'Administracja', 250.00)
     on conflict on constraint payment_types_pkey do nothing;
   end if;
 end $$;
@@ -156,9 +161,9 @@ begin
     values (v_flat_id, 'Czynsz', 800.00)
     on conflict on constraint payment_types_pkey do nothing;
 
-    -- Media (Utilities): 150.00 PLN
+    -- Administracja (Administration): 150.00 PLN
     insert into public.payment_types (flat_id, name, base_amount)
-    values (v_flat_id, 'Media', 150.00)
+    values (v_flat_id, 'Administracja', 150.00)
     on conflict on constraint payment_types_pkey do nothing;
   end if;
 end $$;

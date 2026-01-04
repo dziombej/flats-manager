@@ -73,7 +73,29 @@ export const GET: APIRoute = async ({ locals }) => {
 /**
  * POST handler - Creates a new flat
  */
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
+  const supabase = locals.supabase;
+
+  if (!supabase) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // Get authenticated user
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   try {
     // Parse request body
     let body: unknown;
@@ -110,18 +132,9 @@ export const POST: APIRoute = async ({ request }) => {
 
     const command: CreateFlatCommand = validation.data;
 
-    // Create new flat
-    const newFlat: FlatDto = {
-      id: crypto.randomUUID(),
-      user_id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8", // Mocked user ID
-      name: command.name,
-      address: command.address,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-
-    // Add to mock store
-    mockFlats.push(newFlat);
+    // Create flat using service
+    const flatsService = new FlatsService(supabase);
+    const newFlat = await flatsService.createFlat(user.id, command);
 
     return new Response(JSON.stringify(newFlat), {
       status: 201,

@@ -3,18 +3,18 @@ import { z } from "zod";
 import type {
   PaymentTypesResponseDto,
   CreatePaymentTypeCommand,
-  PaymentTypeDto,
   ValidationErrorResponseDto,
 } from "../../../../../types";
+import { FlatsService } from "../../../../../lib/services/flats.service";
 
 /**
  * GET /api/flats/:flatId/payment-types
  * Returns all payment types for a specific flat
- * Auth Required: Yes (mocked)
+ * Auth Required: Yes
  *
  * POST /api/flats/:flatId/payment-types
  * Creates a new payment type for a specific flat
- * Auth Required: Yes (mocked)
+ * Auth Required: Yes
  */
 export const prerender = false;
 
@@ -27,38 +27,32 @@ const createPaymentTypeSchema = z.object({
     .max(999999.99, "Base amount must be less than 1,000,000"),
 });
 
-// Mock data store
-const mockPaymentTypes: PaymentTypeDto[] = [
-  {
-    id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-    flat_id: "550e8400-e29b-41d4-a716-446655440000",
-    name: "Czynsz",
-    base_amount: 1000.0,
-    created_at: "2024-01-15T10:30:00Z",
-    updated_at: "2024-01-15T10:30:00Z",
-  },
-  {
-    id: "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-    flat_id: "550e8400-e29b-41d4-a716-446655440000",
-    name: "Administracja",
-    base_amount: 200.0,
-    created_at: "2024-01-15T10:35:00Z",
-    updated_at: "2024-01-15T10:35:00Z",
-  },
-  {
-    id: "8d9e6679-7425-40de-944b-e07fc1f90ae8",
-    flat_id: "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-    name: "Czynsz",
-    base_amount: 1200.0,
-    created_at: "2024-01-16T11:00:00Z",
-    updated_at: "2024-01-16T11:00:00Z",
-  },
-];
-
 /**
  * GET handler - Returns all payment types for a specific flat
  */
-export const GET: APIRoute = async ({ params }) => {
+export const GET: APIRoute = async ({ params, locals }) => {
+  const supabase = locals.supabase;
+
+  if (!supabase) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // Get authenticated user
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   try {
     const { flatId } = params;
 
@@ -70,11 +64,11 @@ export const GET: APIRoute = async ({ params }) => {
       });
     }
 
-    // Filter payment types by flat_id
-    const filteredTypes = mockPaymentTypes.filter((pt) => pt.flat_id === flatId);
+    const flatsService = new FlatsService(supabase);
+    const paymentTypes = await flatsService.getPaymentTypes(flatId, user.id);
 
     const response: PaymentTypesResponseDto = {
-      payment_types: filteredTypes,
+      payment_types: paymentTypes,
     };
 
     return new Response(JSON.stringify(response), {
@@ -94,7 +88,29 @@ export const GET: APIRoute = async ({ params }) => {
 /**
  * POST handler - Creates a new payment type for a specific flat
  */
-export const POST: APIRoute = async ({ params, request }) => {
+export const POST: APIRoute = async ({ params, request, locals }) => {
+  const supabase = locals.supabase;
+
+  if (!supabase) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // Get authenticated user
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   try {
     const { flatId } = params;
 
@@ -141,18 +157,15 @@ export const POST: APIRoute = async ({ params, request }) => {
 
     const command: CreatePaymentTypeCommand = validation.data;
 
-    // Create new payment type
-    const newPaymentType: PaymentTypeDto = {
-      id: crypto.randomUUID(),
-      flat_id: flatId,
-      name: command.name,
-      base_amount: command.base_amount,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
+    const flatsService = new FlatsService(supabase);
+    const newPaymentType = await flatsService.createPaymentType(flatId, user.id, command);
 
-    // Add to mock store
-    mockPaymentTypes.push(newPaymentType);
+    if (!newPaymentType) {
+      return new Response(JSON.stringify({ error: "Flat not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     return new Response(JSON.stringify(newPaymentType), {
       status: 201,
