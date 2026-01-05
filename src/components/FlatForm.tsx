@@ -226,7 +226,7 @@ export default function FlatForm({ mode, flatId, initialData }: FlatFormProps) {
   const isFormValid = formState.name.trim().length > 0 && formState.address.trim().length > 0;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+    <form onSubmit={handleSubmit} data-test-id="flat-form" className="space-y-6 max-w-2xl">
       {/* Form Error Message */}
       {formState.errors.form && (
         <div
@@ -255,6 +255,7 @@ export default function FlatForm({ mode, flatId, initialData }: FlatFormProps) {
         </label>
         <Input
           id={nameId}
+          data-test-id="flat-name-input"
           type="text"
           value={formState.name}
           onChange={handleNameChange}
@@ -282,6 +283,7 @@ export default function FlatForm({ mode, flatId, initialData }: FlatFormProps) {
         </label>
         <Input
           id={addressId}
+          data-test-id="flat-address-input"
           type="text"
           value={formState.address}
           onChange={handleAddressChange}
@@ -305,6 +307,7 @@ export default function FlatForm({ mode, flatId, initialData }: FlatFormProps) {
       <div className="flex gap-3 pt-4">
         <Button
           type="submit"
+          data-test-id="flat-form-submit-button"
           disabled={formState.isSubmitting || !isFormValid}
         >
           {formState.isSubmitting ? (

@@ -135,7 +135,7 @@ const viewModel: FlatDetailViewModel = transformFlatDetailData(
     <section class="mb-8">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <!-- Total Debt Card -->
-        <div class="bg-card text-card-foreground rounded-lg border p-6">
+        <div class="bg-card text-card-foreground rounded-lg border p-6" data-test-id="flat-detail-total-debt">
           <h3 class="text-sm font-medium text-muted-foreground mb-2">Total Debt</h3>
           <p class="text-3xl font-bold">
             {new Intl.NumberFormat("pl-PL", {
@@ -146,13 +146,13 @@ const viewModel: FlatDetailViewModel = transformFlatDetailData(
         </div>
 
         <!-- Payment Types Count Card -->
-        <div class="bg-card text-card-foreground rounded-lg border p-6">
+        <div class="bg-card text-card-foreground rounded-lg border p-6" data-test-id="flat-detail-payment-types-count">
           <h3 class="text-sm font-medium text-muted-foreground mb-2">Payment Types</h3>
           <p class="text-3xl font-bold">{viewModel.stats.paymentTypesCount}</p>
         </div>
 
         <!-- Pending Payments Count Card -->
-        <div class="bg-card text-card-foreground rounded-lg border p-6">
+        <div class="bg-card text-card-foreground rounded-lg border p-6" data-test-id="flat-detail-pending-payments-count">
           <h3 class="text-sm font-medium text-muted-foreground mb-2">Pending Payments</h3>
           <p class="text-3xl font-bold">{viewModel.stats.pendingPaymentsCount}</p>
         </div>

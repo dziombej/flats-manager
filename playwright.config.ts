@@ -1,5 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env.test') });
 
@@ -34,6 +35,9 @@ export default defineConfig({
 
     /* Screenshot on failure */
     screenshot: 'only-on-failure',
+
+    /* Custom test ID attribute to match our HTML */
+    testIdAttribute: 'data-test-id',
   },
 
   /* Configure projects for major browsers */

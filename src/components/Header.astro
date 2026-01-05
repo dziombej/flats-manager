@@ -34,7 +34,7 @@ const { user } = Astro.props;
         </a>
 
         <nav class="hidden md:flex items-center gap-6" role="navigation" aria-label="Main navigation">
-          <a href="/dashboard" class="text-sm font-medium hover:text-primary transition-colors" aria-current="page">
+          <a href="/dashboard" data-test-id="dashboard-link" class="text-sm font-medium hover:text-primary transition-colors" aria-current="page">
             Dashboard
           </a>
           <a href="/flats" class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
@@ -47,6 +47,7 @@ const { user } = Astro.props;
       <div class="flex items-center gap-4">
         <a
           href="/flats/new"
+          data-test-id="add-flat-button"
           class="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors text-sm font-medium"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

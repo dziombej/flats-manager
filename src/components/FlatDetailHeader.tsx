@@ -47,10 +47,10 @@ export default function FlatDetailHeader({ flat }: FlatDetailHeaderProps) {
 
   return (
     <>
-      <div className="mb-8">
+      <div className="mb-8" data-test-id="flat-detail-header">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold mb-2">{flat.name}</h1>
+            <h1 className="text-3xl font-bold mb-2" data-test-id="flat-detail-name">{flat.name}</h1>
             <div className="flex items-center text-muted-foreground">
               <svg
                 className="w-4 h-4 mr-2"
@@ -72,12 +72,12 @@ export default function FlatDetailHeader({ flat }: FlatDetailHeaderProps) {
                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                 />
               </svg>
-              <span>{flat.address}</span>
+              <span data-test-id="flat-detail-address">{flat.address}</span>
             </div>
           </div>
 
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleEdit}>
+            <Button variant="outline" onClick={handleEdit} data-test-id="edit-flat-button">
               <svg
                 className="w-4 h-4 mr-2"
                 fill="none"
@@ -94,7 +94,7 @@ export default function FlatDetailHeader({ flat }: FlatDetailHeaderProps) {
               </svg>
               Edit
             </Button>
-            <Button variant="destructive" onClick={handleDeleteClick}>
+            <Button variant="destructive" onClick={handleDeleteClick} data-test-id="delete-flat-button">
               <svg
                 className="w-4 h-4 mr-2"
                 fill="none"
