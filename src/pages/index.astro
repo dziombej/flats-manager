@@ -1,4 +1,134 @@
 ---
-// Redirect to dashboard
-return Astro.redirect("/dashboard");
+/**
+ * Landing Page
+ * Shows welcome page for unauthenticated users
+ * Redirects authenticated users to dashboard
+ */
+import Layout from "../layouts/Layout.astro";
+
+// TODO: Add authentication check and redirect logic
+// export const prerender = false;
+// const { data: { user } } = await Astro.locals.supabase.auth.getUser();
+// if (user) return Astro.redirect('/dashboard');
 ---
+
+<Layout title="Welcome - Flats Manager" showHeader={false}>
+  <main class="min-h-screen flex items-center justify-center bg-background">
+    <div class="container mx-auto px-4 py-16">
+      <div class="max-w-4xl mx-auto text-center">
+        <!-- Logo and Title -->
+        <div class="flex justify-center mb-8">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-20 w-20 text-primary"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+            ></path>
+          </svg>
+        </div>
+
+        <h1 class="text-5xl font-bold mb-6">Flats Manager</h1>
+
+        <p class="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          A simple and efficient tool for managing your rental properties, tracking payments, and keeping everything organized in one place.
+        </p>
+
+        <!-- Features Grid -->
+        <div class="grid md:grid-cols-3 gap-8 mb-12 mt-16">
+          <div class="bg-card rounded-lg border p-6 shadow-sm">
+            <div class="flex justify-center mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-10 w-10 text-primary"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="font-semibold text-lg mb-2">Manage Flats</h3>
+            <p class="text-sm text-muted-foreground">
+              Keep track of all your properties with detailed information and easy access.
+            </p>
+          </div>
+
+          <div class="bg-card rounded-lg border p-6 shadow-sm">
+            <div class="flex justify-center mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-10 w-10 text-primary"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="font-semibold text-lg mb-2">Track Payments</h3>
+            <p class="text-sm text-muted-foreground">
+              Monitor rent payments, utilities, and other recurring charges effortlessly.
+            </p>
+          </div>
+
+          <div class="bg-card rounded-lg border p-6 shadow-sm">
+            <div class="flex justify-center mb-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-10 w-10 text-primary"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="font-semibold text-lg mb-2">Dashboard Overview</h3>
+            <p class="text-sm text-muted-foreground">
+              Get a quick overview of your properties and payment status at a glance.
+            </p>
+          </div>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <a
+            href="/auth/login"
+            class="inline-flex items-center justify-center gap-2 px-8 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors text-base font-medium shadow-sm w-full sm:w-auto"
+          >
+            Log in
+          </a>
+          <a
+            href="/auth/register"
+            class="inline-flex items-center justify-center gap-2 px-8 py-3 border bg-background rounded-md hover:bg-accent hover:text-accent-foreground transition-colors text-base font-medium shadow-sm w-full sm:w-auto"
+          >
+            Create account
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+

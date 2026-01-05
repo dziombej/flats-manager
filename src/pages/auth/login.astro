@@ -1,0 +1,67 @@
+---
+/**
+ * Login Page
+ * User authentication page with email/password form
+ */
+import Layout from "../../layouts/Layout.astro";
+import LoginForm from "../../components/auth/LoginForm";
+
+// TODO: Add redirect logic if user is already authenticated
+// export const prerender = false;
+// const { data: { user } } = await Astro.locals.supabase.auth.getUser();
+// if (user) return Astro.redirect('/dashboard');
+---
+
+<Layout title="Login - Flats Manager" showHeader={false}>
+  <main class="min-h-screen flex items-center justify-center bg-background p-4">
+    <div class="w-full max-w-md">
+      <!-- Card container -->
+      <div class="bg-card rounded-lg shadow-lg border p-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+          <div class="flex justify-center mb-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-12 w-12 text-primary"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              ></path>
+            </svg>
+          </div>
+          <h1 class="text-2xl font-bold mb-2">Welcome back</h1>
+          <p class="text-muted-foreground">
+            Sign in to your account to continue
+          </p>
+        </div>
+
+        <!-- Login Form -->
+        <LoginForm client:load />
+
+        <!-- Footer links -->
+        <div class="mt-6 text-center text-sm">
+          <p class="text-muted-foreground">
+            Don't have an account?{" "}
+            <a href="/auth/register" class="text-primary hover:underline font-medium">
+              Create account
+            </a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Back to home link -->
+      <div class="mt-4 text-center">
+        <a href="/" class="text-sm text-muted-foreground hover:text-primary transition-colors">
+          ← Back to home
+        </a>
+      </div>
+    </div>
+  </main>
+</Layout>
+
