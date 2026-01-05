@@ -20,8 +20,8 @@ async function authenticate(page: Page) {
 
   // If redirected to login, perform login
   if (page.url().includes('/auth/login')) {
-    const email = process.env.TEST_USER_EMAIL || 'test@example.com';
-    const password = process.env.TEST_USER_PASSWORD || 'testpassword';
+    const email = process.env.E2E_USERNAME || 'test@example.com';
+    const password = process.env.E2E_PASSWORD || 'testpassword';
 
     const loginPage = new LoginPage(page);
 
