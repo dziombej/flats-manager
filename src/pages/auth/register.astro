@@ -6,10 +6,13 @@
 import Layout from "../../layouts/Layout.astro";
 import RegisterForm from "../../components/auth/RegisterForm";
 
-// TODO: Add redirect logic if user is already authenticated
-// export const prerender = false;
-// const { data: { user } } = await Astro.locals.supabase.auth.getUser();
-// if (user) return Astro.redirect('/dashboard');
+export const prerender = false;
+
+// Redirect authenticated users to dashboard
+const user = Astro.locals.user;
+if (user) {
+  return Astro.redirect('/dashboard');
+}
 ---
 
 <Layout title="Create Account - Flats Manager" showHeader={false}>

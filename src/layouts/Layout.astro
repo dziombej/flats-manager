@@ -9,6 +9,7 @@ interface Props {
 }
 
 const { title = "Flats Manager", showHeader = true } = Astro.props;
+const user = Astro.locals.user;
 ---
 
 <!doctype html>
@@ -34,7 +35,7 @@ const { title = "Flats Manager", showHeader = true } = Astro.props;
     </script>
   </head>
   <body>
-    {showHeader && <Header />}
+    {showHeader && <Header user={user} />}
     <slot />
   </body>
 </html>

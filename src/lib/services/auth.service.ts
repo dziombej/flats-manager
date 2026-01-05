@@ -23,6 +23,11 @@ export const authService = {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        // Since email confirmations are disabled in config.toml,
+        // this shouldn't require email verification
+        emailRedirectTo: undefined,
+      },
     });
 
     return { data, error };

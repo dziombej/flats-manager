@@ -129,44 +129,39 @@ export default function RegisterForm() {
     }));
 
     try {
-      // TODO: Implement API call to /api/auth/register
-      // const response = await fetch('/api/auth/register', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     email: formState.email,
-      //     password: formState.password,
-      //   }),
-      // });
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formState.email,
+          password: formState.password,
+        }),
+      });
 
-      // const data = await response.json();
+      const data = await response.json();
 
-      // if (!response.ok) {
-      //   const errorMessage = response.status === 409
-      //     ? 'Email already exists'
-      //     : data.error || 'Registration failed. Please try again.';
-      //
-      //   setFormState(prev => ({
-      //     ...prev,
-      //     errors: { form: errorMessage },
-      //     isSubmitting: false,
-      //   }));
-      //   return;
-      // }
+      if (!response.ok) {
+        setFormState(prev => ({
+          ...prev,
+          errors: { form: data.error || 'Registration failed. Please try again.' },
+          isSubmitting: false,
+        }));
+        return;
+      }
 
       // On success: Show success message, then redirect to login
-      // setFormState(prev => ({
-      //   ...prev,
-      //   isSubmitting: false,
-      //   isSuccess: true,
-      // }));
+      setFormState(prev => ({
+        ...prev,
+        isSubmitting: false,
+        isSuccess: true,
+      }));
 
-      // setTimeout(() => {
-      //   window.location.href = '/auth/login';
-      // }, 2000);
-
-      console.log('Register form submitted', { email: formState.email });
+      // Redirect to login page after 2 seconds
+      setTimeout(() => {
+        window.location.href = '/auth/login';
+      }, 2000);
     } catch (error) {
+      console.error('Registration error:', error);
       setFormState(prev => ({
         ...prev,
         errors: { form: 'An error occurred. Please try again.' },

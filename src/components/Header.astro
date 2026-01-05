@@ -4,6 +4,16 @@
  * Main navigation header with branding and user actions
  */
 import ThemeToggle from "./ThemeToggle";
+import UserMenu from "./auth/UserMenu";
+
+interface Props {
+  user?: {
+    id: string;
+    email: string;
+  };
+}
+
+const { user } = Astro.props;
 ---
 
 <header class="border-b bg-background">
@@ -48,15 +58,8 @@ import ThemeToggle from "./ThemeToggle";
         <!-- Theme Toggle -->
         <ThemeToggle client:load />
 
-        <!-- User Profile Button (placeholder) -->
-        <button
-          class="flex items-center gap-2 rounded-full hover:bg-accent p-2 transition-colors"
-          aria-label="User menu"
-        >
-          <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-            <span class="text-sm font-semibold text-primary">U</span>
-          </div>
-        </button>
+        <!-- User Menu -->
+        {user && <UserMenu client:load user={user} />}
       </div>
     </div>
   </div>
