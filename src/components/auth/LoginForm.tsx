@@ -91,29 +91,30 @@ export default function LoginForm() {
     }));
 
     try {
-      // TODO: Implement API call to /api/auth/login
-      // const response = await fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email: formState.email, password: formState.password }),
-      // });
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formState.email,
+          password: formState.password
+        }),
+      });
 
-      // const data = await response.json();
+      const data = await response.json();
 
-      // if (!response.ok) {
-      //   setFormState(prev => ({
-      //     ...prev,
-      //     errors: { form: data.error || 'Invalid email or password' },
-      //     isSubmitting: false,
-      //   }));
-      //   return;
-      // }
+      if (!response.ok) {
+        setFormState(prev => ({
+          ...prev,
+          errors: { form: data.error || 'Invalid email or password' },
+          isSubmitting: false,
+        }));
+        return;
+      }
 
-      // On success: Update auth store and redirect to /dashboard
-      // window.location.href = '/dashboard';
-
-      console.log('Login form submitted', { email: formState.email });
+      // On success: Perform server-side page reload to update auth state
+      window.location.href = '/dashboard';
     } catch (error) {
+      console.error('Login error:', error);
       setFormState(prev => ({
         ...prev,
         errors: { form: 'An error occurred. Please try again.' },

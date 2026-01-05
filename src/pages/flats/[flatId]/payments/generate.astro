@@ -5,6 +5,12 @@ import GeneratePaymentsForm from "../../../../components/GeneratePaymentsForm";
 
 export const prerender = false;
 
+// Check authentication
+const user = Astro.locals.user;
+if (!user) {
+  return Astro.redirect("/auth/login");
+}
+
 // Get flat ID from URL params
 const { flatId } = Astro.params;
 

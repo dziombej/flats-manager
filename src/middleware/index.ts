@@ -1,27 +1,50 @@
 import { defineMiddleware } from "astro:middleware";
 
-import { supabaseClient } from "../db/supabase.client";
+import { createSupabaseServerClient } from "../db/supabase.client";
+
+// Public paths that don't require authentication
+const PUBLIC_PATHS = [
+  "/",
+  "/auth/login",
+  "/auth/register",
+  "/api/auth/login",
+  "/api/auth/register",
+];
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  context.locals.supabase = supabaseClient;
+  // Create Supabase client with SSR support
+  const supabase = createSupabaseServerClient({
+    cookies: context.cookies,
+    headers: context.request.headers,
+  });
 
-  // Development only: Auto-login with test credentials if not authenticated
-  if (import.meta.env.DEV && import.meta.env.DEV_AUTO_LOGIN === 'true') {
-    const { data: { user } } = await supabaseClient.auth.getUser();
+  // Store supabase client in locals
+  context.locals.supabase = supabase;
 
-    if (!user) {
-      const email = import.meta.env.DEV_USER_EMAIL || 'admin@flatmanager.local';
-      const password = import.meta.env.DEV_USER_PASSWORD || 'password123';
+  // Get user session
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-      const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({
-        email,
-        password,
-      });
+  // Store user in locals if authenticated
+  if (user) {
+    context.locals.user = {
+      id: user.id,
+      email: user.email || "",
+    };
+  }
 
-      if (!signInError && signInData.user) {
-        console.log(`[DEV] Auto-logged in as: ${email}`);
-      }
-    }
+  // Check if path is public
+  const isPublicPath = PUBLIC_PATHS.includes(context.url.pathname);
+
+  // Redirect unauthenticated users to login for protected routes
+  if (!user && !isPublicPath) {
+    return context.redirect("/auth/login");
+  }
+
+  // Redirect authenticated users away from auth pages
+  if (user && (context.url.pathname === "/auth/login" || context.url.pathname === "/auth/register")) {
+    return context.redirect("/dashboard");
   }
 
   return next();
