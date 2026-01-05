@@ -51,6 +51,11 @@
 ### Backend
 - **Supabase** - PostgreSQL + Backend-as-a-Service + Authentication (open source, self-hosting capability)
 
+### Testing
+- **Vitest** - Unit and integration testing framework
+- **React Testing Library** - Testing React components
+- **Playwright** - End-to-end testing framework
+
 ### Deployment
 - **GitHub Actions** - CI/CD pipeline
 - **DigitalOcean** - Hosting with Docker

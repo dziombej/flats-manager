@@ -9,6 +9,11 @@
 ## Backend
 **Supabase** - PostgreSQL + BaaS + Auth (open source, self-hosting capability)
 
+## Testing
+**Vitest** - unit and integration testing framework  
+**React Testing Library** - testing React components  
+**Playwright** - end-to-end testing framework
+
 ## Deployment
 **GitHub Actions** - CI/CD  
 **DigitalOcean** - hosting (Docker)
