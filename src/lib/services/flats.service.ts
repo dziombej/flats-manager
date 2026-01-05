@@ -44,7 +44,6 @@ export class FlatsService {
       .select("id, name, address, created_at, updated_at")
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
-    console.log("[FlatsService.getFlatsWithDebt] Query result - data:", flats, "error:", flatsError);
     if (flatsError) {
       throw new Error(`Failed to fetch flats: ${flatsError.message}`);
     }
@@ -130,10 +129,6 @@ export class FlatsService {
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
-    console.log("[FlatsService.getAllFlats] Query result:");
-    console.log("  - data:", JSON.stringify(data, null, 2));
-    console.log("  - error:", JSON.stringify(error, null, 2));
-    console.log("  - data length:", data?.length ?? 0);
 
     if (error) {
       console.error("[FlatsService.getAllFlats] Error details:", {
