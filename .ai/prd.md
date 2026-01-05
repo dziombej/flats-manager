@@ -74,16 +74,32 @@ REQ-AUTH-002: Logout System
 - Logged-in user can log out at any time
 - Logout ends the session and redirects to login page
 
-REQ-AUTH-003: Row Level Security
+REQ-AUTH-003: Row Level Security 
 - User sees only their own apartments and related data
-- RLS policies are implemented for tables: Flat, PaymentType, Payment
-- Reading or modifying other users' data is impossible
+- RLS policies are implemented should be omitted in MVP
 
 REQ-AUTH-004: User Seeding
 - System initializes database with two test users
 - User 1: admin@flatmanager.local / password123 (with 3 apartments)
 - User 2: test@flatmanager.local / password123 (without apartments)
 - Credentials are documented in README.md
+
+REQ-AUTH-005: Landing page
+- Unauthenticated users see a landing page with app description
+- Landing page contains login button redirecting to login page
+- There should be possibility to reset password (email sending not required)
+
+REQ-AUTH-006: Registration page
+- Unauthenticated users can register new account
+- Required fields: email (unique), password (min 8 chars)
+- After registration, user is redirected to login page
+- No email verification in MVP
+- New user has no apartments by default
+- Password is hashed before saving
+- Validation: email format, password length
+- Success message after registration
+- Error messages for duplicate email or validation failures
+- No multi-factor authentication in MVP
 
 ### 3.2. Apartment Management
 
@@ -165,6 +181,14 @@ REQ-PAY-005: Paid Payment Edit Restriction
 REQ-PAY-007: Editing Unpaid Payment
 - No editing of unpaid payment in MVP
 - No ability to delete payment in MVP
+  
+REQ-PAY-008: Monthly Payment Generation on main page
+- User clicks "Generate payments for current month" button on main bar
+- System automatically have selected current month and year  
+- After confirmation, system creates Payment for all active PaymentTypes for all apartments
+- Payment amount is copied from PaymentType's base_amount at generation time
+- Default status of new payment: is_paid = false
+
 
 ### 3.5. Dashboard and Reporting
 
@@ -237,10 +261,7 @@ REQ-SEC-001: Data Security
 ### 4.1. Features Outside MVP Scope
 
 User Management:
-- Registration of new users
-- Password reset
 - User profile management
-- Password change
 - Multi-level user roles
 
 Advanced Payment Management:
