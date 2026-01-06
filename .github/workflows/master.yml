@@ -66,37 +66,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v6
 
-      - name: Validate Secrets
-        run: |
-          echo "🔍 Validating Cloudflare configuration..."
-          
-          # Check if secrets are set (without revealing them)
-          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
-            echo "❌ CLOUDFLARE_API_TOKEN is not set"
-            exit 1
-          else
-            echo "✅ CLOUDFLARE_API_TOKEN is set (length: ${#CLOUDFLARE_API_TOKEN})"
-          fi
-          
-          if [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
-            echo "❌ CLOUDFLARE_ACCOUNT_ID is not set"
-            exit 1
-          else
-            echo "✅ CLOUDFLARE_ACCOUNT_ID is set (length: ${#CLOUDFLARE_ACCOUNT_ID})"
-          fi
-          
-          if [ -z "${{ secrets.CLOUDFLARE_PROJECT_NAME }}" ]; then
-            echo "❌ CLOUDFLARE_PROJECT_NAME is not set"
-            exit 1
-          else
-            PROJECT_NAME="${{ secrets.CLOUDFLARE_PROJECT_NAME }}"
-            echo "✅ CLOUDFLARE_PROJECT_NAME is set: ${PROJECT_NAME} (length: ${#PROJECT_NAME})"
-          fi
-          
-          echo "✅ All secrets are configured"
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -111,6 +80,8 @@ jobs:
         run: npm run build
         env:
           CF_PAGES: true
+          SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.PUBLIC_SUPABASE_KEY }}
 
       - name: List Cloudflare Pages Projects
         uses: cloudflare/wrangler-action@v3
