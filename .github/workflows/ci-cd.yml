@@ -26,8 +26,8 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Install Vitest Globally
-        run: npm install -g vitest
+      - name: Ensure Vitest is Installed
+        run: npm install vitest --save-dev
 
       - name: Run Unit Tests
         run: npm run test:run
