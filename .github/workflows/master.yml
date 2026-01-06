@@ -64,6 +64,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v6
 
+      - name: Print Secret
+        run: |
+          echo "API Token: ${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          echo "Account ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+          echo "Project Name: ${{ secrets.CLOUDFLARE_PROJECT_NAME }}"
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
