@@ -6,10 +6,9 @@
  */
 import Layout from "../layouts/Layout.astro";
 
-// TODO: Add authentication check and redirect logic
-// export const prerender = false;
-// const { data: { user } } = await Astro.locals.supabase.auth.getUser();
-// if (user) return Astro.redirect('/dashboard');
+export const prerender = false;
+const { data: { user } } = await Astro.locals.supabase.auth.getUser();
+if (user) return Astro.redirect('/dashboard');
 ---
 
 <Layout title="Welcome - Flats Manager" showHeader={false}>
