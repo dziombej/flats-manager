@@ -76,9 +76,6 @@ async function globalTeardown() {
         console.error('❌ Error counting flats:', countError);
       } else {
         console.log(`📊 Found ${existingFlats?.length ?? 0} flats for user ${testUserId}`);
-        if (existingFlats && existingFlats.length > 0) {
-          console.log('📋 Flats to delete:', existingFlats.map(f => ({ id: f.id, name: f.name })));
-        }
       }
 
       // Now delete the flats

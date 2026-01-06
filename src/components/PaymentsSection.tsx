@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Calendar, Check, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import {
@@ -10,6 +11,10 @@ import {
   TableRow,
 } from "./ui/table";
 import type { PaymentViewModel } from "../types";
+import { formatCurrency, formatMonthYear, formatDate } from "../lib/formatters";
+import { getPaymentBadgeVariant, getPaymentBadgeLabel } from "../lib/payment-status";
+import { usePaymentActions } from "./hooks/usePaymentActions";
+import { useNavigation } from "./hooks/useNavigation";
 
 interface PaymentsSectionProps {
   payments: PaymentViewModel[];
@@ -20,16 +25,27 @@ export default function PaymentsSection({
   payments,
   flatId,
 }: PaymentsSectionProps) {
-  const [markingPaid, setMarkingPaid] = useState<string | null>(null);
+  const navigation = useNavigation();
   const [localPayments, setLocalPayments] = useState(payments);
+
+  const { markAsPaid, markingPaymentId } = usePaymentActions({
+    flatId,
+    onSuccess: () => {
+      // Reload the page to refresh stats
+      navigation.reload();
+    },
+    onError: (error) => {
+      // Rollback optimistic update
+      setLocalPayments(payments);
+      alert(error.message);
+    },
+  });
 
   const handleGeneratePayments = () => {
     window.location.href = `/flats/${flatId}/payments/generate`;
   };
 
   const handleMarkAsPaid = async (paymentId: string) => {
-    setMarkingPaid(paymentId);
-
     // Optimistic update
     setLocalPayments((prev) =>
       prev.map((p) =>
@@ -39,51 +55,15 @@ export default function PaymentsSection({
       )
     );
 
-    try {
-      const response = await fetch(`/api/payments/${paymentId}/mark-paid`, {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to mark payment as paid");
-      }
-
-      // Reload the page to refresh stats
-      window.location.reload();
-    } catch (error) {
-      console.error("Error marking payment as paid:", error);
-
-      // Rollback optimistic update
-      setLocalPayments(payments);
-
-      alert("Failed to mark payment as paid. Please try again.");
-      setMarkingPaid(null);
-    }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("pl-PL", {
-      style: "currency",
-      currency: "PLN",
-    }).format(amount);
-  };
-
-  const formatMonthYear = (month: number, year: number) => {
-    const date = new Date(year, month - 1);
-    return new Intl.DateTimeFormat("en-US", {
-      month: "long",
-      year: "numeric",
-    }).format(date);
+    await markAsPaid(paymentId);
   };
 
   const getStatusBadge = (payment: PaymentViewModel) => {
-    if (payment.isPaid) {
-      return <Badge variant="success">Paid</Badge>;
-    }
-    if (payment.isOverdue) {
-      return <Badge variant="destructive">Overdue</Badge>;
-    }
-    return <Badge variant="warning">Pending</Badge>;
+    return (
+      <Badge variant={getPaymentBadgeVariant(payment)}>
+        {getPaymentBadgeLabel(payment)}
+      </Badge>
+    );
   };
 
   return (
@@ -91,20 +71,7 @@ export default function PaymentsSection({
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Payments</h2>
         <Button onClick={handleGeneratePayments}>
-          <svg
-            className="w-4 h-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-            />
-          </svg>
+          <Calendar className="w-4 h-4 mr-2" />
           Generate Payments
         </Button>
       </div>
@@ -148,56 +115,24 @@ export default function PaymentsSection({
                         variant="outline"
                         size="sm"
                         onClick={() => handleMarkAsPaid(payment.id)}
-                        disabled={markingPaid === payment.id}
+                        disabled={markingPaymentId === payment.id}
                       >
-                        {markingPaid === payment.id ? (
+                        {markingPaymentId === payment.id ? (
                           <>
-                            <svg
-                              className="animate-spin h-4 w-4 mr-2"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              ></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                              ></path>
-                            </svg>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                             Marking...
                           </>
                         ) : (
                           <>
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                            <span className="ml-2">Mark as Paid</span>
+                            <Check className="w-4 h-4 mr-2" />
+                            Mark as Paid
                           </>
                         )}
                       </Button>
                     )}
                     {payment.isPaid && (
                       <span className="text-muted-foreground text-sm">
-                        Paid on {new Date(payment.paidAt!).toLocaleDateString()}
+                        Paid on {formatDate(payment.paidAt!)}
                       </span>
                     )}
                   </TableCell>

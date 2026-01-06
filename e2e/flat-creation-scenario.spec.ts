@@ -139,35 +139,3 @@ test.describe('Create Flat - Complete Scenario', () => {
   });
 });
 
-/**
- * Cleanup test: Delete the test flat after the scenario
- * Run this separately or include in test teardown
- */
-test.describe('Cleanup', () => {
-  test.skip('delete test flat - manual cleanup', async ({ authenticatedPage: page }) => {
-    // This test is skipped by default
-    // Remove .skip and run manually if you need to clean up test data
-
-    const testFlatName = 'NazwaTest';
-    const dashboard = new DashboardPage(page);
-    const flatDetail = new FlatDetailPage(page);
-
-    await dashboard.goto();
-
-    const flatId = await dashboard.findFlatCardIdByName(testFlatName);
-
-    if (flatId) {
-      await flatDetail.goto(flatId);
-      await flatDetail.clickDelete();
-      await flatDetail.confirmDelete();
-
-      // Verify redirect to dashboard
-      await expect(page).toHaveURL(/\/dashboard/);
-
-      // Verify flat no longer exists
-      const stillExists = await dashboard.hasFlatCard(flatId);
-      expect(stillExists).toBe(false);
-    }
-  });
-});
-

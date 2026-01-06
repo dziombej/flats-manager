@@ -1,6 +1,9 @@
-import { useState, useCallback, useId, type FormEvent } from "react";
+import { useCallback, useId, type FormEvent } from "react";
+import { Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { useFormState } from "./hooks/useFormState";
+import { useNavigation } from "./hooks/useNavigation";
 import type { CreateFlatCommand, UpdateFlatCommand, FlatDto, ValidationErrorResponseDto } from "../types";
 
 interface FlatFormProps {
@@ -12,35 +15,28 @@ interface FlatFormProps {
   };
 }
 
-interface FlatFormState {
+interface FlatFormData {
   name: string;
   address: string;
-  errors: {
-    name?: string;
-    address?: string;
-    form?: string;
-  };
-  isSubmitting: boolean;
-  isSuccess: boolean;
 }
 
 // Helper: Validate form
-const validateForm = (name: string, address: string): { name?: string; address?: string } => {
+const validateFlatForm = (data: FlatFormData): { name?: string; address?: string } => {
   const errors: { name?: string; address?: string } = {};
 
   // Name validation
-  const trimmedName = name.trim();
+  const trimmedName = data.name.trim();
   if (trimmedName.length === 0) {
     errors.name = "Name is required";
-  } else if (name.length > 100) {
+  } else if (data.name.length > 100) {
     errors.name = "Name must be at most 100 characters";
   }
 
   // Address validation
-  const trimmedAddress = address.trim();
+  const trimmedAddress = data.address.trim();
   if (trimmedAddress.length === 0) {
     errors.address = "Address is required";
-  } else if (address.length > 200) {
+  } else if (data.address.length > 200) {
     errors.address = "Address must be at most 200 characters";
   }
 
@@ -48,87 +44,69 @@ const validateForm = (name: string, address: string): { name?: string; address?:
 };
 
 export default function FlatForm({ mode, flatId, initialData }: FlatFormProps) {
+  const navigation = useNavigation();
   const nameId = useId();
   const addressId = useId();
   const nameErrorId = useId();
   const addressErrorId = useId();
   const formErrorId = useId();
 
-  const [formState, setFormState] = useState<FlatFormState>({
-    name: initialData?.name || '',
-    address: initialData?.address || '',
-    errors: {},
-    isSubmitting: false,
-    isSuccess: false,
+  const {
+    formData,
+    errors,
+    isSubmitting,
+    isSuccess,
+    updateField,
+    setErrors,
+    setSubmitting,
+    setSuccess,
+    validate,
+  } = useFormState<FlatFormData>({
+    initialData: {
+      name: initialData?.name || '',
+      address: initialData?.address || '',
+    },
+    validate: validateFlatForm,
   });
 
   const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFormState(prev => ({
-      ...prev,
-      name: value,
-      errors: {
-        ...prev.errors,
-        name: undefined,
-      },
-    }));
-  }, []);
+    updateField('name', e.target.value);
+  }, [updateField]);
 
   const handleAddressChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFormState(prev => ({
-      ...prev,
-      address: value,
-      errors: {
-        ...prev.errors,
-        address: undefined,
-      },
-    }));
-  }, []);
+    updateField('address', e.target.value);
+  }, [updateField]);
 
   const handleCancel = useCallback(() => {
     if (mode === 'create') {
-      window.location.href = '/flats';
+      navigation.goToFlats();
     } else {
-      window.location.href = `/flats/${flatId}`;
+      navigation.goToFlat(flatId!);
     }
-  }, [mode, flatId]);
+  }, [mode, flatId, navigation]);
 
   const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Client-side validation
-    const validationErrors = validateForm(formState.name, formState.address);
-
-    if (Object.keys(validationErrors).length > 0) {
-      setFormState(prev => ({
-        ...prev,
-        errors: validationErrors,
-      }));
-
+    if (!validate()) {
       // Focus first invalid field
-      if (validationErrors.name) {
+      if (errors.name) {
         document.getElementById(nameId)?.focus();
-      } else if (validationErrors.address) {
+      } else if (errors.address) {
         document.getElementById(addressId)?.focus();
       }
-
       return;
     }
 
     // Start submission
-    setFormState(prev => ({
-      ...prev,
-      isSubmitting: true,
-      errors: {},
-      isSuccess: false,
-    }));
+    setSubmitting(true);
 
     try {
       // Construct command
       const command: CreateFlatCommand | UpdateFlatCommand = {
-        name: formState.name.trim(),
-        address: formState.address.trim(),
+        name: formData.name.trim(),
+        address: formData.address.trim(),
       };
 
       // API call
@@ -146,41 +124,25 @@ export default function FlatForm({ mode, flatId, initialData }: FlatFormProps) {
       if (!response.ok) {
         // Handle error responses
         if (response.status === 400) {
-          // Validation error
           const errorData: ValidationErrorResponseDto = await response.json();
-          setFormState(prev => ({
-            ...prev,
-            isSubmitting: false,
-            errors: {
-              ...errorData.details,
-              form: errorData.details ? undefined : errorData.error,
-            },
-          }));
+          setErrors({
+            ...errorData.details,
+            form: errorData.details ? undefined : errorData.error,
+          });
           return;
         } else if (response.status === 401) {
-          // Unauthorized - redirect to login
-          window.location.href = `/login?returnTo=${encodeURIComponent(window.location.pathname)}`;
+          navigation.goToLogin(window.location.pathname);
           return;
         } else if (response.status === 404) {
-          // Not found (edit mode)
-          setFormState(prev => ({
-            ...prev,
-            isSubmitting: false,
-            errors: {
-              form: "Flat not found or you don't have permission to edit it.",
-            },
-          }));
+          setErrors({
+            form: "Flat not found or you don't have permission to edit it.",
+          });
           return;
         } else {
-          // Other errors
           const errorData = await response.json().catch(() => ({ error: 'An error occurred' }));
-          setFormState(prev => ({
-            ...prev,
-            isSubmitting: false,
-            errors: {
-              form: errorData.error || 'An error occurred while saving. Please try again.',
-            },
-          }));
+          setErrors({
+            form: errorData.error || 'An error occurred while saving. Please try again.',
+          });
           return;
         }
       }
@@ -189,57 +151,44 @@ export default function FlatForm({ mode, flatId, initialData }: FlatFormProps) {
       const result: FlatDto = await response.json();
 
       if (mode === 'create') {
-        // Redirect to flat details page
-        window.location.href = `/flats/${result.id}`;
+        navigation.goToFlat(result.id);
       } else {
-        // Show success message in edit mode
-        setFormState(prev => ({
-          ...prev,
-          isSubmitting: false,
-          isSuccess: true,
-          name: result.name,
-          address: result.address,
-        }));
+        setSuccess(true);
+        updateField('name', result.name);
+        updateField('address', result.address);
 
         // Hide success message after 3 seconds
         setTimeout(() => {
-          setFormState(prev => ({
-            ...prev,
-            isSuccess: false,
-          }));
+          setSuccess(false);
         }, 3000);
       }
     } catch (error) {
-      // Network error
       console.error('Network error:', error);
-      setFormState(prev => ({
-        ...prev,
-        isSubmitting: false,
-        errors: {
-          form: 'Network error. Please check your connection and try again.',
-        },
-      }));
+      setErrors({
+        form: 'Network error. Please check your connection and try again.',
+      });
+    } finally {
+      setSubmitting(false);
     }
-  }, [mode, flatId, formState.name, formState.address, nameId, addressId]);
+  }, [mode, flatId, formData, errors, nameId, addressId, validate, setSubmitting, setSuccess, setErrors, updateField, navigation]);
 
-  const hasErrors = Object.keys(formState.errors).length > 0;
-  const isFormValid = formState.name.trim().length > 0 && formState.address.trim().length > 0;
+  const isFormValid = formData.name.trim().length > 0 && formData.address.trim().length > 0;
 
   return (
     <form onSubmit={handleSubmit} data-test-id="flat-form" className="space-y-6 max-w-2xl">
       {/* Form Error Message */}
-      {formState.errors.form && (
+      {errors.form && (
         <div
           id={formErrorId}
           role="alert"
           className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-md"
         >
-          <p className="text-sm font-medium">{formState.errors.form}</p>
+          <p className="text-sm font-medium">{errors.form}</p>
         </div>
       )}
 
       {/* Success Message (Edit Mode) */}
-      {formState.isSuccess && mode === 'edit' && (
+      {isSuccess && mode === 'edit' && (
         <div
           role="status"
           className="bg-green-50 dark:bg-green-950/30 border border-green-500 text-green-700 dark:text-green-400 px-4 py-3 rounded-md"
@@ -257,22 +206,22 @@ export default function FlatForm({ mode, flatId, initialData }: FlatFormProps) {
           id={nameId}
           data-test-id="flat-name-input"
           type="text"
-          value={formState.name}
+          value={formData.name}
           onChange={handleNameChange}
-          aria-invalid={!!formState.errors.name}
-          aria-describedby={formState.errors.name ? nameErrorId : undefined}
+          aria-invalid={!!errors.name}
+          aria-describedby={errors.name ? nameErrorId : undefined}
           placeholder="e.g., Apartment 101"
           maxLength={100}
-          disabled={formState.isSubmitting}
+          disabled={isSubmitting}
           autoFocus
         />
-        {formState.errors.name && (
+        {errors.name && (
           <p id={nameErrorId} className="text-sm text-destructive">
-            {formState.errors.name}
+            {errors.name}
           </p>
         )}
         <p className="text-xs text-muted-foreground">
-          {formState.name.length}/100 characters
+          {formData.name.length}/100 characters
         </p>
       </div>
 
@@ -285,21 +234,21 @@ export default function FlatForm({ mode, flatId, initialData }: FlatFormProps) {
           id={addressId}
           data-test-id="flat-address-input"
           type="text"
-          value={formState.address}
+          value={formData.address}
           onChange={handleAddressChange}
-          aria-invalid={!!formState.errors.address}
-          aria-describedby={formState.errors.address ? addressErrorId : undefined}
+          aria-invalid={!!errors.address}
+          aria-describedby={errors.address ? addressErrorId : undefined}
           placeholder="e.g., 123 Main St, City, ZIP"
           maxLength={200}
-          disabled={formState.isSubmitting}
+          disabled={isSubmitting}
         />
-        {formState.errors.address && (
+        {errors.address && (
           <p id={addressErrorId} className="text-sm text-destructive">
-            {formState.errors.address}
+            {errors.address}
           </p>
         )}
         <p className="text-xs text-muted-foreground">
-          {formState.address.length}/200 characters
+          {formData.address.length}/200 characters
         </p>
       </div>
 
@@ -308,11 +257,11 @@ export default function FlatForm({ mode, flatId, initialData }: FlatFormProps) {
         <Button
           type="submit"
           data-test-id="flat-form-submit-button"
-          disabled={formState.isSubmitting || !isFormValid}
+          disabled={isSubmitting || !isFormValid}
         >
-          {formState.isSubmitting ? (
+          {isSubmitting ? (
             <>
-              <span className="inline-block animate-spin mr-2">⏳</span>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               {mode === 'create' ? 'Creating...' : 'Saving...'}
             </>
           ) : (
@@ -323,7 +272,7 @@ export default function FlatForm({ mode, flatId, initialData }: FlatFormProps) {
           type="button"
           variant="outline"
           onClick={handleCancel}
-          disabled={formState.isSubmitting}
+          disabled={isSubmitting}
         >
           Cancel
         </Button>

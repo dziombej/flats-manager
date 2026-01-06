@@ -1,6 +1,9 @@
-import { useState, useCallback, useId, type FormEvent } from "react";
+import { useCallback, useId, type FormEvent } from "react";
+import { Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { useFormState } from "./hooks/useFormState";
+import { useNavigation } from "./hooks/useNavigation";
 import type { CreatePaymentTypeCommand, UpdatePaymentTypeCommand, PaymentTypeDto, ValidationErrorResponseDto } from "../types";
 
 interface PaymentTypeFormProps {
@@ -13,32 +16,25 @@ interface PaymentTypeFormProps {
   };
 }
 
-interface PaymentTypeFormState {
+interface PaymentTypeFormData {
   name: string;
   baseAmount: string;
-  errors: {
-    name?: string;
-    base_amount?: string;
-    form?: string;
-  };
-  isSubmitting: boolean;
-  isSuccess: boolean;
 }
 
 // Helper: Validate form
-const validateForm = (name: string, baseAmount: string): { name?: string; base_amount?: string } => {
+const validatePaymentTypeForm = (data: PaymentTypeFormData): { name?: string; base_amount?: string } => {
   const errors: { name?: string; base_amount?: string } = {};
 
   // Name validation
-  const trimmedName = name.trim();
+  const trimmedName = data.name.trim();
   if (trimmedName.length === 0) {
     errors.name = "Name is required";
-  } else if (name.length > 100) {
+  } else if (data.name.length > 100) {
     errors.name = "Name must be at most 100 characters";
   }
 
   // Base amount validation
-  const trimmedAmount = baseAmount.trim();
+  const trimmedAmount = data.baseAmount.trim();
   if (trimmedAmount.length === 0) {
     errors.base_amount = "Base amount is required";
   } else {
@@ -56,83 +52,65 @@ const validateForm = (name: string, baseAmount: string): { name?: string; base_a
 };
 
 export default function PaymentTypeForm({ mode, flatId, paymentTypeId, initialData }: PaymentTypeFormProps) {
+  const navigation = useNavigation();
   const nameId = useId();
   const baseAmountId = useId();
   const nameErrorId = useId();
   const baseAmountErrorId = useId();
   const formErrorId = useId();
 
-  const [formState, setFormState] = useState<PaymentTypeFormState>({
-    name: initialData?.name || '',
-    baseAmount: initialData?.base_amount?.toString() || '',
-    errors: {},
-    isSubmitting: false,
-    isSuccess: false,
+  const {
+    formData,
+    errors,
+    isSubmitting,
+    isSuccess,
+    updateField,
+    setErrors,
+    setSubmitting,
+    setSuccess,
+    validate,
+  } = useFormState<PaymentTypeFormData>({
+    initialData: {
+      name: initialData?.name || '',
+      baseAmount: initialData?.base_amount?.toString() || '',
+    },
+    validate: validatePaymentTypeForm,
   });
 
   const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFormState(prev => ({
-      ...prev,
-      name: value,
-      errors: {
-        ...prev.errors,
-        name: undefined,
-      },
-    }));
-  }, []);
+    updateField('name', e.target.value);
+  }, [updateField]);
 
   const handleBaseAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFormState(prev => ({
-      ...prev,
-      baseAmount: value,
-      errors: {
-        ...prev.errors,
-        base_amount: undefined,
-      },
-    }));
-  }, []);
+    updateField('baseAmount', e.target.value);
+  }, [updateField]);
 
   const handleCancel = useCallback(() => {
-    window.location.href = `/flats/${flatId}`;
-  }, [flatId]);
+    navigation.goToFlat(flatId);
+  }, [flatId, navigation]);
 
   const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Client-side validation
-    const validationErrors = validateForm(formState.name, formState.baseAmount);
-
-    if (Object.keys(validationErrors).length > 0) {
-      setFormState(prev => ({
-        ...prev,
-        errors: validationErrors,
-      }));
-
+    if (!validate()) {
       // Focus first invalid field
-      if (validationErrors.name) {
+      if (errors.name) {
         document.getElementById(nameId)?.focus();
-      } else if (validationErrors.base_amount) {
+      } else if (errors.base_amount) {
         document.getElementById(baseAmountId)?.focus();
       }
-
       return;
     }
 
     // Start submission
-    setFormState(prev => ({
-      ...prev,
-      isSubmitting: true,
-      errors: {},
-      isSuccess: false,
-    }));
+    setSubmitting(true);
 
     try {
       // Construct command
       const command: CreatePaymentTypeCommand | UpdatePaymentTypeCommand = {
-        name: formState.name.trim(),
-        base_amount: parseFloat(formState.baseAmount.trim()),
+        name: formData.name.trim(),
+        base_amount: parseFloat(formData.baseAmount.trim()),
       };
 
       // API call
@@ -152,41 +130,25 @@ export default function PaymentTypeForm({ mode, flatId, paymentTypeId, initialDa
       if (!response.ok) {
         // Handle error responses
         if (response.status === 400) {
-          // Validation error
           const errorData: ValidationErrorResponseDto = await response.json();
-          setFormState(prev => ({
-            ...prev,
-            isSubmitting: false,
-            errors: {
-              ...errorData.details,
-              form: errorData.details ? undefined : errorData.error,
-            },
-          }));
+          setErrors({
+            ...errorData.details,
+            form: errorData.details ? undefined : errorData.error,
+          });
           return;
         } else if (response.status === 401) {
-          // Unauthorized - redirect to login
-          window.location.href = `/login?returnTo=${encodeURIComponent(window.location.pathname)}`;
+          navigation.goToLogin(window.location.pathname);
           return;
         } else if (response.status === 404) {
-          // Not found (edit mode)
-          setFormState(prev => ({
-            ...prev,
-            isSubmitting: false,
-            errors: {
-              form: "Payment type not found or you don't have permission to edit it.",
-            },
-          }));
+          setErrors({
+            form: "Payment type not found or you don't have permission to edit it.",
+          });
           return;
         } else {
-          // Other errors
           const errorData = await response.json().catch(() => ({ error: 'An error occurred' }));
-          setFormState(prev => ({
-            ...prev,
-            isSubmitting: false,
-            errors: {
-              form: errorData.error || 'An error occurred while saving. Please try again.',
-            },
-          }));
+          setErrors({
+            form: errorData.error || 'An error occurred while saving. Please try again.',
+          });
           return;
         }
       }
@@ -195,56 +157,44 @@ export default function PaymentTypeForm({ mode, flatId, paymentTypeId, initialDa
       const result: PaymentTypeDto = await response.json();
 
       if (mode === 'create') {
-        // Redirect to flat details page
-        window.location.href = `/flats/${flatId}`;
+        navigation.goToFlat(flatId);
       } else {
-        // Show success message in edit mode
-        setFormState(prev => ({
-          ...prev,
-          isSubmitting: false,
-          isSuccess: true,
-          name: result.name,
-          baseAmount: result.base_amount.toString(),
-        }));
+        setSuccess(true);
+        updateField('name', result.name);
+        updateField('baseAmount', result.base_amount.toString());
 
         // Hide success message after 3 seconds
         setTimeout(() => {
-          setFormState(prev => ({
-            ...prev,
-            isSuccess: false,
-          }));
+          setSuccess(false);
         }, 3000);
       }
     } catch (error) {
-      // Network error
       console.error('Network error:', error);
-      setFormState(prev => ({
-        ...prev,
-        isSubmitting: false,
-        errors: {
-          form: 'Network error. Please check your connection and try again.',
-        },
-      }));
+      setErrors({
+        form: 'Network error. Please check your connection and try again.',
+      });
+    } finally {
+      setSubmitting(false);
     }
-  }, [mode, flatId, paymentTypeId, formState.name, formState.baseAmount, nameId, baseAmountId]);
+  }, [mode, flatId, paymentTypeId, formData, errors, nameId, baseAmountId, validate, setSubmitting, setSuccess, setErrors, updateField, navigation]);
 
-  const isFormValid = formState.name.trim().length > 0 && formState.baseAmount.trim().length > 0;
+  const isFormValid = formData.name.trim().length > 0 && formData.baseAmount.trim().length > 0;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
       {/* Form Error Message */}
-      {formState.errors.form && (
+      {errors.form && (
         <div
           id={formErrorId}
           role="alert"
           className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-md"
         >
-          <p className="text-sm font-medium">{formState.errors.form}</p>
+          <p className="text-sm font-medium">{errors.form}</p>
         </div>
       )}
 
       {/* Success Message (Edit Mode) */}
-      {formState.isSuccess && mode === 'edit' && (
+      {isSuccess && mode === 'edit' && (
         <div
           role="status"
           className="bg-green-50 dark:bg-green-950/30 border border-green-500 text-green-700 dark:text-green-400 px-4 py-3 rounded-md"
@@ -261,22 +211,22 @@ export default function PaymentTypeForm({ mode, flatId, paymentTypeId, initialDa
         <Input
           id={nameId}
           type="text"
-          value={formState.name}
+          value={formData.name}
           onChange={handleNameChange}
-          aria-invalid={!!formState.errors.name}
-          aria-describedby={formState.errors.name ? nameErrorId : undefined}
+          aria-invalid={!!errors.name}
+          aria-describedby={errors.name ? nameErrorId : undefined}
           placeholder="e.g., Rent, Utilities, Internet"
           maxLength={100}
-          disabled={formState.isSubmitting}
+          disabled={isSubmitting}
           autoFocus
         />
-        {formState.errors.name && (
+        {errors.name && (
           <p id={nameErrorId} className="text-sm text-destructive">
-            {formState.errors.name}
+            {errors.name}
           </p>
         )}
         <p className="text-xs text-muted-foreground">
-          {formState.name.length}/100 characters
+          {formData.name.length}/100 characters
         </p>
       </div>
 
@@ -291,16 +241,16 @@ export default function PaymentTypeForm({ mode, flatId, paymentTypeId, initialDa
           step="0.01"
           min="0"
           max="999999.99"
-          value={formState.baseAmount}
+          value={formData.baseAmount}
           onChange={handleBaseAmountChange}
-          aria-invalid={!!formState.errors.base_amount}
-          aria-describedby={formState.errors.base_amount ? baseAmountErrorId : undefined}
+          aria-invalid={!!errors.base_amount}
+          aria-describedby={errors.base_amount ? baseAmountErrorId : undefined}
           placeholder="e.g., 1500.00"
-          disabled={formState.isSubmitting}
+          disabled={isSubmitting}
         />
-        {formState.errors.base_amount && (
+        {errors.base_amount && (
           <p id={baseAmountErrorId} className="text-sm text-destructive">
-            {formState.errors.base_amount}
+            {errors.base_amount}
           </p>
         )}
         <p className="text-xs text-muted-foreground">
@@ -312,11 +262,11 @@ export default function PaymentTypeForm({ mode, flatId, paymentTypeId, initialDa
       <div className="flex gap-3 pt-4">
         <Button
           type="submit"
-          disabled={formState.isSubmitting || !isFormValid}
+          disabled={isSubmitting || !isFormValid}
         >
-          {formState.isSubmitting ? (
+          {isSubmitting ? (
             <>
-              <span className="inline-block animate-spin mr-2">⏳</span>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               {mode === 'create' ? 'Creating...' : 'Saving...'}
             </>
           ) : (
@@ -327,7 +277,7 @@ export default function PaymentTypeForm({ mode, flatId, paymentTypeId, initialDa
           type="button"
           variant="outline"
           onClick={handleCancel}
-          disabled={formState.isSubmitting}
+          disabled={isSubmitting}
         >
           Cancel
         </Button>

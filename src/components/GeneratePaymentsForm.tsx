@@ -1,7 +1,13 @@
 import { useState, useMemo } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import type { PaymentTypeDto, GeneratePaymentsCommand, GeneratePaymentsResponseDto } from "../types";
+import { Calendar, Loader2 } from "lucide-react";
+import type { PaymentTypeDto, GeneratePaymentsCommand } from "../types";
+import { getMonthName } from "../lib/formatters";
+import { usePaymentGeneration } from "./hooks/usePaymentGeneration";
+import { usePaymentPreview } from "./hooks/usePaymentPreview";
+import { useNavigation } from "./hooks/useNavigation";
+import PaymentGenerationSuccess from "./PaymentGenerationSuccess";
 
 interface GeneratePaymentsFormProps {
   flatId: string;
@@ -18,38 +24,7 @@ interface FormState {
     month?: string;
     year?: string;
   };
-  isSubmitting: boolean;
 }
-
-interface PaymentPreviewItem {
-  paymentTypeId: string;
-  paymentTypeName: string;
-  amount: number;
-  formattedAmount: string;
-}
-
-interface PreviewSummary {
-  count: number;
-  totalAmount: number;
-  formattedTotalAmount: string;
-}
-
-// Helper: Format currency (PLN)
-const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat("pl-PL", {
-    style: "currency",
-    currency: "PLN",
-  }).format(amount);
-};
-
-// Helper: Format month name
-const getMonthName = (month: number): string => {
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-  return monthNames[month - 1] || "";
-};
 
 // Helper: Validate form
 const validateForm = (month: number, year: number): { month?: string; year?: string } => {
@@ -73,35 +48,19 @@ export default function GeneratePaymentsForm({
   currentMonth,
   currentYear,
 }: GeneratePaymentsFormProps) {
+  const navigation = useNavigation();
   const [formState, setFormState] = useState<FormState>({
     month: currentMonth,
     year: currentYear,
     errors: {},
-    isSubmitting: false,
   });
 
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [generationResult, setGenerationResult] = useState<GeneratePaymentsResponseDto | null>(null);
+  const { generate, isGenerating, result } = usePaymentGeneration({
+    flatId,
+  });
 
   // Calculate preview based on current selections
-  const preview = useMemo(() => {
-    const items: PaymentPreviewItem[] = paymentTypes.map((pt) => ({
-      paymentTypeId: pt.id,
-      paymentTypeName: pt.name,
-      amount: pt.base_amount,
-      formattedAmount: formatCurrency(pt.base_amount),
-    }));
-
-    const totalAmount = items.reduce((sum, item) => sum + item.amount, 0);
-
-    const summary: PreviewSummary = {
-      count: items.length,
-      totalAmount,
-      formattedTotalAmount: formatCurrency(totalAmount),
-    };
-
-    return { items, summary };
-  }, [paymentTypes]);
+  const preview = usePaymentPreview(paymentTypes);
 
   // Check if form is valid
   const isFormValid = useMemo(() => {
@@ -128,7 +87,7 @@ export default function GeneratePaymentsForm({
   };
 
   const handleCancel = () => {
-    window.location.href = `/flats/${flatId}`;
+    navigation.goToFlat(flatId);
   };
 
   const handleGenerate = async () => {
@@ -146,80 +105,32 @@ export default function GeneratePaymentsForm({
     };
 
     // Submit
-    setFormState((prev) => ({ ...prev, isSubmitting: true }));
-
-    try {
-      const response = await fetch(`/api/flats/${flatId}/payments/generate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(command),
-      });
-
-      if (!response.ok) {
-        // Handle error
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to generate payments");
-      }
-
-      const result: GeneratePaymentsResponseDto = await response.json();
-
-      // Success
-      setGenerationResult(result);
-      setIsSuccess(true);
-    } catch (error) {
-      // Show error (for now, alert - should use toast)
-      alert(error instanceof Error ? error.message : "Failed to generate payments");
-    } finally {
-      setFormState((prev) => ({ ...prev, isSubmitting: false }));
-    }
+    await generate(command);
   };
 
   const handleViewPayments = () => {
-    window.location.href = `/flats/${flatId}?month=${formState.month}&year=${formState.year}`;
+    navigation.goToFlatWithParams(flatId, {
+      month: formState.month,
+      year: formState.year,
+    });
+  };
+
+  const handleReset = () => {
+    setFormState({
+      month: currentMonth,
+      year: currentYear,
+      errors: {},
+    });
   };
 
   // If success, show success state
-  if (isSuccess && generationResult) {
+  if (result) {
     return (
-      <div className="rounded-lg border border-green-200 bg-green-50 p-8 text-center">
-        <div className="flex justify-center mb-4">
-          <div className="rounded-full bg-green-100 p-3">
-            <svg
-              className="h-12 w-12 text-green-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-        </div>
-        <h2 className="text-2xl font-bold text-green-900 mb-2">
-          Payments Generated Successfully
-        </h2>
-        <p className="text-green-700 mb-6">
-          {generationResult.generated_count} payment{generationResult.generated_count !== 1 ? "s" : ""}{" "}
-          generated for {getMonthName(generationResult.month)} {generationResult.year}
-        </p>
-        <div className="space-y-3">
-          <Button onClick={handleViewPayments} className="w-full sm:w-auto">
-            View Payments
-          </Button>
-          <div>
-            <button
-              onClick={() => setIsSuccess(false)}
-              className="text-green-700 hover:text-green-900 text-sm font-medium"
-            >
-              Generate More Payments
-            </button>
-          </div>
-        </div>
-      </div>
+      <PaymentGenerationSuccess
+        result={result}
+        onViewPayments={handleViewPayments}
+        onReset={handleReset}
+      />
     );
   }
 
@@ -317,42 +228,20 @@ export default function GeneratePaymentsForm({
 
       {/* Form Actions */}
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <Button variant="outline" onClick={handleCancel} disabled={formState.isSubmitting}>
+        <Button variant="outline" onClick={handleCancel} disabled={isGenerating}>
           Cancel
         </Button>
-        <Button
-          onClick={handleGenerate}
-          disabled={!isFormValid || formState.isSubmitting}
-          className="relative"
-        >
-          {formState.isSubmitting ? (
+        <Button onClick={handleGenerate} disabled={!isFormValid || isGenerating}>
+          {isGenerating ? (
             <>
-              <span className="opacity-0">Generate Payments</span>
-              <span className="absolute inset-0 flex items-center justify-center">
-                <svg
-                  className="h-5 w-5 animate-spin text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-              </span>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Generating...
             </>
           ) : (
-            "Generate Payments"
+            <>
+              <Calendar className="h-4 w-4 mr-2" />
+              Generate Payments
+            </>
           )}
         </Button>
       </div>

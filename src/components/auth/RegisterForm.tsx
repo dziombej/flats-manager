@@ -1,48 +1,39 @@
-import { useState, useCallback, useId, type FormEvent } from "react";
+import { useCallback, useId, type FormEvent } from "react";
+import { Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { useFormState } from "../hooks/useFormState";
+import { useNavigation } from "../hooks/useNavigation";
 
-interface RegisterFormState {
+interface RegisterFormData {
   email: string;
   password: string;
   confirmPassword: string;
-  errors: {
-    email?: string;
-    password?: string;
-    confirmPassword?: string;
-    form?: string;
-  };
-  isSubmitting: boolean;
-  isSuccess: boolean;
 }
 
 // Client-side validation
-const validateForm = (
-  email: string,
-  password: string,
-  confirmPassword: string
-): { email?: string; password?: string; confirmPassword?: string } => {
+const validateRegisterForm = (data: RegisterFormData): { email?: string; password?: string; confirmPassword?: string } => {
   const errors: { email?: string; password?: string; confirmPassword?: string } = {};
 
   // Email validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email.trim()) {
+  if (!data.email.trim()) {
     errors.email = "Email is required";
-  } else if (!emailRegex.test(email)) {
+  } else if (!emailRegex.test(data.email)) {
     errors.email = "Please enter a valid email address";
   }
 
   // Password validation
-  if (!password) {
+  if (!data.password) {
     errors.password = "Password is required";
-  } else if (password.length < 8) {
+  } else if (data.password.length < 8) {
     errors.password = "Password must be at least 8 characters";
   }
 
   // Confirm password validation
-  if (!confirmPassword) {
+  if (!data.confirmPassword) {
     errors.confirmPassword = "Please confirm your password";
-  } else if (password !== confirmPassword) {
+  } else if (data.password !== data.confirmPassword) {
     errors.confirmPassword = "Passwords do not match";
   }
 
@@ -50,6 +41,7 @@ const validateForm = (
 };
 
 export default function RegisterForm() {
+  const navigation = useNavigation();
   const emailId = useId();
   const passwordId = useId();
   const confirmPasswordId = useId();
@@ -59,102 +51,66 @@ export default function RegisterForm() {
   const formErrorId = useId();
   const successMessageId = useId();
 
-  const [formState, setFormState] = useState<RegisterFormState>({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    errors: {},
-    isSubmitting: false,
-    isSuccess: false,
+  const {
+    formData,
+    errors,
+    isSubmitting,
+    isSuccess,
+    updateField,
+    setErrors,
+    setSubmitting,
+    setSuccess,
+    validate,
+  } = useFormState<RegisterFormData>({
+    initialData: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+    validate: validateRegisterForm,
   });
 
   const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFormState(prev => ({
-      ...prev,
-      email: value,
-      errors: {
-        ...prev.errors,
-        email: undefined,
-      },
-    }));
-  }, []);
+    updateField('email', e.target.value);
+  }, [updateField]);
 
   const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFormState(prev => ({
-      ...prev,
-      password: value,
-      errors: {
-        ...prev.errors,
-        password: undefined,
-      },
-    }));
-  }, []);
+    updateField('password', e.target.value);
+  }, [updateField]);
 
   const handleConfirmPasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFormState(prev => ({
-      ...prev,
-      confirmPassword: value,
-      errors: {
-        ...prev.errors,
-        confirmPassword: undefined,
-      },
-    }));
-  }, []);
+    updateField('confirmPassword', e.target.value);
+  }, [updateField]);
 
   const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // Client-side validation
-    const validationErrors = validateForm(
-      formState.email,
-      formState.password,
-      formState.confirmPassword
-    );
-
-    if (Object.keys(validationErrors).length > 0) {
-      setFormState(prev => ({
-        ...prev,
-        errors: validationErrors,
-      }));
+    if (!validate()) {
       return;
     }
 
-    setFormState(prev => ({
-      ...prev,
-      isSubmitting: true,
-      errors: {},
-    }));
+    setSubmitting(true);
 
     try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: formState.email,
-          password: formState.password,
+          email: formData.email,
+          password: formData.password,
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setFormState(prev => ({
-          ...prev,
-          errors: { form: data.error || 'Registration failed. Please try again.' },
-          isSubmitting: false,
-        }));
+        setErrors({ form: data.error || 'Registration failed. Please try again.' });
         return;
       }
 
       // On success: Show success message, then redirect to login
-      setFormState(prev => ({
-        ...prev,
-        isSubmitting: false,
-        isSuccess: true,
-      }));
+      setSuccess(true);
 
       // Redirect to login page after 2 seconds
       setTimeout(() => {
@@ -162,16 +118,14 @@ export default function RegisterForm() {
       }, 2000);
     } catch (error) {
       console.error('Registration error:', error);
-      setFormState(prev => ({
-        ...prev,
-        errors: { form: 'An error occurred. Please try again.' },
-        isSubmitting: false,
-      }));
+      setErrors({ form: 'An error occurred. Please try again.' });
+    } finally {
+      setSubmitting(false);
     }
-  }, [formState.email, formState.password, formState.confirmPassword]);
+  }, [formData.email, formData.password, validate, setSubmitting, setSuccess, setErrors]);
 
   // Success message
-  if (formState.isSuccess) {
+  if (isSuccess) {
     return (
       <div
         id={successMessageId}
@@ -179,20 +133,7 @@ export default function RegisterForm() {
         className="rounded-md border border-primary bg-primary/10 p-4 text-center"
       >
         <div className="flex flex-col items-center gap-3">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-12 w-12 text-primary"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          <CheckCircle2 className="h-12 w-12 text-primary" />
           <div>
             <h3 className="font-semibold text-lg mb-1">Account created successfully!</h3>
             <p className="text-sm text-muted-foreground">
@@ -207,13 +148,13 @@ export default function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
       {/* Form-level error */}
-      {formState.errors.form && (
+      {errors.form && (
         <div
           id={formErrorId}
           role="alert"
           className="rounded-md border border-destructive bg-destructive/10 p-4 text-sm text-destructive"
         >
-          {formState.errors.form}
+          {errors.form}
         </div>
       )}
 
@@ -225,18 +166,18 @@ export default function RegisterForm() {
         <Input
           id={emailId}
           type="email"
-          value={formState.email}
+          value={formData.email}
           onChange={handleEmailChange}
-          aria-invalid={!!formState.errors.email}
-          aria-describedby={formState.errors.email ? emailErrorId : undefined}
+          aria-invalid={!!errors.email}
+          aria-describedby={errors.email ? emailErrorId : undefined}
           placeholder="your@email.com"
-          disabled={formState.isSubmitting}
+          disabled={isSubmitting}
           autoComplete="email"
           required
         />
-        {formState.errors.email && (
+        {errors.email && (
           <p id={emailErrorId} role="alert" className="text-sm text-destructive">
-            {formState.errors.email}
+            {errors.email}
           </p>
         )}
       </div>
@@ -249,18 +190,18 @@ export default function RegisterForm() {
         <Input
           id={passwordId}
           type="password"
-          value={formState.password}
+          value={formData.password}
           onChange={handlePasswordChange}
-          aria-invalid={!!formState.errors.password}
-          aria-describedby={formState.errors.password ? passwordErrorId : undefined}
+          aria-invalid={!!errors.password}
+          aria-describedby={errors.password ? passwordErrorId : undefined}
           placeholder="••••••••"
-          disabled={formState.isSubmitting}
+          disabled={isSubmitting}
           autoComplete="new-password"
           required
         />
-        {formState.errors.password && (
+        {errors.password && (
           <p id={passwordErrorId} role="alert" className="text-sm text-destructive">
-            {formState.errors.password}
+            {errors.password}
           </p>
         )}
         <p className="text-xs text-muted-foreground">
@@ -276,18 +217,18 @@ export default function RegisterForm() {
         <Input
           id={confirmPasswordId}
           type="password"
-          value={formState.confirmPassword}
+          value={formData.confirmPassword}
           onChange={handleConfirmPasswordChange}
-          aria-invalid={!!formState.errors.confirmPassword}
-          aria-describedby={formState.errors.confirmPassword ? confirmPasswordErrorId : undefined}
+          aria-invalid={!!errors.confirmPassword}
+          aria-describedby={errors.confirmPassword ? confirmPasswordErrorId : undefined}
           placeholder="••••••••"
-          disabled={formState.isSubmitting}
+          disabled={isSubmitting}
           autoComplete="new-password"
           required
         />
-        {formState.errors.confirmPassword && (
+        {errors.confirmPassword && (
           <p id={confirmPasswordErrorId} role="alert" className="text-sm text-destructive">
-            {formState.errors.confirmPassword}
+            {errors.confirmPassword}
           </p>
         )}
       </div>
@@ -296,9 +237,16 @@ export default function RegisterForm() {
       <Button
         type="submit"
         className="w-full"
-        disabled={formState.isSubmitting}
+        disabled={isSubmitting}
       >
-        {formState.isSubmitting ? 'Creating account...' : 'Create account'}
+        {isSubmitting ? (
+          <>
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            Creating account...
+          </>
+        ) : (
+          'Create account'
+        )}
       </Button>
     </form>
   );
