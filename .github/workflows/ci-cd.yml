@@ -24,13 +24,9 @@ jobs:
           node-version: 20
 
       - name: Install Dependencies
-        run: npm ci
-
-      - name: Ensure Vitest is Installed
-        run: npm install vitest --save-dev
-
-      - name: Current directory
-        run: ls -al
+        env:
+          NODE_ENV: development
+        run: npm install
 
       - name: Run Unit Tests
         run: npm run test:run
