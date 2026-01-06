@@ -29,6 +29,9 @@ jobs:
       - name: Ensure Vitest is Installed
         run: npm install vitest --save-dev
 
+      - name: Current directory
+        run: pwd
+
       - name: Run Unit Tests
         run: npm run test:run
 
