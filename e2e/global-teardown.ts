@@ -9,18 +9,18 @@ async function globalTeardown() {
   console.log('🧹 Starting global teardown - cleaning up test data...');
 
   const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseKey = process.env.SUPABASE_KEY;
   const testUserId = process.env.E2E_USERNAME_ID;
   const testUserEmail = process.env.E2E_USERNAME;
   const testUserPassword = process.env.E2E_PASSWORD;
 
-  if (!supabaseUrl || !supabaseServiceRoleKey) {
+  if (!supabaseUrl || !supabaseKey) {
     console.error('❌ Missing required environment variables for Supabase connection');
-    throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set');
+    throw new Error('SUPABASE_URL and SUPABASE_KEY must be set');
   }
 
   // Create Supabase client
-  const supabase = createClient<Database>(supabaseUrl, supabaseServiceRoleKey, {
+  const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
@@ -32,7 +32,7 @@ async function globalTeardown() {
 
   // Check if the key is actually a service role key (should start with 'eyJ')
   // If not, we need to authenticate as the test user to bypass RLS
-  const isServiceRoleKey = supabaseServiceRoleKey.startsWith('eyJ');
+  const isServiceRoleKey = supabaseKey.startsWith('eyJ');
 
   if (!isServiceRoleKey) {
     console.warn('⚠️  Provided key appears to be a publishable key, not a service role key');
