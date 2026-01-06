@@ -1,4 +1,4 @@
-# flats-manager.pl
+# flats-manager
 
 > A web application for landlords to efficiently manage multiple apartments, recurring payments, and debt monitoring.
 
