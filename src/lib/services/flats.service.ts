@@ -335,7 +335,8 @@ export class FlatsService {
     }
 
     // Remove the join data before returning
-    const { flats, ...paymentType } = data as any;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { flats: _flats, ...paymentType } = data as any;
     return paymentType as PaymentTypeDto;
   }
 

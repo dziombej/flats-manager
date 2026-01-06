@@ -1,0 +1,3 @@
+# Ignore Layout.astro due to inline script formatting issues with prettier
+src/layouts/Layout.astro
+

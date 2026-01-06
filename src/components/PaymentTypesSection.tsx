@@ -8,21 +8,22 @@ interface PaymentTypesSectionProps {
   flatId: string;
 }
 
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat("pl-PL", {
+    style: "currency",
+    currency: "PLN",
+  }).format(amount);
+};
+
 export default function PaymentTypesSection({ paymentTypes, flatId }: PaymentTypesSectionProps) {
   const handleAddPaymentType = useCallback(() => {
     window.location.href = `/flats/${flatId}/payment-types/new`;
   }, [flatId]);
 
   const handleEditPaymentType = useCallback((paymentTypeId: string) => {
+    // eslint-disable-next-line react-compiler/react-compiler
     window.location.href = `/payment-types/${paymentTypeId}/edit`;
   }, []);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("pl-PL", {
-      style: "currency",
-      currency: "PLN",
-    }).format(amount);
-  };
 
   return (
     <section className="mb-8">

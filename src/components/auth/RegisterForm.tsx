@@ -3,7 +3,6 @@ import { Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useFormState } from "../hooks/useFormState";
-import { useNavigation } from "../hooks/useNavigation";
 
 interface RegisterFormData {
   email: string;
@@ -43,7 +42,6 @@ const validateRegisterForm = (
 };
 
 export default function RegisterForm() {
-  const navigation = useNavigation();
   const emailId = useId();
   const passwordId = useId();
   const confirmPasswordId = useId();

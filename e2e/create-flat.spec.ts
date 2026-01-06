@@ -77,7 +77,6 @@ test.describe("Create Flat Flow", () => {
 
   test("should allow canceling flat creation", async ({ authenticatedPage: page }) => {
     // Arrange
-    const headerNav = new HeaderNavigationPage(page);
     const flatForm = new FlatFormPage(page);
 
     // Navigate to create flat page

@@ -9,7 +9,7 @@ describe("utils", () => {
     });
 
     it("should handle conditional classes", () => {
-      const result = cn("btn", false && "hidden", "visible");
+      const result = cn("btn", (false as boolean) && "hidden", "visible");
       expect(result).toBe("btn visible");
     });
 

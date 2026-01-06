@@ -2,6 +2,8 @@ import * as React from "react";
 
 import { cn } from "../../lib/utils";
 
+/* eslint-disable react/prop-types */
+
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (
     <div className="relative w-full overflow-auto">
@@ -54,6 +56,8 @@ const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<
   )
 );
 TableHead.displayName = "TableHead";
+// @ts-expect-error - PropTypes are not used with TypeScript
+TableHead.propTypes = {};
 
 const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<HTMLTableCellElement>>(
   ({ className, ...props }, ref) => (
@@ -61,6 +65,8 @@ const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<
   )
 );
 TableCell.displayName = "TableCell";
+// @ts-expect-error - PropTypes are not used with TypeScript
+TableCell.propTypes = {};
 
 const TableCaption = React.forwardRef<HTMLTableCaptionElement, React.HTMLAttributes<HTMLTableCaptionElement>>(
   ({ className, ...props }, ref) => (

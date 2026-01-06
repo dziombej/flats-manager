@@ -78,5 +78,12 @@ export default tseslint.config(
       "@typescript-eslint/no-explicit-any": "off",
       "no-console": "off",
     },
+  },
+  // Disable prettier for Layout.astro due to inline script formatting issues
+  {
+    files: ["src/layouts/Layout.astro"],
+    rules: {
+      "prettier/prettier": "off",
+    },
   }
 );

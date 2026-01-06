@@ -492,7 +492,7 @@ describe("DashboardStats Component", () => {
           updated_at: "2026-01-01T00:00:00Z",
         },
       ];
-      const { container } = render(<DashboardStats flats={flats} />);
+      render(<DashboardStats flats={flats} />);
 
       // Check Total Debt card has destructive styling
       const totalDebtCard = screen.getByText("Total Debt").closest('[data-slot="card"]')?.parentElement;
