@@ -6,6 +6,7 @@
     "dev": "astro dev --port 4321",
     "dev:debug": "node --inspect-brk ./node_modules/.bin/astro dev",
     "build": "astro build",
+    "build:cloudflare": "CF_PAGES=true astro build",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "eslint .",
@@ -48,6 +49,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@astrojs/cloudflare": "^12.6.12",
     "@eslint/compat": "1.2.7",
     "@eslint/js": "9.23.0",
     "@playwright/test": "^1.57.0",
