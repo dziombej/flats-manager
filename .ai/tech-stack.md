@@ -21,3 +21,6 @@
 
 **GitHub Actions** - CI/CD  
 **DigitalOcean** - hosting (Docker)
+
+## CI/CD
+**Cloudflare** -hosting Astro application
