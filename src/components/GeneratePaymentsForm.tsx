@@ -1,13 +1,18 @@
-import { useState, useMemo } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Calendar, Loader2 } from "lucide-react";
-import type { PaymentTypeDto, GeneratePaymentsCommand } from "../types";
+import { Calendar, Loader2, AlertCircle } from "lucide-react";
+import type { PaymentTypeDto } from "../types";
 import { getMonthName } from "../lib/formatters";
 import { usePaymentGeneration } from "./hooks/usePaymentGeneration";
 import { usePaymentPreview } from "./hooks/usePaymentPreview";
 import { useNavigation } from "./hooks/useNavigation";
 import PaymentGenerationSuccess from "./PaymentGenerationSuccess";
+import {
+  paymentGenerationSchema,
+  type PaymentGenerationFormData,
+} from "../lib/validation/payment-generation.schema";
 
 interface GeneratePaymentsFormProps {
   flatId: string;
@@ -17,29 +22,6 @@ interface GeneratePaymentsFormProps {
   currentYear: number;
 }
 
-interface FormState {
-  month: number;
-  year: number;
-  errors: {
-    month?: string;
-    year?: string;
-  };
-}
-
-// Helper: Validate form
-const validateForm = (month: number, year: number): { month?: string; year?: string } => {
-  const errors: { month?: string; year?: string } = {};
-
-  if (month < 1 || month > 12) {
-    errors.month = "Month must be between 1 and 12";
-  }
-
-  if (year < 1900 || year > 2100) {
-    errors.year = "Year must be between 1900 and 2100";
-  }
-
-  return errors;
-};
 
 export default function GeneratePaymentsForm({
   flatId,
@@ -49,77 +31,54 @@ export default function GeneratePaymentsForm({
   currentYear,
 }: GeneratePaymentsFormProps) {
   const navigation = useNavigation();
-  const [formState, setFormState] = useState<FormState>({
-    month: currentMonth,
-    year: currentYear,
-    errors: {},
+
+  // React Hook Form setup
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors, isValid, isSubmitting },
+  } = useForm<PaymentGenerationFormData>({
+    resolver: zodResolver(paymentGenerationSchema),
+    mode: "onChange",
+    defaultValues: {
+      month: currentMonth,
+      year: currentYear,
+    },
   });
 
-  const { generate, isGenerating, result } = usePaymentGeneration({
+  // Watch form values for preview
+  const formValues = watch();
+
+  // Payment generation hook
+  const { generate, isGenerating, result, error: apiError } = usePaymentGeneration({
     flatId,
   });
 
-  // Calculate preview based on current selections
+  // Calculate preview based on current form values
   const preview = usePaymentPreview(paymentTypes);
 
-  // Check if form is valid
-  const isFormValid = useMemo(() => {
-    const errors = validateForm(formState.month, formState.year);
-    return Object.keys(errors).length === 0;
-  }, [formState.month, formState.year]);
-
-  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const month = parseInt(e.target.value, 10);
-    setFormState((prev) => ({
-      ...prev,
-      month,
-      errors: { ...prev.errors, month: undefined },
-    }));
-  };
-
-  const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const year = parseInt(e.target.value, 10);
-    setFormState((prev) => ({
-      ...prev,
-      year,
-      errors: { ...prev.errors, year: undefined },
-    }));
-  };
+  // Form submit handler
+  const onSubmit = handleSubmit(async (data) => {
+    await generate(data);
+  });
 
   const handleCancel = () => {
     navigation.goToFlat(flatId);
   };
 
-  const handleGenerate = async () => {
-    // Validate form
-    const errors = validateForm(formState.month, formState.year);
-    if (Object.keys(errors).length > 0) {
-      setFormState((prev) => ({ ...prev, errors }));
-      return;
-    }
-
-    // Prepare command
-    const command: GeneratePaymentsCommand = {
-      month: formState.month,
-      year: formState.year,
-    };
-
-    // Submit
-    await generate(command);
-  };
-
   const handleViewPayments = () => {
     navigation.goToFlatWithParams(flatId, {
-      month: formState.month,
-      year: formState.year,
+      month: formValues.month,
+      year: formValues.year,
     });
   };
 
   const handleReset = () => {
-    setFormState({
+    reset({
       month: currentMonth,
       year: currentYear,
-      errors: {},
     });
   };
 
@@ -137,6 +96,19 @@ export default function GeneratePaymentsForm({
   // Main form
   return (
     <div className="space-y-6">
+      {/* API Error Display */}
+      {apiError && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold text-red-900">Error Generating Payments</h3>
+              <p className="mt-1 text-sm text-red-700">{apiError.message}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Date Selection Section */}
       <div className="rounded-lg border bg-white p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Select Month and Year</h2>
@@ -148,8 +120,7 @@ export default function GeneratePaymentsForm({
             </label>
             <select
               id="month"
-              value={formState.month}
-              onChange={handleMonthChange}
+              {...register("month", { valueAsNumber: true })}
               className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value={1}>January</option>
@@ -165,8 +136,8 @@ export default function GeneratePaymentsForm({
               <option value={11}>November</option>
               <option value={12}>December</option>
             </select>
-            {formState.errors.month && (
-              <p className="mt-1 text-sm text-red-600">{formState.errors.month}</p>
+            {errors.month && (
+              <p className="mt-1 text-sm text-red-600">{errors.month.message}</p>
             )}
           </div>
 
@@ -178,15 +149,14 @@ export default function GeneratePaymentsForm({
             <Input
               id="year"
               type="number"
-              value={formState.year}
-              onChange={handleYearChange}
+              {...register("year", { valueAsNumber: true })}
               min={1900}
               max={2100}
               placeholder="YYYY"
               className="w-full"
             />
-            {formState.errors.year && (
-              <p className="mt-1 text-sm text-red-600">{formState.errors.year}</p>
+            {errors.year && (
+              <p className="mt-1 text-sm text-red-600">{errors.year.message}</p>
             )}
           </div>
         </div>
@@ -196,8 +166,8 @@ export default function GeneratePaymentsForm({
       <div className="rounded-lg border bg-white p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Preview</h2>
         <p className="mb-4 text-sm text-gray-600">
-          The following payments will be generated for {getMonthName(formState.month)}{" "}
-          {formState.year}
+          The following payments will be generated for {getMonthName(formValues.month)}{" "}
+          {formValues.year}
         </p>
 
         {/* Preview List */}
@@ -231,7 +201,7 @@ export default function GeneratePaymentsForm({
         <Button variant="outline" onClick={handleCancel} disabled={isGenerating}>
           Cancel
         </Button>
-        <Button onClick={handleGenerate} disabled={!isFormValid || isGenerating}>
+        <Button onClick={onSubmit} disabled={!isValid || isGenerating}>
           {isGenerating ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
