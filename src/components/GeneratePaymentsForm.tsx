@@ -95,7 +95,7 @@ export default function GeneratePaymentsForm({
 
   // Main form
   return (
-    <div className="space-y-6">
+    <form onSubmit={onSubmit} className="space-y-6">
       {/* API Error Display */}
       {apiError && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-4">
@@ -198,10 +198,10 @@ export default function GeneratePaymentsForm({
 
       {/* Form Actions */}
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <Button variant="outline" onClick={handleCancel} disabled={isGenerating}>
+        <Button type="button" variant="outline" onClick={handleCancel} disabled={isGenerating}>
           Cancel
         </Button>
-        <Button onClick={onSubmit} disabled={!isValid || isGenerating}>
+        <Button type="submit" disabled={!isValid || isGenerating}>
           {isGenerating ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -215,7 +215,7 @@ export default function GeneratePaymentsForm({
           )}
         </Button>
       </div>
-    </div>
+    </form>
   );
 }
 

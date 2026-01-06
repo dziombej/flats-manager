@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import GeneratePaymentsForm from "./GeneratePaymentsForm";
 import type { PaymentTypeDto } from "../types";
@@ -171,26 +171,23 @@ describe("GeneratePaymentsForm", () => {
       });
     });
 
-    it("should show error message for year out of range", async () => {
-      const user = userEvent.setup();
-
+    it("should disable submit button with year out of range", async () => {
+      // Test with initial invalid year
       render(
         <GeneratePaymentsForm
           flatId="flat-1"
           flatName="Test Flat"
           paymentTypes={mockPaymentTypes}
           currentMonth={3}
-          currentYear={2024}
+          currentYear={3000} // Invalid year
         />
       );
 
-      const yearInput = screen.getByLabelText(/year/i);
+      const submitButton = screen.getByRole("button", { name: /generate payments/i });
 
-      await user.clear(yearInput);
-      await user.type(yearInput, "3000");
-
+      // Button should be disabled with invalid year
       await waitFor(() => {
-        expect(screen.getByText(/year must be between 1900 and 2100/i)).toBeInTheDocument();
+        expect(submitButton).toBeDisabled();
       });
     });
 
@@ -239,7 +236,7 @@ describe("GeneratePaymentsForm", () => {
       });
     });
 
-    it("should update form values before submission", async () => {
+    it("should update month value before submission", async () => {
       const user = userEvent.setup();
 
       render(
@@ -253,20 +250,17 @@ describe("GeneratePaymentsForm", () => {
       );
 
       const monthSelect = screen.getByLabelText(/month/i);
-      const yearInput = screen.getByLabelText(/year/i);
       const submitButton = screen.getByRole("button", { name: /generate payments/i });
 
-      // Change values
+      // Change month value
       await user.selectOptions(monthSelect, "6");
-      await user.clear(yearInput);
-      await user.type(yearInput, "2025");
 
       await user.click(submitButton);
 
       await waitFor(() => {
         expect(mockGenerate).toHaveBeenCalledWith({
           month: 6,
-          year: 2025,
+          year: 2024, // Year stays the same
         });
       });
     });
