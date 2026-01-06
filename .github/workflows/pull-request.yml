@@ -18,8 +18,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install Dependencies
         run: npm ci
@@ -39,8 +39,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install Dependencies
         run: npm ci
@@ -87,8 +87,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install Dependencies
         run: npm ci
@@ -140,27 +140,26 @@ jobs:
         with:
           script: |
             const comment = `## ✅ CI Pipeline Passed Successfully!
-            
+
             All checks have completed successfully:
-            
+
             | Job | Status |
             |-----|--------|
             | 🔍 Lint | ✅ Passed |
             | 🧪 Unit Tests | ✅ Passed |
             | 🎭 E2E Tests | ✅ Passed |
-            
+
             **Build Details:**
             - **Commit:** ${{ github.event.pull_request.head.sha }}
             - **Author:** @${{ github.event.pull_request.user.login }}
             - **Branch:** \`${{ github.head_ref }}\`
             - **Run:** [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            
+
             The pull request is ready for review! 🚀`;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: comment
             });
-

@@ -15,11 +15,13 @@ The view consolidates multiple data sources (flat details, payment types, paymen
 **Authorization:** User must own the flat (validated via RLS in API)
 
 **Navigation Access:**
+
 - Click on flat card from Dashboard or Flats List
 - Direct URL navigation
 - Breadcrumb navigation
 
 **Error Handling:**
+
 - 404 if flat not found or doesn't belong to user
 - 401 if user not authenticated
 
@@ -71,6 +73,7 @@ FlatDetailPage (Astro)
 ```
 
 **Component Hierarchy:**
+
 - Astro for static structure and server-side rendering
 - React for interactive tables and actions
 - Shared UI components from shadcn/ui
@@ -78,9 +81,11 @@ FlatDetailPage (Astro)
 ## 4. Component Details
 
 ### FlatDetailPage (Astro)
+
 **Description:** Main page component that fetches all flat-related data server-side and orchestrates the detail view.
 
 **Main Elements:**
+
 - Page wrapper with `AppLayout`
 - Multiple server-side API calls for comprehensive data
 - Error boundaries for various failure modes
@@ -89,10 +94,12 @@ FlatDetailPage (Astro)
 **Handled Events:** None (static orchestration)
 
 **Validation Conditions:**
+
 - Flat ID from URL parameter must be valid UUID
 - User must own the flat (enforced by RLS)
 
 **Types:**
+
 - `FlatDto` - Flat entity
 - `PaymentTypeDto[]` - Payment types for flat
 - `PaymentWithTypeNameDto[]` - Payments for flat
@@ -101,6 +108,7 @@ FlatDetailPage (Astro)
 **Props:** None (page component)
 
 **Server-Side Logic:**
+
 ```typescript
 const { id } = Astro.params;
 
@@ -122,24 +130,29 @@ const viewModel = transformFlatDetailData(flat, paymentTypesData, paymentsData);
 ---
 
 ### FlatDetailHeader (React)
+
 **Description:** Header section displaying flat name, address, and primary actions (edit, delete).
 
 **Main Elements:**
+
 - Flat name as `<h1>`
 - Flat address with location icon
 - Edit button
 - Delete button with confirmation
 
 **Handled Events:**
+
 - Edit button click (navigate to edit form)
 - Delete button click (show confirmation dialog)
 
 **Validation Conditions:** None for display
 
 **Types:**
+
 - `FlatDto` (partial)
 
 **Props:**
+
 ```typescript
 interface FlatDetailHeaderProps {
   flat: {
@@ -154,22 +167,27 @@ interface FlatDetailHeaderProps {
 ---
 
 ### FlatActions (React)
+
 **Description:** Action buttons for editing and deleting the flat.
 
 **Main Elements:**
+
 - Edit button (secondary variant)
 - Delete button (destructive variant)
 
 **Handled Events:**
+
 - Edit click → navigate to `/flats/:id/edit`
 - Delete click → show confirmation dialog
 
 **Validation Conditions:**
+
 - Delete requires confirmation
 
 **Types:** Standard button types
 
 **Props:**
+
 ```typescript
 interface FlatActionsProps {
   flatId: string;
@@ -178,6 +196,7 @@ interface FlatActionsProps {
 ```
 
 **Delete Flow:**
+
 1. User clicks delete button
 2. Confirmation dialog appears
 3. User confirms
@@ -188,13 +207,16 @@ interface FlatActionsProps {
 ---
 
 ### EditFlatButton (React)
+
 **Description:** Button to navigate to edit flat form.
 
 **Main Elements:**
+
 - Button with "Edit" label
 - Edit icon
 
 **Handled Events:**
+
 - Click → navigate to `/flats/:id/edit`
 
 **Validation Conditions:** None
@@ -202,6 +224,7 @@ interface FlatActionsProps {
 **Types:** Standard button
 
 **Props:**
+
 ```typescript
 interface EditFlatButtonProps {
   flatId: string;
@@ -211,22 +234,27 @@ interface EditFlatButtonProps {
 ---
 
 ### DeleteFlatButton (React)
+
 **Description:** Button to delete flat with confirmation.
 
 **Main Elements:**
+
 - Button with "Delete" label
 - Destructive styling
 - Trash icon
 
 **Handled Events:**
+
 - Click → show confirmation dialog
 
 **Validation Conditions:**
+
 - Requires confirmation via dialog
 
 **Types:** Standard button
 
 **Props:**
+
 ```typescript
 interface DeleteFlatButtonProps {
   flatId: string;
@@ -237,9 +265,11 @@ interface DeleteFlatButtonProps {
 ---
 
 ### FlatOverview (Astro)
+
 **Description:** Section showing basic flat information and statistics.
 
 **Main Elements:**
+
 - Flat information card
 - Statistics cards (debt, payment types count, pending payments)
 
@@ -248,9 +278,11 @@ interface DeleteFlatButtonProps {
 **Validation Conditions:** None
 
 **Types:**
+
 - `FlatOverviewViewModel`
 
 **Props:**
+
 ```typescript
 interface FlatOverviewProps {
   flat: FlatDto;
@@ -261,9 +293,11 @@ interface FlatOverviewProps {
 ---
 
 ### FlatStats (React)
+
 **Description:** Row of statistics cards showing flat metrics.
 
 **Main Elements:**
+
 - Grid of `StatCard` components
 - Metrics: total debt, payment types count, pending payments count
 
@@ -272,9 +306,11 @@ interface FlatOverviewProps {
 **Validation Conditions:** None
 
 **Types:**
+
 - `FlatStatsViewModel`
 
 **Props:**
+
 ```typescript
 interface FlatStatsProps {
   stats: FlatStatsViewModel;
@@ -284,27 +320,33 @@ interface FlatStatsProps {
 ---
 
 ### PaymentTypesSection (React)
+
 **Description:** Section displaying all payment types for the flat with management actions.
 
 **Main Elements:**
+
 - Section header with "Payment Types" title
 - Add payment type button
 - Payment types table
 - Empty state if no payment types
 
 **Handled Events:**
+
 - Add payment type click
 - Edit payment type click
 - Delete payment type click (disabled in MVP)
 
 **Validation Conditions:**
+
 - At least 1 payment type must exist (business rule, enforced on delete)
 
 **Types:**
+
 - `PaymentTypeDto[]`
 - `PaymentTypeViewModel[]`
 
 **Props:**
+
 ```typescript
 interface PaymentTypesSectionProps {
   paymentTypes: PaymentTypeViewModel[];
@@ -316,23 +358,28 @@ interface PaymentTypesSectionProps {
 ---
 
 ### PaymentTypesTable (React)
+
 **Description:** Table displaying all payment types with columns for name, amount, and actions.
 
 **Main Elements:**
+
 - Table with semantic HTML (`<table>`, `<thead>`, `<tbody>`)
 - Column headers: Name, Base Amount, Actions
 - Rows for each payment type
 - Empty state if no payment types
 
 **Handled Events:**
+
 - Delegates edit/delete to row components
 
 **Validation Conditions:** None
 
 **Types:**
+
 - `PaymentTypeViewModel[]`
 
 **Props:**
+
 ```typescript
 interface PaymentTypesTableProps {
   paymentTypes: PaymentTypeViewModel[];
@@ -342,6 +389,7 @@ interface PaymentTypesTableProps {
 ```
 
 **Accessibility:**
+
 - Proper table structure with `<th>` headers
 - Row scope for screen readers
 - Keyboard navigation support
@@ -349,24 +397,30 @@ interface PaymentTypesTableProps {
 ---
 
 ### PaymentTypeRow (React)
+
 **Description:** Individual row in payment types table.
 
 **Main Elements:**
+
 - Payment type name cell
 - Base amount cell (formatted currency)
 - Actions cell (edit button, delete button)
 
 **Handled Events:**
+
 - Edit button click
 - Delete button click (disabled in MVP)
 
 **Validation Conditions:**
+
 - Delete disabled if last payment type (business rule)
 
 **Types:**
+
 - `PaymentTypeViewModel`
 
 **Props:**
+
 ```typescript
 interface PaymentTypeRowProps {
   paymentType: PaymentTypeViewModel;
@@ -379,14 +433,17 @@ interface PaymentTypeRowProps {
 ---
 
 ### AddPaymentTypeButton (React)
+
 **Description:** Button to navigate to create payment type form.
 
 **Main Elements:**
+
 - Primary button
 - "Add Payment Type" label
 - Plus icon
 
 **Handled Events:**
+
 - Click → navigate to `/flats/:flatId/payment-types/new`
 
 **Validation Conditions:** None
@@ -394,6 +451,7 @@ interface PaymentTypeRowProps {
 **Types:** Standard button
 
 **Props:**
+
 ```typescript
 interface AddPaymentTypeButtonProps {
   flatId: string;
@@ -403,9 +461,11 @@ interface AddPaymentTypeButtonProps {
 ---
 
 ### PaymentsSection (React)
+
 **Description:** Section displaying all payments for the flat with filtering and management actions.
 
 **Main Elements:**
+
 - Section header with "Payments" title
 - Generate payments button
 - Optional: Add manual payment button
@@ -414,20 +474,24 @@ interface AddPaymentTypeButtonProps {
 - Empty state if no payments
 
 **Handled Events:**
+
 - Generate payments click
 - Filter changes (month, year, status)
 - Mark as paid click
 - Edit payment click
 
 **Validation Conditions:**
+
 - Filters must be valid (month 1-12, year valid range)
 
 **Types:**
+
 - `PaymentWithTypeNameDto[]`
 - `PaymentViewModel[]`
 - `PaymentFiltersState`
 
 **Props:**
+
 ```typescript
 interface PaymentsSectionProps {
   payments: PaymentViewModel[];
@@ -441,26 +505,32 @@ interface PaymentsSectionProps {
 ---
 
 ### PaymentFilters (React) - Optional for MVP
+
 **Description:** Filter controls for payments list.
 
 **Main Elements:**
+
 - Month dropdown (1-12)
 - Year input
 - Status radio buttons (All, Pending, Paid)
 - Clear filters button
 
 **Handled Events:**
+
 - Filter value changes
 - Clear filters click
 
 **Validation Conditions:**
+
 - Month: 1-12
 - Year: 1900-2100
 
 **Types:**
+
 - `PaymentFiltersState`
 
 **Props:**
+
 ```typescript
 interface PaymentFiltersProps {
   filters: PaymentFiltersState;
@@ -474,9 +544,11 @@ interface PaymentFiltersProps {
 ---
 
 ### PaymentsTable (React)
+
 **Description:** Table displaying all payments with columns for due date, type, amount, status, and actions.
 
 **Main Elements:**
+
 - Table with semantic HTML
 - Column headers: Due Date, Payment Type, Amount, Status, Actions
 - Rows for each payment
@@ -484,15 +556,18 @@ interface PaymentFiltersProps {
 - Empty state if no payments
 
 **Handled Events:**
+
 - Delegates actions to row components
 - Optional: Column header click for sorting
 
 **Validation Conditions:** None
 
 **Types:**
+
 - `PaymentViewModel[]`
 
 **Props:**
+
 ```typescript
 interface PaymentsTableProps {
   payments: PaymentViewModel[];
@@ -503,6 +578,7 @@ interface PaymentsTableProps {
 ```
 
 **Accessibility:**
+
 - Proper table structure
 - Sortable headers with `aria-sort`
 - Row scope for screen readers
@@ -510,9 +586,11 @@ interface PaymentsTableProps {
 ---
 
 ### PaymentRow (React)
+
 **Description:** Individual row in payments table.
 
 **Main Elements:**
+
 - Due date cell (formatted: "January 2024" or "01/2024")
 - Payment type name cell
 - Amount cell (formatted currency)
@@ -520,18 +598,22 @@ interface PaymentsTableProps {
 - Actions cell (mark as paid, edit, delete)
 
 **Handled Events:**
+
 - Mark as paid click
 - Edit click (disabled if paid)
 - Delete click
 
 **Validation Conditions:**
+
 - Edit disabled if `is_paid === true`
 - Mark as paid hidden if `is_paid === true`
 
 **Types:**
+
 - `PaymentViewModel`
 
 **Props:**
+
 ```typescript
 interface PaymentRowProps {
   payment: PaymentViewModel;
@@ -542,28 +624,34 @@ interface PaymentRowProps {
 ```
 
 **Visual Features:**
+
 - Paid payments visually distinct (muted, strikethrough optional)
 - Overdue payments highlighted (red text or badge)
 
 ---
 
 ### MarkAsPaidButton (React)
+
 **Description:** Quick action button to mark payment as paid.
 
 **Main Elements:**
+
 - Button or checkbox
 - Loading state during API call
 - Success animation
 
 **Handled Events:**
+
 - Click → mark payment as paid
 
 **Validation Conditions:**
+
 - Only shown for unpaid payments (`is_paid === false`)
 
 **Types:** Standard button
 
 **Props:**
+
 ```typescript
 interface MarkAsPaidButtonProps {
   paymentId: string;
@@ -573,6 +661,7 @@ interface MarkAsPaidButtonProps {
 ```
 
 **Features:**
+
 - Optimistic UI update
 - Rollback on error
 - Success feedback
@@ -580,14 +669,17 @@ interface MarkAsPaidButtonProps {
 ---
 
 ### GeneratePaymentsButton (React)
+
 **Description:** Button to navigate to payment generation form.
 
 **Main Elements:**
+
 - Primary button
 - "Generate Payments" label
 - Calendar or plus icon
 
 **Handled Events:**
+
 - Click → navigate to `/flats/:flatId/payments/generate`
 
 **Validation Conditions:** None
@@ -595,6 +687,7 @@ interface MarkAsPaidButtonProps {
 **Types:** Standard button
 
 **Props:**
+
 ```typescript
 interface GeneratePaymentsButtonProps {
   flatId: string;
@@ -604,9 +697,11 @@ interface GeneratePaymentsButtonProps {
 ---
 
 ### ConfirmDialog (React)
+
 **Description:** Reusable modal dialog for confirming destructive actions.
 
 **Main Elements:**
+
 - Modal overlay
 - Dialog box
 - Title
@@ -616,6 +711,7 @@ interface GeneratePaymentsButtonProps {
 - Close X button
 
 **Handled Events:**
+
 - Confirm click
 - Cancel click
 - Escape key press
@@ -624,9 +720,11 @@ interface GeneratePaymentsButtonProps {
 **Validation Conditions:** None
 
 **Types:**
+
 - Generic dialog props
 
 **Props:**
+
 ```typescript
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -641,6 +739,7 @@ interface ConfirmDialogProps {
 ```
 
 **Accessibility:**
+
 - Focus trap when open
 - Focus on confirm button when opened
 - Escape to close
@@ -718,6 +817,7 @@ interface PaymentFiltersState {
 ## 6. State Management
 
 ### Server-Side State
+
 - Initial data for flat, payment types, and payments fetched server-side
 - Multiple API calls coordinated in Astro component
 - Data transformed to view models and passed to React components
@@ -738,7 +838,7 @@ interface UseFlatDetailReturn {
   filters: PaymentFiltersState;
   isLoading: boolean;
   error: Error | null;
-  
+
   // Actions
   setFilters: (filters: PaymentFiltersState) => void;
   markPaymentAsPaid: (paymentId: string) => Promise<void>;
@@ -751,10 +851,11 @@ function useFlatDetail(
   initialPaymentTypes: PaymentTypeViewModel[],
   initialStats: FlatStatsViewModel,
   flatId: string
-): UseFlatDetailReturn
+): UseFlatDetailReturn;
 ```
 
 **State Variables:**
+
 - `payments` - Current list of payments (filtered)
 - `paymentTypes` - Current list of payment types
 - `stats` - Current statistics
@@ -764,6 +865,7 @@ function useFlatDetail(
 - `optimisticUpdates` - Map of pending optimistic updates
 
 **State Updates:**
+
 - Filter changes re-fetch payments with new query params
 - Mark as paid optimistically updates payment in list
 - Refresh re-fetches all data
@@ -771,13 +873,16 @@ function useFlatDetail(
 ### Local Component State
 
 **PaymentFilters Component:**
+
 - `localFilters` - Local state before applying (optional, for "Apply" button pattern)
 
 **ConfirmDialog Component:**
+
 - `isOpen` - Dialog visibility state
 - `isConfirming` - Loading state during confirm action
 
 ### No Global State Required
+
 - View is self-contained
 - Data specific to this flat
 - Navigation to other views doesn't share state
@@ -787,6 +892,7 @@ function useFlatDetail(
 ### Endpoints Used
 
 #### GET /api/flats/:id
+
 **Purpose:** Fetch flat details
 
 **Request Type:** `void` (ID in URL)
@@ -794,9 +900,11 @@ function useFlatDetail(
 **Response Type:** `FlatDto`
 
 **When Called:**
+
 - Server-side on page load
 
 **Error Handling:**
+
 - 404: Show "Flat not found" error page
 - 401: Redirect to login
 - 500: Show error message with retry
@@ -804,6 +912,7 @@ function useFlatDetail(
 ---
 
 #### GET /api/flats/:flatId/payment-types
+
 **Purpose:** Fetch all payment types for flat
 
 **Request Type:** `void`
@@ -811,16 +920,19 @@ function useFlatDetail(
 **Response Type:** `PaymentTypesResponseDto`
 
 **When Called:**
+
 - Server-side on page load
 - After adding/editing/deleting payment type (refresh)
 
 **Error Handling:**
+
 - 404: Cascade from flat not found
 - 500: Show error in payment types section, allow rest of page to function
 
 ---
 
 #### GET /api/flats/:flatId/payments
+
 **Purpose:** Fetch payments for flat with optional filtering
 
 **Request Type:** `PaymentsQueryParams`
@@ -836,12 +948,14 @@ interface PaymentsQueryParams {
 **Response Type:** `PaymentsResponseDto`
 
 **When Called:**
+
 - Server-side on page load (default: unpaid only)
 - Client-side when filters change
 - After marking payment as paid (refresh)
 - After generating payments (refresh)
 
 **Error Handling:**
+
 - 400: Show validation error for invalid query params
 - 404: Cascade from flat not found
 - 500: Show error in payments section
@@ -849,6 +963,7 @@ interface PaymentsQueryParams {
 ---
 
 #### POST /api/payments/:id/mark-paid
+
 **Purpose:** Mark payment as paid
 
 **Request Type:** `void` (no body)
@@ -856,9 +971,11 @@ interface PaymentsQueryParams {
 **Response Type:** `MarkPaidResponseDto`
 
 **When Called:**
+
 - User clicks "Mark as Paid" button
 
 **Error Handling:**
+
 - 400: Show error toast "Payment already paid" or other business error
 - 404: Show error toast "Payment not found"
 - 500: Rollback optimistic update, show error toast
@@ -866,6 +983,7 @@ interface PaymentsQueryParams {
 ---
 
 #### DELETE /api/flats/:id
+
 **Purpose:** Delete flat and all associated data
 
 **Request Type:** `void`
@@ -873,19 +991,23 @@ interface PaymentsQueryParams {
 **Response Type:** `DeleteFlatResponseDto`
 
 **When Called:**
+
 - User confirms delete in confirmation dialog
 
 **Error Handling:**
+
 - 404: Show error toast "Flat not found" (rare, should exist if on page)
 - 500: Show error toast "Failed to delete flat"
 
 **Success:**
+
 - Redirect to dashboard (`/`)
 - Show success toast "Flat deleted successfully"
 
 ### Data Transformation
 
 **API to ViewModel:**
+
 ```typescript
 function transformFlatDetailData(
   flat: FlatDto,
@@ -895,11 +1017,11 @@ function transformFlatDetailData(
   const paymentTypes = paymentTypesData.payment_types.map((pt) =>
     transformPaymentType(pt, paymentTypesData.payment_types.length)
   );
-  
+
   const payments = paymentsData.payments.map(transformPayment);
-  
+
   const stats = calculateFlatStats(paymentTypes, payments);
-  
+
   return {
     flat,
     paymentTypes,
@@ -909,10 +1031,7 @@ function transformFlatDetailData(
   };
 }
 
-function transformPaymentType(
-  pt: PaymentTypeDto,
-  totalCount: number
-): PaymentTypeViewModel {
+function transformPaymentType(pt: PaymentTypeDto, totalCount: number): PaymentTypeViewModel {
   return {
     ...pt,
     formattedBaseAmount: formatCurrency(pt.base_amount),
@@ -925,7 +1044,7 @@ function transformPayment(p: PaymentWithTypeNameDto): PaymentViewModel {
   const dueDate = new Date(p.year, p.month - 1, 1);
   const now = new Date();
   const isOverdue = dueDate < now && !p.is_paid;
-  
+
   return {
     ...p,
     formattedAmount: formatCurrency(p.amount),
@@ -938,14 +1057,11 @@ function transformPayment(p: PaymentWithTypeNameDto): PaymentViewModel {
   };
 }
 
-function calculateFlatStats(
-  paymentTypes: PaymentTypeViewModel[],
-  payments: PaymentViewModel[]
-): FlatStatsViewModel {
+function calculateFlatStats(paymentTypes: PaymentTypeViewModel[], payments: PaymentViewModel[]): FlatStatsViewModel {
   const unpaidPayments = payments.filter((p) => !p.isPaid);
   const totalDebt = unpaidPayments.reduce((sum, p) => sum + p.amount, 0);
   const overdueCount = payments.filter((p) => p.isOverdue).length;
-  
+
   return {
     totalDebt,
     formattedDebt: formatCurrency(totalDebt),
@@ -961,9 +1077,11 @@ function calculateFlatStats(
 ### Primary Interactions
 
 #### 1. Mark Payment as Paid
+
 **Trigger:** User clicks "Mark as Paid" button or checkbox on payment row
 
 **Flow:**
+
 1. User clicks button
 2. Button shows loading spinner
 3. Optimistic update: payment's `isPaid` set to true, row styled as paid
@@ -972,9 +1090,11 @@ function calculateFlatStats(
 6. On error: Rollback payment state, show error toast
 
 **Validation:**
+
 - Payment must be unpaid (`is_paid === false`)
 
 **Feedback:**
+
 - Button loading state
 - Optimistic UI update (immediate visual feedback)
 - Success toast: "Payment marked as paid"
@@ -984,9 +1104,11 @@ function calculateFlatStats(
 ---
 
 #### 2. Delete Flat
+
 **Trigger:** User clicks "Delete" button in header
 
 **Flow:**
+
 1. User clicks delete button
 2. Confirmation dialog opens
 3. Dialog explains consequences: "This will delete the flat and all payment types and payments. This cannot be undone."
@@ -998,9 +1120,11 @@ function calculateFlatStats(
    - On error: Close dialog, show error toast
 
 **Validation:**
+
 - Requires explicit confirmation
 
 **Feedback:**
+
 - Confirmation dialog with clear warning
 - Loading state in dialog
 - Success: Redirect with toast
@@ -1009,9 +1133,11 @@ function calculateFlatStats(
 ---
 
 #### 3. Edit Flat
+
 **Trigger:** User clicks "Edit" button in header
 
 **Flow:**
+
 1. User clicks edit button
 2. Client-side navigation to `/flats/:id/edit`
 3. Edit form loads with current flat data
@@ -1019,15 +1145,18 @@ function calculateFlatStats(
 **Validation:** None (navigation only)
 
 **Feedback:**
+
 - Button hover state
 - Immediate navigation
 
 ---
 
 #### 4. Add Payment Type
+
 **Trigger:** User clicks "Add Payment Type" button
 
 **Flow:**
+
 1. User clicks button
 2. Client-side navigation to `/flats/:flatId/payment-types/new`
 3. Create payment type form loads
@@ -1035,15 +1164,18 @@ function calculateFlatStats(
 **Validation:** None (navigation only)
 
 **Feedback:**
+
 - Button hover state
 - Immediate navigation
 
 ---
 
 #### 5. Edit Payment Type
+
 **Trigger:** User clicks "Edit" button on payment type row
 
 **Flow:**
+
 1. User clicks edit button
 2. Client-side navigation to `/payment-types/:id/edit`
 3. Edit form loads with current payment type data
@@ -1051,15 +1183,18 @@ function calculateFlatStats(
 **Validation:** None (navigation only)
 
 **Feedback:**
+
 - Button hover state
 - Immediate navigation
 
 ---
 
 #### 6. Generate Payments
+
 **Trigger:** User clicks "Generate Payments" button
 
 **Flow:**
+
 1. User clicks button
 2. Client-side navigation to `/flats/:flatId/payments/generate`
 3. Payment generation form loads
@@ -1067,15 +1202,18 @@ function calculateFlatStats(
 **Validation:** None (navigation only)
 
 **Feedback:**
+
 - Button hover state
 - Immediate navigation
 
 ---
 
 #### 7. Filter Payments
+
 **Trigger:** User changes filter values (month, year, status)
 
 **Flow:**
+
 1. User selects filter value (e.g., month = January, year = 2024)
 2. Filter state updates
 3. API call to `GET /api/flats/:flatId/payments?month=1&year=2024`
@@ -1083,11 +1221,13 @@ function calculateFlatStats(
 5. If no results: Show empty state "No payments found for selected filters"
 
 **Validation:**
+
 - Month: 1-12
 - Year: valid number
 - Status: true/false/undefined
 
 **Feedback:**
+
 - Loading state during fetch
 - Table updates with new data
 - Empty state if no matches
@@ -1096,9 +1236,11 @@ function calculateFlatStats(
 ---
 
 #### 8. Clear Filters
+
 **Trigger:** User clicks "Clear Filters" button
 
 **Flow:**
+
 1. User clicks button
 2. Filters reset to default (unpaid only)
 3. API call with default filters
@@ -1107,6 +1249,7 @@ function calculateFlatStats(
 **Validation:** None
 
 **Feedback:**
+
 - Immediate filter reset
 - Table updates
 
@@ -1122,28 +1265,33 @@ function calculateFlatStats(
 ### Display Conditions
 
 #### Payment Types Section
+
 - **Always visible:** Show section even if empty
 - **Empty state:** "No payment types defined. Add your first payment type to start."
 - **Add button:** Always enabled
 
 #### Payments Section
+
 - **Always visible:** Show section even if empty
 - **Empty state (no payments):** "No payments generated. Generate payments for a specific month."
 - **Empty state (filtered, no results):** "No payments found for selected filters. Try adjusting your filters."
 - **Generate button:** Always enabled
 
 #### Flat Actions
+
 - **Edit button:** Always enabled
 - **Delete button:** Always enabled (with confirmation)
 
 ### Component-Level Conditions
 
 #### PaymentTypeRow Actions
+
 - **Edit button:** Always enabled
 - **Delete button:** Disabled if `isOnlyPaymentType === true` (business rule: minimum 1 payment type)
 - **Delete button tooltip:** "Cannot delete the last payment type"
 
 #### PaymentRow Actions
+
 - **Mark as Paid button:**
   - Visible when `isPaid === false`
   - Hidden when `isPaid === true`
@@ -1155,11 +1303,13 @@ function calculateFlatStats(
   - Always enabled (or hidden in MVP if no delete functionality)
 
 #### Payment Visual States
+
 - **Paid payments:** Muted text color, optional strikethrough, green badge
 - **Overdue payments:** Red text or red badge, highlighted row background
 - **Pending payments:** Default styling, yellow badge
 
 #### Filters
+
 - **Month dropdown:**
   - Options: "All", "January" (1), "February" (2), ..., "December" (12)
   - Default: "All" (undefined)
@@ -1174,15 +1324,18 @@ function calculateFlatStats(
 ### Validation Rules
 
 #### Payment Filters
+
 - **Month:** If provided, must be 1-12
 - **Year:** If provided, must be valid number in range 1900-2100
 - **Status:** true, false, or undefined (all)
 
 **Client-Side Validation:**
+
 - Validate before making API call
 - Show inline error for invalid values
 
 **Server-Side Validation:**
+
 - API validates query parameters
 - Returns 400 if invalid
 
@@ -1197,9 +1350,11 @@ function calculateFlatStats(
 ### API Errors
 
 #### Flat Not Found (404)
+
 **Scenario:** `GET /api/flats/:id` returns 404
 
 **Handling:**
+
 - Display full-page error: "Flat not found"
 - Message: "The flat you're looking for doesn't exist or you don't have access to it."
 - Action: "Return to Dashboard" button
@@ -1208,9 +1363,11 @@ function calculateFlatStats(
 ---
 
 #### Payment Types Fetch Error
+
 **Scenario:** `GET /api/flats/:flatId/payment-types` fails
 
 **Handling:**
+
 - Show error in payment types section only
 - Rest of page functions normally
 - Error message: "Failed to load payment types"
@@ -1220,9 +1377,11 @@ function calculateFlatStats(
 ---
 
 #### Payments Fetch Error
+
 **Scenario:** `GET /api/flats/:flatId/payments` fails
 
 **Handling:**
+
 - Show error in payments section only
 - Rest of page functions normally
 - Error message: "Failed to load payments"
@@ -1231,9 +1390,11 @@ function calculateFlatStats(
 ---
 
 #### Mark as Paid Error
+
 **Scenario:** `POST /api/payments/:id/mark-paid` fails
 
 **Handling:**
+
 - Rollback optimistic update
 - Payment returns to unpaid state
 - Show error toast: "Failed to mark payment as paid. Please try again."
@@ -1243,9 +1404,11 @@ function calculateFlatStats(
 ---
 
 #### Delete Flat Error
+
 **Scenario:** `DELETE /api/flats/:id` fails
 
 **Handling:**
+
 - Close confirmation dialog
 - Show error toast: "Failed to delete flat. Please try again."
 - User remains on flat detail page
@@ -1254,9 +1417,11 @@ function calculateFlatStats(
 ---
 
 #### Invalid Filters
+
 **Scenario:** User enters invalid filter values
 
 **Handling:**
+
 - Client-side validation prevents submission
 - Inline error message: "Month must be between 1 and 12"
 - Disable apply button until valid
@@ -1265,18 +1430,22 @@ function calculateFlatStats(
 ### Authentication Errors
 
 #### Unauthorized (401)
+
 **Scenario:** User session expired
 
 **Handling:**
+
 - Redirect to `/login?returnTo=/flats/:id`
 - Show message: "Your session has expired. Please log in."
 
 ### Network Errors
 
 #### Network Unavailable
+
 **Scenario:** Network error during any API call
 
 **Handling:**
+
 - Show error message: "Network error. Please check your connection."
 - Retry button
 - Disable actions requiring network
@@ -1284,9 +1453,11 @@ function calculateFlatStats(
 ### Edge Cases
 
 #### No Payment Types
+
 **Scenario:** Flat has no payment types
 
 **Handling:**
+
 - Display empty state with message
 - Prominent "Add Payment Type" CTA
 - Explain: "You need at least one payment type to generate payments"
@@ -1295,9 +1466,11 @@ function calculateFlatStats(
 ---
 
 #### No Payments
+
 **Scenario:** Flat has no generated payments
 
 **Handling:**
+
 - Display empty state with message
 - "Generate Payments" CTA
 - Explain: "No payments have been generated yet"
@@ -1305,9 +1478,11 @@ function calculateFlatStats(
 ---
 
 #### All Payments Paid
+
 **Scenario:** All payments are paid, default filter shows empty
 
 **Handling:**
+
 - Empty state: "All payments are paid!"
 - Success icon (checkmark)
 - Suggestion: "Change filter to see paid payments" or "Generate payments for next month"
@@ -1315,9 +1490,11 @@ function calculateFlatStats(
 ---
 
 #### Filtered Results Empty
+
 **Scenario:** Filter yields no results
 
 **Handling:**
+
 - Empty state: "No payments found for selected filters"
 - Suggestion: "Try adjusting your filters"
 - "Clear Filters" button
@@ -1325,9 +1502,11 @@ function calculateFlatStats(
 ---
 
 #### Very Large Number of Payments
+
 **Scenario:** Flat has 100+ payments
 
 **Handling:**
+
 - MVP: Display all (scrollable table)
 - Performance: Consider pagination (post-MVP)
 - Encourage use of filters to narrow results
@@ -1335,18 +1514,22 @@ function calculateFlatStats(
 ---
 
 #### Delete Last Payment Type Attempt
+
 **Scenario:** User tries to delete the only payment type
 
 **Handling:**
+
 - Delete button disabled
 - Tooltip: "Cannot delete the last payment type. A flat must have at least one payment type."
 
 ---
 
 #### Concurrent Modification
+
 **Scenario:** Payment marked as paid in another session/tab
 
 **Handling:**
+
 - If user tries to edit: API returns 400 "Payment is already paid"
 - Show error toast
 - Refresh payments to sync state
@@ -1354,6 +1537,7 @@ function calculateFlatStats(
 ## 10. Implementation Steps
 
 ### Step 1: Setup Page Structure
+
 1. Create `/src/pages/flats/[id].astro` file
 2. Implement authentication check
 3. Extract `id` parameter from URL
@@ -1361,6 +1545,7 @@ function calculateFlatStats(
 5. Configure page metadata and title
 
 ### Step 2: Implement API Integration Service
+
 1. Create or extend `src/lib/services/flatsService.ts`
 2. Implement `fetchFlatById(id)` function
 3. Implement `fetchPaymentTypes(flatId)` function
@@ -1369,6 +1554,7 @@ function calculateFlatStats(
 6. Add error handling and Zod validation
 
 ### Step 3: Implement Server-Side Data Fetching
+
 1. Fetch flat details in Astro component
 2. Fetch payment types
 3. Fetch payments (default filter: unpaid)
@@ -1377,6 +1563,7 @@ function calculateFlatStats(
 6. Transform data to view models
 
 ### Step 4: Create View Models and Utilities
+
 1. Define all view model types
 2. Implement `transformFlatDetailData()` helper
 3. Implement `transformPaymentType()` helper
@@ -1386,6 +1573,7 @@ function calculateFlatStats(
 7. Test transformations with sample data
 
 ### Step 5: Build Static Layout Components (Astro)
+
 1. Implement page layout with sections
 2. Implement `FlatOverview` component
 3. Implement `FlatInfo` display
@@ -1394,6 +1582,7 @@ function calculateFlatStats(
 6. Add Tailwind styling
 
 ### Step 6: Build Header and Actions (React)
+
 1. Implement `FlatDetailHeader` component
 2. Implement `FlatActions` component
 3. Implement `EditFlatButton` component
@@ -1402,6 +1591,7 @@ function calculateFlatStats(
 6. Wire up delete confirmation (basic)
 
 ### Step 7: Build Stats Display (React)
+
 1. Implement `FlatStats` component
 2. Implement `StatCard` component (or reuse from dashboard)
 3. Display total debt, payment types count, pending count
@@ -1409,6 +1599,7 @@ function calculateFlatStats(
 5. Test with various data scenarios
 
 ### Step 8: Build Payment Types Section (React)
+
 1. Implement `PaymentTypesSection` component
 2. Implement `PaymentTypesTable` component
 3. Implement `PaymentTypeRow` component
@@ -1419,6 +1610,7 @@ function calculateFlatStats(
 8. Disable delete for last payment type
 
 ### Step 9: Build Payments Section (React)
+
 1. Implement `PaymentsSection` component
 2. Implement `PaymentsTable` component
 3. Implement `PaymentRow` component
@@ -1428,6 +1620,7 @@ function calculateFlatStats(
 7. Handle empty states (no payments, filtered empty)
 
 ### Step 10: Implement Payment Filters (Optional)
+
 1. Implement `PaymentFilters` component
 2. Add month dropdown
 3. Add year input
@@ -1438,6 +1631,7 @@ function calculateFlatStats(
 8. Show active filters visually
 
 ### Step 11: Implement State Management Hook
+
 1. Create `useFlatDetail` custom hook
 2. Implement filter state management
 3. Implement mark as paid with optimistic update
@@ -1447,6 +1641,7 @@ function calculateFlatStats(
 7. Test state transitions
 
 ### Step 12: Build Confirm Dialog
+
 1. Implement `ConfirmDialog` component (or use shadcn dialog)
 2. Implement focus trap
 3. Implement keyboard handling (Escape, Enter)
@@ -1455,6 +1650,7 @@ function calculateFlatStats(
 6. Test accessibility
 
 ### Step 13: Integrate All Components
+
 1. Wire up all components in main page
 2. Pass data from server to React components
 3. Add `client:load` directives for interactive parts
@@ -1462,6 +1658,7 @@ function calculateFlatStats(
 5. Test data flow end-to-end
 
 ### Step 14: Implement Delete Flat Flow
+
 1. Wire delete button to open confirm dialog
 2. Implement confirm handler calling API
 3. Handle success (redirect to dashboard with toast)
@@ -1469,6 +1666,7 @@ function calculateFlatStats(
 5. Test delete flow
 
 ### Step 15: Implement Mark as Paid Flow
+
 1. Wire mark as paid button to handler
 2. Implement optimistic update logic
 3. Call API endpoint
@@ -1477,6 +1675,7 @@ function calculateFlatStats(
 6. Test with various scenarios
 
 ### Step 16: Styling and Responsiveness
+
 1. Apply Tailwind classes for layout
 2. Style tables with proper spacing
 3. Style action buttons
@@ -1485,6 +1684,7 @@ function calculateFlatStats(
 6. Test on different screen sizes
 
 ### Step 17: Accessibility
+
 1. Add ARIA labels to tables
 2. Implement keyboard navigation
 3. Add focus indicators
@@ -1494,6 +1694,7 @@ function calculateFlatStats(
 7. Test dialog focus management
 
 ### Step 18: Error States
+
 1. Implement 404 flat not found page
 2. Implement section-level error displays
 3. Implement retry functionality
@@ -1501,6 +1702,7 @@ function calculateFlatStats(
 5. Verify error messages are clear
 
 ### Step 19: Testing
+
 1. Test with various data states (empty, populated, large datasets)
 2. Test all user interactions
 3. Test filter functionality
@@ -1511,6 +1713,7 @@ function calculateFlatStats(
 8. Accessibility testing
 
 ### Step 20: Documentation
+
 1. Document component props and usage
 2. Add JSDoc comments
 3. Document state management patterns
@@ -1524,6 +1727,7 @@ function calculateFlatStats(
 **Estimated Complexity:** High - most complex view with multiple data sources, tables, filters, and interactive elements.
 
 **Dependencies:**
+
 - API endpoints for flats, payment types, payments must be implemented
 - Mark as paid endpoint must be implemented
 - Delete flat endpoint must be implemented
@@ -1531,4 +1735,3 @@ function calculateFlatStats(
 - `AppLayout` component must exist
 - Toast notification system must be implemented
 - Currency and date formatting utilities
-

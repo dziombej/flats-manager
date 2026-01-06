@@ -75,7 +75,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
-  } catch (error) {
+  } catch {
     console.error("Error in GET /api/flats/:flatId/payment-types:", error);
 
     return new Response(JSON.stringify({ error: "Internal server error" }), {
@@ -126,7 +126,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
     let body: unknown;
     try {
       body = await request.json();
-    } catch (error) {
+    } catch {
       return new Response(JSON.stringify({ error: "Invalid JSON in request body" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
@@ -171,7 +171,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
       status: 201,
       headers: { "Content-Type": "application/json" },
     });
-  } catch (error) {
+  } catch {
     console.error("Error in POST /api/flats/:flatId/payment-types:", error);
 
     return new Response(JSON.stringify({ error: "Internal server error" }), {

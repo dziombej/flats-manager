@@ -15,6 +15,7 @@ The application uses server-side rendering with Astro for optimal performance an
 ## 2. View List
 
 ### 2.1 Login View
+
 - **Path**: `/login`
 - **Main Purpose**: Authenticate users to access the application
 - **Key Information**:
@@ -41,6 +42,7 @@ The application uses server-side rendering with Astro for optimal performance an
   - Rate limiting for login attempts
 
 ### 2.2 Dashboard View
+
 - **Path**: `/` (root)
 - **Main Purpose**: Provide an overview of all properties and highlight urgent items requiring attention
 - **Key Information**:
@@ -68,6 +70,7 @@ The application uses server-side rendering with Astro for optimal performance an
   - Protected route requiring authentication
 
 ### 2.3 Flats List View
+
 - **Path**: `/flats`
 - **Main Purpose**: Display all flats owned by the authenticated user
 - **Key Information**:
@@ -99,6 +102,7 @@ The application uses server-side rendering with Astro for optimal performance an
   - Protected route
 
 ### 2.4 Flat Detail View
+
 - **Path**: `/flats/:id`
 - **Main Purpose**: Show comprehensive information about a specific flat including basic details, payment types, and recent payments
 - **Key Information**:
@@ -131,6 +135,7 @@ The application uses server-side rendering with Astro for optimal performance an
   - Confirm destructive actions
 
 ### 2.5 Create/Edit Flat View
+
 - **Path**: `/flats/new` (create), `/flats/:id/edit` (edit)
 - **Main Purpose**: Allow users to add new flats or modify existing flat information
 - **Key Information**:
@@ -168,6 +173,7 @@ The application uses server-side rendering with Astro for optimal performance an
   - Protected route
 
 ### 2.6 Payment Types Management View
+
 - **Path**: `/flats/:flatId/payment-types`
 - **Main Purpose**: Manage recurring payment configurations for a specific flat
 - **Key Information**:
@@ -204,6 +210,7 @@ The application uses server-side rendering with Astro for optimal performance an
   - Validate permissions on all actions
 
 ### 2.7 Create/Edit Payment Type View
+
 - **Path**: `/flats/:flatId/payment-types/new` (create), `/flats/:flatId/payment-types/:id/edit` (edit)
 - **Main Purpose**: Configure a recurring payment type with amount and recurrence settings
 - **Key Information**:
@@ -238,6 +245,7 @@ The application uses server-side rendering with Astro for optimal performance an
   - Protected route
 
 ### 2.8 Payments List View
+
 - **Path**: `/flats/:flatId/payments`
 - **Main Purpose**: View and manage all payments for a specific flat with filtering and sorting capabilities
 - **Key Information**:
@@ -281,6 +289,7 @@ The application uses server-side rendering with Astro for optimal performance an
   - Rate limit bulk actions
 
 ### 2.9 Create/Edit Payment View
+
 - **Path**: `/flats/:flatId/payments/new` (create), `/flats/:flatId/payments/:id/edit` (edit)
 - **Main Purpose**: Manually add or modify individual payment records
 - **Key Information**:
@@ -314,6 +323,7 @@ The application uses server-side rendering with Astro for optimal performance an
   - Protected route
 
 ### 2.10 Generate Payments View
+
 - **Path**: `/flats/:flatId/payments/generate`
 - **Main Purpose**: Generate multiple recurring payments for a specified time period
 - **Key Information**:
@@ -365,7 +375,7 @@ The application uses server-side rendering with Astro for optimal performance an
    - User can take quick actions (mark as paid) or navigate deeper
 
 3. **Navigation Options from Dashboard**:
-   
+
    **Path A: Quick Action on Overdue Payment**
    - User clicks "Mark as Paid" on an overdue payment
    - Confirmation dialog appears
@@ -379,7 +389,7 @@ The application uses server-side rendering with Astro for optimal performance an
    - User sees overview, payment types, and recent payments
 
 4. **Flat Detail View** (Hub for flat-specific actions)
-   
+
    **Sub-journey 1: Manage Payment Types**
    - User clicks "Manage Payment Types"
    - Payment Types Management View loads
@@ -388,7 +398,7 @@ The application uses server-side rendering with Astro for optimal performance an
      - Edit existing → Edit Payment Type Form
      - Delete payment type (with confirmation)
    - Return to Flat Detail
-   
+
    **Sub-journey 2: Manage Payments**
    - User clicks "View All Payments"
    - Payments List View loads with all payments for flat
@@ -400,7 +410,7 @@ The application uses server-side rendering with Astro for optimal performance an
      - Delete payment (with confirmation)
      - Generate new payments → Generate Payments View
      - Create manual payment → Create Payment Form
-   
+
    **Sub-journey 3: Generate Recurring Payments**
    - From Payments List, user clicks "Generate Payments"
    - Generate Payments View loads
@@ -418,6 +428,7 @@ The application uses server-side rendering with Astro for optimal performance an
 ### Secondary User Journeys
 
 **Journey: Adding a New Flat**
+
 1. Dashboard → Click "Add New Flat"
 2. Create Flat View → Fill form and submit
 3. Success → Redirect to new Flat Detail View
@@ -426,6 +437,7 @@ The application uses server-side rendering with Astro for optimal performance an
 6. Return to Dashboard to see new flat
 
 **Journey: Monitoring Overdue Payments**
+
 1. Dashboard → View overdue payments section
 2. Click on specific flat with overdue payments
 3. Flat Detail View → Click "View All Payments"
@@ -434,6 +446,7 @@ The application uses server-side rendering with Astro for optimal performance an
 6. Return to Dashboard to verify all cleared
 
 **Journey: Monthly Payment Cycle**
+
 1. Beginning of month → Login → Dashboard
 2. Generate payments for all flats (if using generate feature)
 3. As tenants pay → Mark payments as paid from Dashboard or Payments List
@@ -445,6 +458,7 @@ The application uses server-side rendering with Astro for optimal performance an
 ### Global Layout Components
 
 **Header (Present on all authenticated pages)**
+
 - Logo/App name (links to Dashboard)
 - Primary navigation menu:
   - Dashboard (link to `/`)
@@ -454,6 +468,7 @@ The application uses server-side rendering with Astro for optimal performance an
   - Logout button
 
 **Breadcrumb Navigation (Context-dependent)**
+
 - Dashboard
 - Dashboard > Flats
 - Dashboard > Flats > [Flat Name]
@@ -462,6 +477,7 @@ The application uses server-side rendering with Astro for optimal performance an
 - Dashboard > Flats > [Flat Name] > Payments > Generate
 
 **Main Content Area**
+
 - Page title (h1)
 - Primary actions (top-right of content area)
 - Content sections
@@ -470,24 +486,28 @@ The application uses server-side rendering with Astro for optimal performance an
 ### Navigation Patterns
 
 **Primary Navigation**
+
 - Top navigation bar always visible
 - Two main sections: Dashboard and Flats
 - Persistent across all views
 - Mobile: Hamburger menu for compact display
 
 **Breadcrumb Navigation**
+
 - Shows current location in hierarchy
 - Each level is clickable (except current page)
 - Helps users understand context
 - Provides quick return to parent levels
 
 **Contextual Navigation**
+
 - Within Flat Detail: Tabs or sections for Overview/Payment Types/Payments
 - Action buttons contextual to current view
 - "Back" buttons on forms
 - Cancel buttons return to previous context
 
 **Card/List Navigation**
+
 - Flat cards in Flats List → Click to Flat Detail
 - Payment rows in tables → Click to edit or view details
 - Interactive elements clearly indicated with hover states
@@ -505,18 +525,21 @@ The application uses server-side rendering with Astro for optimal performance an
 ### 5.1 Layout Components
 
 **AppLayout**
+
 - Purpose: Wrapper for all authenticated pages
 - Features: Header, navigation, breadcrumbs, main content area, footer
 - Responsive behavior: Collapsible navigation on mobile
 - Accessibility: Skip to main content link, semantic HTML5 structure
 
 **Header**
+
 - Purpose: Global navigation and branding
 - Features: Logo, primary nav links, user menu
 - Responsive behavior: Hamburger menu on mobile
 - Accessibility: Navigation landmark, clear focus indicators
 
 **Breadcrumb**
+
 - Purpose: Show current location in hierarchy
 - Features: Dynamic breadcrumb trail, clickable links
 - Props: Current path, flat name (if applicable)
@@ -525,6 +548,7 @@ The application uses server-side rendering with Astro for optimal performance an
 ### 5.2 Data Display Components
 
 **FlatCard**
+
 - Purpose: Display flat summary in grid/list views
 - Features: Flat name, address, tenant info, payment stats, clickable link
 - Visual indicators: Badge for overdue payments count
@@ -532,6 +556,7 @@ The application uses server-side rendering with Astro for optimal performance an
 - Accessibility: Card as link with comprehensive label
 
 **PaymentTable**
+
 - Purpose: Display list of payments with sorting and filtering
 - Features: Sortable columns, status badges, action buttons per row, pagination
 - Columns: Due date, payment type, amount, status, actions
@@ -539,18 +564,21 @@ The application uses server-side rendering with Astro for optimal performance an
 - Accessibility: Proper table structure, sortable headers with aria-sort
 
 **PaymentTypeTable**
+
 - Purpose: Display list of payment types for a flat
 - Features: Name, amount, recurrence, active status, edit/delete actions
 - Responsive behavior: Horizontal scroll on mobile
 - Accessibility: Table structure, action buttons with labels
 
 **DashboardStatCard**
+
 - Purpose: Display summary statistics on dashboard
 - Features: Icon, metric label, metric value, optional trend indicator
 - Examples: Total flats, pending payments count, overdue amount
 - Accessibility: Semantic structure, metric clearly labeled
 
 **OverduePaymentsList**
+
 - Purpose: Highlight overdue payments on dashboard
 - Features: List of overdue payments, flat name, amount, days overdue, quick actions
 - Visual indicators: Red/urgent styling
@@ -559,24 +587,28 @@ The application uses server-side rendering with Astro for optimal performance an
 ### 5.3 Form Components
 
 **FlatForm**
+
 - Purpose: Create or edit flat information
 - Fields: Name, address, tenant name, tenant email, tenant phone
 - Features: Inline validation, error messages, submit/cancel actions
 - Accessibility: Error summary, field-level errors, focus management
 
 **PaymentTypeForm**
+
 - Purpose: Create or edit payment type configuration
 - Fields: Name, amount, recurrence type, day of month, active status
 - Features: Conditional fields, recurrence preview, validation
 - Accessibility: Grouped fields with fieldset, clear labels
 
 **PaymentForm**
+
 - Purpose: Create or edit individual payment
 - Fields: Payment type (dropdown), due date, amount, notes
 - Features: Auto-fill amount from payment type, date picker
 - Accessibility: Date picker with keyboard support, clear labels
 
 **GeneratePaymentsForm**
+
 - Purpose: Generate multiple payments for a date range
 - Fields: Start date, end date, payment types selector
 - Features: Real-time preview, summary statistics, confirmation
@@ -585,51 +617,60 @@ The application uses server-side rendering with Astro for optimal performance an
 ### 5.4 UI Elements
 
 **Button**
+
 - Variants: Primary, secondary, destructive, ghost
 - States: Default, hover, active, disabled, loading
 - Sizes: Small, medium, large
 - Accessibility: Clear labels, disabled state announced, loading state indicated
 
 **StatusBadge**
+
 - Purpose: Display payment status with color coding
 - Variants: Pending (yellow), Paid (green), Overdue (red)
 - Features: Text label (not just color), icon (optional)
 - Accessibility: Status conveyed with text and aria-label
 
 **ConfirmDialog**
+
 - Purpose: Confirm destructive actions (delete flat, payment, etc.)
 - Features: Title, message, confirm button (destructive style), cancel button
 - Accessibility: Focus trap, keyboard navigation, clear action labels
 - UX: Explains impact of action
 
 **Toast/Notification**
+
 - Purpose: Provide feedback for actions (success, error, info)
 - Variants: Success, error, warning, info
 - Features: Auto-dismiss (for success), manual dismiss for errors, action buttons (optional)
 - Accessibility: ARIA live region (polite for success, assertive for errors)
 
 **LoadingSpinner**
+
 - Purpose: Indicate loading state
 - Variants: Full-page overlay, inline, button spinner
 - Accessibility: aria-live region with "Loading" message, aria-busy attribute
 
 **SkeletonLoader**
+
 - Purpose: Show loading placeholder with content structure
 - Use cases: Flat cards loading, table rows loading, dashboard stats loading
 - Accessibility: aria-busy and aria-label indicating loading state
 
 **DatePicker**
+
 - Purpose: Select dates for payments, filters, date ranges
 - Features: Calendar interface, keyboard input, min/max date constraints
 - Accessibility: Keyboard navigation, clear instructions, aria-labels
 
 **EmptyState**
+
 - Purpose: Display when no data exists with guidance
 - Variants: No flats, no payment types, no payments, filtered results empty
 - Features: Illustration (optional), message, call-to-action button
 - Accessibility: Clear message, actionable next step
 
 **FilterControls**
+
 - Purpose: Filter and sort data in lists/tables
 - Features: Status dropdown, date range picker, search input, sort dropdown
 - Features: Clear filters button, filter count indicator
@@ -638,24 +679,28 @@ The application uses server-side rendering with Astro for optimal performance an
 ### 5.5 Specialized Components
 
 **RecurrencePatternDisplay**
+
 - Purpose: Show human-readable recurrence pattern for payment types
 - Examples: "Monthly on the 1st", "Quarterly on the 15th", "Yearly on Jan 1st"
 - Features: Format recurrence data into readable text
 - Accessibility: Clear, plain language description
 
 **PaymentPreviewList**
+
 - Purpose: Show preview of payments to be generated
 - Features: List of payments with due date, type, amount
 - Summary: Total count, total amount
 - Accessibility: Structured list, summary clearly labeled
 
 **QuickActionButton**
+
 - Purpose: Provide one-click actions (Mark as Paid, etc.)
 - Features: Icon + label, loading state, success feedback
 - UX: Optimistic UI update, confirmation for critical actions
 - Accessibility: Clear action label, state changes announced
 
 **TenantInfoDisplay**
+
 - Purpose: Show tenant details in flat views
 - Features: Name, email, phone with icons
 - Features: Click-to-call, click-to-email (optional)
@@ -666,16 +711,19 @@ The application uses server-side rendering with Astro for optimal performance an
 ### Error States
 
 **Authentication Errors**
+
 - Invalid credentials → Clear error message, focus on email field
 - Session expired → Redirect to login with message
 - Network error during login → Retry button, error message
 
 **Data Loading Errors**
+
 - API failure → Error message with retry button
 - Not found (404) → Friendly message, link to relevant page
 - Unauthorized (403) → Redirect to dashboard or login
 
 **Form Validation Errors**
+
 - Client-side validation → Inline errors, error summary
 - Server-side validation → Display returned errors, focus on first error
 - Network error on submit → Toast notification, data preserved, retry option
@@ -683,23 +731,27 @@ The application uses server-side rendering with Astro for optimal performance an
 ### Edge Cases
 
 **Empty States**
+
 - No flats → Dashboard and Flats List show empty state with "Create First Flat" CTA
 - No payment types for flat → Payment Types view shows guidance to create first one
 - No payments for flat → Payments List shows empty state with "Generate" or "Create" options
 - Filtered results empty → Show "No results found" with clear filters option
 
 **Data Conflicts**
+
 - Generating payments for period that already has payments → Warning dialog with option to continue or cancel
 - Editing payment that was modified by another session → Show conflict, allow user to choose version
 - Deleting flat with payments → Confirmation with impact warning (will delete all associated data)
 
 **Boundary Conditions**
+
 - Invalid date ranges (end before start) → Validation error
 - Amounts with more than 2 decimal places → Round or validate
 - Day of month > actual days (e.g., 31st in February) → Handle gracefully with last day of month logic
 - Very large amounts → Format with proper number formatting
 
 **Network Issues**
+
 - Slow connection → Show loading state, timeout with retry
 - Offline → Inform user, queue actions (if offline support added)
 - Request timeout → Error message with retry option
@@ -707,12 +759,14 @@ The application uses server-side rendering with Astro for optimal performance an
 ### Accessibility Edge Cases
 
 **Screen Reader Considerations**
+
 - Empty tables → Announce "No data available"
 - Loading states → Announce "Loading" and completion
 - Dynamic updates → Use aria-live regions appropriately
 - Form errors → Announce error count and provide navigation
 
 **Keyboard Navigation**
+
 - Modal dialogs → Focus trap, escape to close
 - Dropdowns → Arrow key navigation, type-ahead
 - Tables → Arrow keys for navigation, enter to activate
@@ -723,16 +777,19 @@ The application uses server-side rendering with Astro for optimal performance an
 ### Loading Strategies
 
 **Progressive Loading**
+
 - Dashboard: Load summary stats first, then overdue payments
 - Flat Detail: Load flat info immediately, lazy load payment sections
 - Payments List: Initial page load, pagination/infinite scroll for more
 
 **Optimistic UI**
+
 - Mark as Paid: Update UI immediately, rollback on error
 - Delete payment: Remove from list immediately, restore on error
 - Toggle active status: Update immediately, sync with server
 
 **Skeleton Screens**
+
 - Use during initial load for better perceived performance
 - Match skeleton to actual content structure
 - Replace with real content smoothly
@@ -740,11 +797,13 @@ The application uses server-side rendering with Astro for optimal performance an
 ### Caching and State Management
 
 **Client-side Caching**
+
 - Cache flat list to avoid refetch on navigation
 - Invalidate cache on mutations
 - Store filter/sort preferences in URL or localStorage
 
 **Prefetching**
+
 - Prefetch flat details when hovering over flat card
 - Prefetch next page of payments on scroll approach
 - Preload common forms (Create Flat, Create Payment)
@@ -752,16 +811,19 @@ The application uses server-side rendering with Astro for optimal performance an
 ### User Feedback
 
 **Success Feedback**
+
 - Toast notifications for successful actions
 - Success state on buttons (checkmark animation)
 - Updated data reflected immediately in lists
 
 **Error Feedback**
+
 - Toast notifications for errors with retry option
 - Inline validation errors on forms
 - Clear error messages with actionable guidance
 
 **Loading Feedback**
+
 - Button loading spinners for form submissions
 - Skeleton screens for page loads
 - Progress indicators for bulk operations (payment generation)
@@ -771,6 +833,7 @@ The application uses server-side rendering with Astro for optimal performance an
 ### Breakpoint Strategy
 
 **Mobile**: < 640px
+
 - Single column layout
 - Stacked forms
 - Hamburger navigation
@@ -778,12 +841,14 @@ The application uses server-side rendering with Astro for optimal performance an
 - Simplified tables (stacked or horizontal scroll)
 
 **Tablet**: 640px - 1024px
+
 - 2-column grid for flat cards
 - Side-by-side form fields where appropriate
 - Visible navigation with some items collapsed
 - Full tables with horizontal scroll if needed
 
 **Desktop**: > 1024px
+
 - 3+ column grid for flat cards
 - Multi-column forms
 - Full navigation always visible
@@ -801,30 +866,35 @@ The application uses server-side rendering with Astro for optimal performance an
 ## 9. Security Considerations in UI
 
 ### Input Validation
+
 - Client-side validation for immediate feedback
 - Server-side validation as source of truth
 - Sanitize all inputs to prevent XSS
 - Validate amounts, dates, and text length
 
 ### Authentication Flow
+
 - Redirect unauthenticated users to login
 - Session timeout with warning before expiration
 - Secure logout with session cleanup
 - CSRF tokens on all forms
 
 ### Data Privacy
+
 - Display only user's own data
 - Mask sensitive information where appropriate
 - Secure handling of tenant personal information
 - No sensitive data in URLs
 
 ### Action Confirmation
+
 - Confirm destructive actions (delete flat, delete payment type)
 - Clear explanation of impact
 - Require explicit user action (no accidental clicks)
 - Undo option where feasible
 
 ### Rate Limiting
+
 - Limit rapid-fire form submissions
 - Throttle bulk operations (payment generation)
 - Prevent abuse of mark-as-paid action

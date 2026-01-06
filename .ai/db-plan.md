@@ -6,14 +6,15 @@
 
 Extends Supabase Auth (`auth.users`) with application-specific user data.
 
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| id | UUID | PRIMARY KEY, FOREIGN KEY → auth.users.id ON DELETE CASCADE | User identifier |
-| email | TEXT | NOT NULL | User email (duplicate from auth.users for convenience) |
-| created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Record creation timestamp |
-| updated_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Record last update timestamp |
+| Column     | Type                     | Constraints                                                | Description                                            |
+| ---------- | ------------------------ | ---------------------------------------------------------- | ------------------------------------------------------ |
+| id         | UUID                     | PRIMARY KEY, FOREIGN KEY → auth.users.id ON DELETE CASCADE | User identifier                                        |
+| email      | TEXT                     | NOT NULL                                                   | User email (duplicate from auth.users for convenience) |
+| created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW()                                    | Record creation timestamp                              |
+| updated_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW()                                    | Record last update timestamp                           |
 
 **Notes:**
+
 - Profile is automatically created when user registers via Supabase Auth
 - Email field is duplicated for performance (avoiding joins with auth.users)
 
@@ -23,16 +24,17 @@ Extends Supabase Auth (`auth.users`) with application-specific user data.
 
 Stores apartment data managed by landlords.
 
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| id | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() | Flat identifier |
-| user_id | UUID | NOT NULL, FOREIGN KEY → auth.users.id ON DELETE CASCADE | Owner identifier |
-| name | TEXT | NOT NULL | Flat name (e.g., "Żoliborz 1") |
-| address | TEXT | NOT NULL | Flat address |
-| created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Record creation timestamp |
-| updated_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Record last update timestamp |
+| Column     | Type                     | Constraints                                             | Description                    |
+| ---------- | ------------------------ | ------------------------------------------------------- | ------------------------------ |
+| id         | UUID                     | PRIMARY KEY, DEFAULT gen_random_uuid()                  | Flat identifier                |
+| user_id    | UUID                     | NOT NULL, FOREIGN KEY → auth.users.id ON DELETE CASCADE | Owner identifier               |
+| name       | TEXT                     | NOT NULL                                                | Flat name (e.g., "Żoliborz 1") |
+| address    | TEXT                     | NOT NULL                                                | Flat address                   |
+| created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW()                                 | Record creation timestamp      |
+| updated_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW()                                 | Record last update timestamp   |
 
 **Business Rules:**
+
 - Each user can have multiple flats (1:N relationship)
 - Flat name does not have to be unique (MVP allows duplicates)
 - Deleting user cascades to all their flats
@@ -43,16 +45,17 @@ Stores apartment data managed by landlords.
 
 Defines recurring payment templates for each flat.
 
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| id | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() | Payment type identifier |
-| flat_id | UUID | NOT NULL, FOREIGN KEY → flats.id ON DELETE CASCADE | Flat identifier |
-| name | TEXT | NOT NULL | Payment type name (e.g., "Rent", "Utilities") |
-| base_amount | NUMERIC(10,2) | NOT NULL, CHECK (base_amount >= 0) | Base payment amount in PLN |
-| created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Record creation timestamp |
-| updated_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Record last update timestamp |
+| Column      | Type                     | Constraints                                        | Description                                   |
+| ----------- | ------------------------ | -------------------------------------------------- | --------------------------------------------- |
+| id          | UUID                     | PRIMARY KEY, DEFAULT gen_random_uuid()             | Payment type identifier                       |
+| flat_id     | UUID                     | NOT NULL, FOREIGN KEY → flats.id ON DELETE CASCADE | Flat identifier                               |
+| name        | TEXT                     | NOT NULL                                           | Payment type name (e.g., "Rent", "Utilities") |
+| base_amount | NUMERIC(10,2)            | NOT NULL, CHECK (base_amount >= 0)                 | Base payment amount in PLN                    |
+| created_at  | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW()                            | Record creation timestamp                     |
+| updated_at  | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW()                            | Record last update timestamp                  |
 
 **Business Rules:**
+
 - Each flat has 1:N payment types
 - Payment type name does not have to be unique within flat
 - base_amount must be non-negative (check constraint)
@@ -61,6 +64,7 @@ Defines recurring payment templates for each flat.
 - Changing base_amount affects only future payment generations
 
 **MVP Constraints:**
+
 - Flat must have minimum 1 payment type (validated at application level)
 - No ability to delete payment types in MVP (REQ-PTYPE-003)
 
@@ -70,22 +74,24 @@ Defines recurring payment templates for each flat.
 
 Stores generated monthly payment instances.
 
-| Column | Type | Constraints | Description |
-|--------|------|-------------|-------------|
-| id | UUID | PRIMARY KEY, DEFAULT gen_random_uuid() | Payment identifier |
-| payment_type_id | UUID | NOT NULL, FOREIGN KEY → payment_types.id ON DELETE CASCADE | Payment type identifier |
-| amount | NUMERIC(10,2) | NOT NULL, CHECK (amount >= 0) | Payment amount (copied from base_amount at generation) |
-| month | INTEGER | NOT NULL, CHECK (month >= 1 AND month <= 12) | Payment month (1-12) |
-| year | INTEGER | NOT NULL, CHECK (year >= 1900 AND year <= 2100) | Payment year |
-| is_paid | BOOLEAN | NOT NULL, DEFAULT false | Payment status (paid/unpaid) |
-| paid_at | TIMESTAMP WITH TIME ZONE | NULL, CHECK (is_paid = false OR paid_at IS NOT NULL) | Payment timestamp (set when marked as paid) |
-| created_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Record creation timestamp |
-| updated_at | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW() | Record last update timestamp |
+| Column          | Type                     | Constraints                                                | Description                                            |
+| --------------- | ------------------------ | ---------------------------------------------------------- | ------------------------------------------------------ |
+| id              | UUID                     | PRIMARY KEY, DEFAULT gen_random_uuid()                     | Payment identifier                                     |
+| payment_type_id | UUID                     | NOT NULL, FOREIGN KEY → payment_types.id ON DELETE CASCADE | Payment type identifier                                |
+| amount          | NUMERIC(10,2)            | NOT NULL, CHECK (amount >= 0)                              | Payment amount (copied from base_amount at generation) |
+| month           | INTEGER                  | NOT NULL, CHECK (month >= 1 AND month <= 12)               | Payment month (1-12)                                   |
+| year            | INTEGER                  | NOT NULL, CHECK (year >= 1900 AND year <= 2100)            | Payment year                                           |
+| is_paid         | BOOLEAN                  | NOT NULL, DEFAULT false                                    | Payment status (paid/unpaid)                           |
+| paid_at         | TIMESTAMP WITH TIME ZONE | NULL, CHECK (is_paid = false OR paid_at IS NOT NULL)       | Payment timestamp (set when marked as paid)            |
+| created_at      | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW()                                    | Record creation timestamp                              |
+| updated_at      | TIMESTAMP WITH TIME ZONE | NOT NULL, DEFAULT NOW()                                    | Record last update timestamp                           |
 
 **Unique Constraints:**
+
 - UNIQUE (payment_type_id, month, year) - prevents duplicate payments for same type and period
 
 **Business Rules:**
+
 - Each payment type can have multiple payment instances (1:N relationship)
 - amount is copied from payment_type.base_amount at generation time
 - amount does not change when base_amount is updated (historical data preservation)
@@ -95,6 +101,7 @@ Stores generated monthly payment instances.
 - Paid payments cannot be edited (enforced at application level)
 
 **MVP Constraints:**
+
 - No ability to edit or delete payments in MVP (REQ-PAY-007)
 - No ability to change status from paid to unpaid
 
@@ -121,21 +128,25 @@ public.payments
 ### 2.2. Relationship Details
 
 **auth.users → profiles (1:1)**
+
 - One user has one profile (optional extension)
 - Cascade delete: deleting user deletes profile
 
 **auth.users → flats (1:N)**
+
 - One user can have multiple flats
 - Each flat belongs to exactly one user
 - Cascade delete: deleting user deletes all their flats
 
 **flats → payment_types (1:N)**
+
 - One flat can have multiple payment types
 - Each payment type belongs to exactly one flat
 - Cascade delete: deleting flat deletes all its payment types
 - Business constraint: minimum 1 payment type per flat (validated at application level)
 
 **payment_types → payments (1:N)**
+
 - One payment type can have multiple payment instances (monthly)
 - Each payment belongs to exactly one payment type
 - Cascade delete: deleting payment type deletes all its payments
@@ -166,15 +177,16 @@ CREATE INDEX idx_payment_month_year ON payments(month, year);
 
 ### 3.2. Index Justification
 
-| Index | Purpose | Queries Optimized |
-|-------|---------|-------------------|
-| idx_flat_user_id | User's flat list, RLS policies | Dashboard, flat filtering |
-| idx_payment_type_flat_id | Joining payment types with flats | Payment generation, RLS |
-| idx_payment_payment_type_id | Joining payments with payment types | Payment list, debt calculation |
-| idx_payment_is_paid | Filtering unpaid payments | Dashboard debt, default payment view |
-| idx_payment_month_year | Time-based filtering | Month/year payment filter |
+| Index                       | Purpose                             | Queries Optimized                    |
+| --------------------------- | ----------------------------------- | ------------------------------------ |
+| idx_flat_user_id            | User's flat list, RLS policies      | Dashboard, flat filtering            |
+| idx_payment_type_flat_id    | Joining payment types with flats    | Payment generation, RLS              |
+| idx_payment_payment_type_id | Joining payments with payment types | Payment list, debt calculation       |
+| idx_payment_is_paid         | Filtering unpaid payments           | Dashboard debt, default payment view |
+| idx_payment_month_year      | Time-based filtering                | Month/year payment filter            |
 
 **Performance Assumptions:**
+
 - 2-10 flats per user (MVP target)
 - 3-5 payment types per flat
 - ~12 payments per year per payment type
@@ -215,6 +227,7 @@ WITH CHECK (user_id = auth.uid());
 ```
 
 **Explanation:**
+
 - Direct ownership check via user_id column
 - Protects all operations: SELECT, INSERT, UPDATE, DELETE
 - User can only access flats where user_id matches their authenticated ID
@@ -242,6 +255,7 @@ WITH CHECK (
 ```
 
 **Explanation:**
+
 - Indirect ownership check through flat relationship
 - Payment type is accessible only if associated flat belongs to user
 - Prevents accessing payment types through direct ID manipulation
@@ -271,6 +285,7 @@ WITH CHECK (
 ```
 
 **Explanation:**
+
 - Double indirect ownership check: payment → payment_type → flat → user
 - Payment is accessible only if its payment type's flat belongs to user
 - Most complex RLS policy due to deepest nesting level
@@ -278,6 +293,7 @@ WITH CHECK (
 ### 4.6. RLS Testing Recommendations
 
 Test scenarios:
+
 1. User A cannot see flats of User B
 2. User A cannot see payment types of User B's flats
 3. User A cannot see payments of User B's flats
@@ -323,6 +339,7 @@ CREATE TRIGGER update_payments_updated_at
 ```
 
 **Alternative (Supabase Extension):**
+
 ```sql
 -- If using Supabase moddatetime extension
 CREATE TRIGGER handle_updated_at BEFORE UPDATE ON profiles
@@ -346,7 +363,7 @@ FOR EACH ROW EXECUTE FUNCTION moddatetime(updated_at);
 
 ```sql
 -- Calculate total debt for each user's flat
-SELECT 
+SELECT
   f.id,
   f.name,
   f.address,
@@ -360,6 +377,7 @@ ORDER BY f.name;
 ```
 
 **Performance:**
+
 - Uses idx_flat_user_id for user filtering
 - Uses idx_payment_type_flat_id for first join
 - Uses idx_payment_payment_type_id for second join
@@ -370,7 +388,7 @@ ORDER BY f.name;
 ```sql
 -- Generate payments for all payment types of a flat for specific month/year
 INSERT INTO payments (payment_type_id, amount, month, year)
-SELECT 
+SELECT
   pt.id,
   pt.base_amount,
   $month,
@@ -381,6 +399,7 @@ ON CONFLICT (payment_type_id, month, year) DO NOTHING;
 ```
 
 **Features:**
+
 - Copies base_amount to amount at generation time
 - ON CONFLICT handles duplicate prevention gracefully
 - Returns number of inserted rows (partial generation on conflict)
@@ -389,7 +408,7 @@ ON CONFLICT (payment_type_id, month, year) DO NOTHING;
 
 ```sql
 -- List all unpaid payments for a flat
-SELECT 
+SELECT
   p.id,
   pt.name as payment_type_name,
   p.amount,
@@ -406,6 +425,7 @@ ORDER BY p.year DESC, p.month DESC;
 ```
 
 **Performance:**
+
 - Uses idx_payment_payment_type_id for join
 - Uses idx_payment_is_paid for filtering
 
@@ -414,7 +434,7 @@ ORDER BY p.year DESC, p.month DESC;
 ```sql
 -- Update payment status to paid
 UPDATE payments
-SET 
+SET
   is_paid = true,
   paid_at = NOW()
 WHERE id = $payment_id
@@ -422,6 +442,7 @@ WHERE id = $payment_id
 ```
 
 **Business Logic:**
+
 - Sets both is_paid and paid_at atomically
 - WHERE clause prevents re-marking already paid payments
 - Check constraint ensures paid_at is NOT NULL when is_paid = true
@@ -430,7 +451,7 @@ WHERE id = $payment_id
 
 ```sql
 -- List payments for specific month and year
-SELECT 
+SELECT
   p.id,
   pt.name as payment_type_name,
   p.amount,
@@ -447,6 +468,7 @@ ORDER BY pt.name;
 ```
 
 **Performance:**
+
 - Uses idx_payment_month_year for time filtering
 - Uses idx_payment_payment_type_id for join
 
@@ -465,17 +487,20 @@ ORDER BY pt.name;
 ### 7.2. User 1 Data (admin@flatmanager.local)
 
 **Flat 1: "Żoliborz 1"**
+
 - Address: "ul. Słowackiego 1"
 - Payment Types:
   - "Czynsz": 1000.00 PLN
   - "Administracja": 200.00 PLN
 
 **Flat 2: "Mokotów 2"**
+
 - Address: "ul. Puławska 2"
 - Payment Types:
   - "Czynsz": 1500.00 PLN
 
 **Flat 3: "Praga 3"**
+
 - Address: "ul. Targowa 3"
 - Payment Types:
   - "Czynsz": 800.00 PLN
@@ -499,32 +524,32 @@ ORDER BY pt.name;
 
 ### 8.1. Database-Level Validation (Check Constraints)
 
-| Constraint | Table | Rule | Purpose |
-|------------|-------|------|---------|
-| base_amount >= 0 | payment_types | Non-negative base amount | Prevents negative payment templates |
-| amount >= 0 | payments | Non-negative amount | Prevents negative payments |
-| month >= 1 AND month <= 12 | payments | Valid month range | Ensures valid month values |
-| year >= 1900 AND year <= 2100 | payments | Reasonable year range | Prevents unrealistic years |
-| is_paid = false OR paid_at IS NOT NULL | payments | Paid status consistency | Ensures paid_at is set when payment is marked as paid |
+| Constraint                             | Table         | Rule                     | Purpose                                               |
+| -------------------------------------- | ------------- | ------------------------ | ----------------------------------------------------- |
+| base_amount >= 0                       | payment_types | Non-negative base amount | Prevents negative payment templates                   |
+| amount >= 0                            | payments      | Non-negative amount      | Prevents negative payments                            |
+| month >= 1 AND month <= 12             | payments      | Valid month range        | Ensures valid month values                            |
+| year >= 1900 AND year <= 2100          | payments      | Reasonable year range    | Prevents unrealistic years                            |
+| is_paid = false OR paid_at IS NOT NULL | payments      | Paid status consistency  | Ensures paid_at is set when payment is marked as paid |
 
 ### 8.2. Application-Level Validation
 
-| Validation | Level | Purpose |
-|------------|-------|---------|
-| Required fields | UI/API | Ensures all mandatory fields are filled |
-| Email format | UI/API | Validates email structure |
-| Amount non-negative | UI/API | First line of defense (backed by DB constraint) |
-| Month 1-12 | UI/API | First line of defense (backed by DB constraint) |
-| Year integer | UI/API | Type validation |
-| Minimum 1 PaymentType | API | Business rule (MVP: no deletion possible) |
-| Cannot edit paid payment | API | Business rule |
+| Validation               | Level  | Purpose                                         |
+| ------------------------ | ------ | ----------------------------------------------- |
+| Required fields          | UI/API | Ensures all mandatory fields are filled         |
+| Email format             | UI/API | Validates email structure                       |
+| Amount non-negative      | UI/API | First line of defense (backed by DB constraint) |
+| Month 1-12               | UI/API | First line of defense (backed by DB constraint) |
+| Year integer             | UI/API | Type validation                                 |
+| Minimum 1 PaymentType    | API    | Business rule (MVP: no deletion possible)       |
+| Cannot edit paid payment | API    | Business rule                                   |
 
 ### 8.3. Unique Constraints
 
-| Constraint | Table | Columns | Purpose |
-|------------|-------|---------|---------|
-| PRIMARY KEY | All tables | id | Unique record identification |
-| UNIQUE | payments | (payment_type_id, month, year) | Prevents duplicate payments |
+| Constraint  | Table      | Columns                        | Purpose                      |
+| ----------- | ---------- | ------------------------------ | ---------------------------- |
+| PRIMARY KEY | All tables | id                             | Unique record identification |
+| UNIQUE      | payments   | (payment_type_id, month, year) | Prevents duplicate payments  |
 
 **Note:** No unique constraint on names (flats, payment_types) - duplicates allowed in MVP
 
@@ -537,6 +562,7 @@ ORDER BY pt.name;
 **Decision:** Use UUID (gen_random_uuid()) instead of SERIAL/BIGSERIAL
 
 **Rationale:**
+
 - Compatible with Supabase Auth (auth.users uses UUID)
 - Better for distributed systems and replication
 - Prevents ID enumeration attacks
@@ -548,6 +574,7 @@ ORDER BY pt.name;
 **Decision:** Use NUMERIC(10,2) instead of FLOAT/REAL/DOUBLE
 
 **Rationale:**
+
 - Exact decimal precision (no floating-point errors)
 - Industry standard for financial data
 - 10 digits total, 2 decimal places (max: 99,999,999.99 PLN)
@@ -559,6 +586,7 @@ ORDER BY pt.name;
 **Decision:** Use TIMESTAMP WITH TIME ZONE instead of TIMESTAMP
 
 **Rationale:**
+
 - Time zone awareness (important for international users)
 - UTC storage with automatic conversion
 - Prevents daylight saving time issues
@@ -570,6 +598,7 @@ ORDER BY pt.name;
 **Decision:** Use TEXT for all string fields
 
 **Rationale:**
+
 - PostgreSQL stores both identically (no performance difference)
 - TEXT is more flexible (no arbitrary length limits)
 - Easier to change without migration
@@ -580,6 +609,7 @@ ORDER BY pt.name;
 **Decision:** Use BOOLEAN instead of INTEGER/VARCHAR
 
 **Rationale:**
+
 - Semantic clarity (true/false vs 0/1)
 - Type safety
 - Storage efficiency (1 byte)
@@ -741,7 +771,7 @@ supabase gen types typescript --local > src/db/database.types.ts
 
 - **Design principle:** Historical payments are immutable
 - **Rationale:** Financial data should not change retroactively
-- **Implementation:** 
+- **Implementation:**
   - Paid payments cannot be edited (application logic)
   - Amount is copied at generation (not referenced)
   - Changing base_amount does not affect existing payments
@@ -749,6 +779,7 @@ supabase gen types typescript --local > src/db/database.types.ts
 ### 13.5. Business Logic Location
 
 **Database Level:**
+
 - Referential integrity (foreign keys)
 - Data validation (check constraints)
 - Uniqueness (unique constraints)
@@ -756,6 +787,7 @@ supabase gen types typescript --local > src/db/database.types.ts
 - Auto-timestamps
 
 **Application Level:**
+
 - Minimum 1 PaymentType per Flat
 - Cannot edit paid payment
 - Payment generation logic
@@ -765,6 +797,7 @@ supabase gen types typescript --local > src/db/database.types.ts
 ### 13.6. Performance Monitoring
 
 **Metrics to track:**
+
 - Query execution time (aim: < 100ms for dashboard)
 - Index hit ratio (aim: > 99%)
 - Database connection pool usage
@@ -772,6 +805,7 @@ supabase gen types typescript --local > src/db/database.types.ts
 - Most expensive queries (pg_stat_statements)
 
 **Tools:**
+
 - Supabase Dashboard (built-in monitoring)
 - pg_stat_statements extension
 - EXPLAIN ANALYZE for query optimization
@@ -789,14 +823,14 @@ This database schema provides a solid foundation for the flat-manager MVP with:
 ✅ **Scalability path** for future growth  
 ✅ **Audit trail** with timestamps  
 ✅ **Clean cascade deletion** for data consistency  
-✅ **Financial precision** with NUMERIC types  
+✅ **Financial precision** with NUMERIC types
 
 The schema is ready for implementation via Supabase migrations and supports all functional requirements from the PRD and user stories.
 
 **Next Steps:**
+
 1. Create Supabase migration files from this schema
 2. Implement seed data script
 3. Generate TypeScript types for frontend
 4. Test RLS policies with both test users
 5. Validate all user stories against schema capabilities
-

@@ -72,4 +72,3 @@ export function transformFlatToCardViewModel(flat: FlatDto): FlatCardViewModel {
     updatedAt: flat.updated_at,
   };
 }
-

@@ -79,7 +79,6 @@ export default function FlatsGrid() {
       setFlats(data.flats);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
-      console.error("Error fetching dashboard data:", err);
     } finally {
       setLoading(false);
     }

@@ -73,7 +73,7 @@ describe('Button', () => {
   it('handles click events', async () => {
     const handleClick = vi.fn();
     render(<Button onClick={handleClick}>Click me</Button>);
-    
+
     await userEvent.click(screen.getByText('Click me'));
     expect(handleClick).toHaveBeenCalledOnce();
   });
@@ -83,21 +83,21 @@ describe('Button', () => {
 ### Testing Services
 
 ```typescript
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createMockSupabaseClient } from '@/test/mocks';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { createMockSupabaseClient } from "@/test/mocks";
 
-describe('FlatsService', () => {
+describe("FlatsService", () => {
   let mockSupabase;
 
   beforeEach(() => {
     mockSupabase = createMockSupabaseClient();
   });
 
-  it('fetches flats', async () => {
-    const mockFlats = [{ id: '1', name: 'Flat 1' }];
-    mockSupabase.from().select().mockResolvedValue({ 
-      data: mockFlats, 
-      error: null 
+  it("fetches flats", async () => {
+    const mockFlats = [{ id: "1", name: "Flat 1" }];
+    mockSupabase.from().select().mockResolvedValue({
+      data: mockFlats,
+      error: null,
     });
 
     const result = await getFlats(mockSupabase);
@@ -109,9 +109,9 @@ describe('FlatsService', () => {
 ### Mocking Modules
 
 ```typescript
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
-vi.mock('@supabase/ssr', () => ({
+vi.mock("@supabase/ssr", () => ({
   createServerClient: vi.fn(() => createMockSupabaseClient()),
 }));
 ```
@@ -122,13 +122,13 @@ vi.mock('@supabase/ssr', () => ({
 
 ```typescript
 // e2e/pages/login.page.ts
-import { Page } from '@playwright/test';
+import { Page } from "@playwright/test";
 
 export class LoginPage {
   constructor(private page: Page) {}
 
   async goto() {
-    await this.page.goto('/auth/login');
+    await this.page.goto("/auth/login");
   }
 
   async login(email: string, password: string) {
@@ -142,17 +142,17 @@ export class LoginPage {
 ### Using Page Objects in Tests
 
 ```typescript
-import { test, expect } from './fixtures/test';
-import { LoginPage } from './pages/login.page';
+import { test, expect } from "./fixtures/test";
+import { LoginPage } from "./pages/login.page";
 
-test.describe('Login Flow', () => {
-  test('user can login successfully', async ({ page }) => {
+test.describe("Login Flow", () => {
+  test("user can login successfully", async ({ page }) => {
     const loginPage = new LoginPage(page);
-    
+
     await loginPage.goto();
-    await loginPage.login('user@example.com', 'password');
-    
-    await expect(page).toHaveURL('/dashboard');
+    await loginPage.login("user@example.com", "password");
+
+    await expect(page).toHaveURL("/dashboard");
   });
 });
 ```
@@ -160,9 +160,9 @@ test.describe('Login Flow', () => {
 ### Visual Testing
 
 ```typescript
-test('homepage visual test', async ({ page }) => {
-  await page.goto('/');
-  await expect(page).toHaveScreenshot('homepage.png');
+test("homepage visual test", async ({ page }) => {
+  await page.goto("/");
+  await expect(page).toHaveScreenshot("homepage.png");
 });
 ```
 
@@ -171,37 +171,40 @@ test('homepage visual test', async ({ page }) => {
 ### Unit Tests
 
 1. **Arrange-Act-Assert Pattern**
+
    ```typescript
-   it('should do something', () => {
+   it("should do something", () => {
      // Arrange - setup test data
-     const input = 'test';
-     
+     const input = "test";
+
      // Act - execute the code
      const result = transform(input);
-     
+
      // Assert - verify the result
-     expect(result).toBe('TEST');
+     expect(result).toBe("TEST");
    });
    ```
 
 2. **Test Edge Cases First**
+
    ```typescript
-   describe('divide', () => {
-     it('handles division by zero', () => {
-       expect(() => divide(10, 0)).toThrow('Cannot divide by zero');
+   describe("divide", () => {
+     it("handles division by zero", () => {
+       expect(() => divide(10, 0)).toThrow("Cannot divide by zero");
      });
 
-     it('divides positive numbers', () => {
+     it("divides positive numbers", () => {
        expect(divide(10, 2)).toBe(5);
      });
    });
    ```
 
 3. **Use Descriptive Test Names**
+
    ```typescript
    // ❌ Bad
    it('works', () => { ... });
-   
+
    // ✅ Good
    it('calculates total price with tax included', () => { ... });
    ```
@@ -209,29 +212,31 @@ test('homepage visual test', async ({ page }) => {
 ### E2E Tests
 
 1. **Use Locators Wisely**
+
    ```typescript
    // ✅ Good - resilient to changes
-   await page.getByRole('button', { name: 'Submit' });
-   await page.getByLabel('Email');
-   
+   await page.getByRole("button", { name: "Submit" });
+   await page.getByLabel("Email");
+
    // ❌ Bad - fragile
-   await page.locator('.btn-primary');
+   await page.locator(".btn-primary");
    ```
 
 2. **Wait for Elements**
+
    ```typescript
    // Wait for element to be visible
-   await expect(page.getByText('Success')).toBeVisible();
-   
+   await expect(page.getByText("Success")).toBeVisible();
+
    // Wait for navigation
-   await page.waitForURL('/dashboard');
+   await page.waitForURL("/dashboard");
    ```
 
 3. **Isolate Tests**
    ```typescript
    test.beforeEach(async ({ page }) => {
      // Reset state before each test
-     await page.goto('/');
+     await page.goto("/");
    });
    ```
 
@@ -264,6 +269,7 @@ npm run test:e2e -- --trace on
 ```
 
 View trace file:
+
 ```bash
 npx playwright show-trace trace.zip
 ```
@@ -315,4 +321,3 @@ After running `npm run test:coverage`, open `coverage/index.html` in your browse
 - [React Testing Library](https://testing-library.com/react)
 - [Playwright Documentation](https://playwright.dev/)
 - [Testing Library Queries](https://testing-library.com/docs/queries/about)
-

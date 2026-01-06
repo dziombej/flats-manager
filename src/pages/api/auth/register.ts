@@ -25,7 +25,7 @@ function getUserFriendlyError(errorMessage: string): string {
   return ERROR_MESSAGES[errorMessage] || ERROR_MESSAGES.default;
 }
 
-export const POST: APIRoute = async ({ request, cookies, locals }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     // Parse request body
     const body = await request.json();
@@ -35,7 +35,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     if (!email || !password) {
       return new Response(
         JSON.stringify({
-          error: "Email and password are required."
+          error: "Email and password are required.",
         }),
         {
           status: 400,
@@ -49,7 +49,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     if (!emailRegex.test(email)) {
       return new Response(
         JSON.stringify({
-          error: "Please enter a valid email address."
+          error: "Please enter a valid email address.",
         }),
         {
           status: 400,
@@ -62,7 +62,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     if (password.length < 8) {
       return new Response(
         JSON.stringify({
-          error: "Password must be at least 8 characters."
+          error: "Password must be at least 8 characters.",
         }),
         {
           status: 400,
@@ -75,15 +75,15 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     const { data, error } = await authService.register(locals.supabase, email, password);
 
     if (error) {
-      console.error("Registration error:", error.message, error);
-
       // Check if it's a duplicate email error
-      const statusCode = error.message.toLowerCase().includes("already") ||
-                        error.message.toLowerCase().includes("duplicate") ? 409 : 400;
+      const statusCode =
+        error.message.toLowerCase().includes("already") || error.message.toLowerCase().includes("duplicate")
+          ? 409
+          : 400;
 
       return new Response(
         JSON.stringify({
-          error: getUserFriendlyError(error.message)
+          error: getUserFriendlyError(error.message),
         }),
         {
           status: statusCode,
@@ -93,10 +93,9 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     }
 
     if (!data.user) {
-      console.error("Registration succeeded but no user returned", data);
       return new Response(
         JSON.stringify({
-          error: "Registration failed. Please try again."
+          error: "Registration failed. Please try again.",
         }),
         {
           status: 400,
@@ -104,8 +103,6 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
         }
       );
     }
-
-    console.log("User registered successfully:", data.user.id, data.user.email);
 
     // Return success
     return new Response(
@@ -122,11 +119,10 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
         headers: { "Content-Type": "application/json" },
       }
     );
-  } catch (error) {
-    console.error("Registration error:", error);
+  } catch {
     return new Response(
       JSON.stringify({
-        error: "An unexpected error occurred. Please try again."
+        error: "An unexpected error occurred. Please try again.",
       }),
       {
         status: 500,
@@ -135,4 +131,3 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     );
   }
 };
-

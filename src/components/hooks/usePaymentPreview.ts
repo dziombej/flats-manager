@@ -44,4 +44,3 @@ export function usePaymentPreview(paymentTypes: PaymentTypeDto[]): PaymentPrevie
     return { items, summary };
   }, [paymentTypes]);
 }
-

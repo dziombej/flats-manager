@@ -1,9 +1,6 @@
 ---
 import Layout from "../../../../layouts/Layout.astro";
-import type {
-  FlatDto,
-  PaymentsResponseDto,
-} from "../../../../types";
+import type { FlatDto, PaymentsResponseDto } from "../../../../types";
 import { transformPaymentToViewModel } from "../../../../lib/flat-detail-transformers";
 import PaymentsSection from "../../../../components/PaymentsSection";
 
@@ -42,30 +39,25 @@ try {
   }
 
   flat = await flatResponse.json();
-} catch (error) {
-  console.error("Error fetching flat:", error);
+} catch {
   return Astro.redirect("/dashboard?error=fetch_failed");
 }
 
 // Fetch payments (default: unpaid only)
 let paymentsData: PaymentsResponseDto;
 try {
-  const paymentsResponse = await fetch(
-    `${Astro.url.origin}/api/flats/${flatId}/payments?is_paid=false`,
-    {
-      headers: {
-        Cookie: Astro.request.headers.get("Cookie") || "",
-      },
-    }
-  );
+  const paymentsResponse = await fetch(`${Astro.url.origin}/api/flats/${flatId}/payments?is_paid=false`, {
+    headers: {
+      Cookie: Astro.request.headers.get("Cookie") || "",
+    },
+  });
 
   if (!paymentsResponse.ok) {
     throw new Error("Failed to fetch payments");
   }
 
   paymentsData = await paymentsResponse.json();
-} catch (error) {
-  console.error("Error fetching payments:", error);
+} catch {
   paymentsData = { payments: [] };
 }
 
@@ -94,4 +86,3 @@ const payments = paymentsData.payments.map(transformPaymentToViewModel);
     <PaymentsSection payments={payments} flatId={flatId} client:load />
   </div>
 </Layout>
-

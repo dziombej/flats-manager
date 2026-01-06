@@ -13,6 +13,7 @@
 ## 📊 Test Suite Breakdown
 
 ### 1. `cn()` - Tailwind Class Merger (3 tests)
+
 **Status:** ✅ Already tested, maintained
 
 - ✅ Merges class names correctly
@@ -22,6 +23,7 @@
 ---
 
 ### 2. `formatCurrency()` - Polish Currency Formatter (10 tests)
+
 **Status:** ✅ **NEW - Comprehensive coverage added**
 
 #### Test Cases:
@@ -50,6 +52,7 @@
 ---
 
 ### 3. `formatDate()` - Long Date Formatter (8 tests)
+
 **Status:** ✅ **NEW - Comprehensive coverage added**
 
 #### Test Cases:
@@ -76,6 +79,7 @@
 ---
 
 ### 4. `formatDateShort()` - Short Date Formatter (13 tests)
+
 **Status:** ✅ **NEW - Comprehensive coverage added**
 
 #### Test Cases:
@@ -108,6 +112,7 @@
 ## 🎯 Edge Cases Covered
 
 ### Currency Formatting
+
 - ✅ Zero amounts
 - ✅ Negative amounts (debt scenarios)
 - ✅ Very small amounts (0.01 zł)
@@ -116,6 +121,7 @@
 - ✅ Thousands separator placement
 
 ### Date Formatting
+
 - ✅ Month boundaries (1st, 31st)
 - ✅ Year boundaries (Jan 1, Dec 31)
 - ✅ Leap years (Feb 29)
@@ -129,6 +135,7 @@
 ## 🔍 Technical Implementation Details
 
 ### Locale-Specific Formatting
+
 The tests validate that the Polish locale is correctly applied:
 
 ```typescript
@@ -143,6 +150,7 @@ new Intl.DateTimeFormat("pl-PL", { ... })
 ```
 
 ### Special Characters Handled
+
 - **Non-breaking space (U+00A0)**: Used in currency and as thousands separator
 - **Polish letter ł**: Currency symbol "zł"
 - **Dot separator**: Used in short date format
@@ -176,6 +184,7 @@ Following `.github/copilot-instructions.md`:
 ### Real-World Usage
 
 These functions are called in:
+
 - `FlatCard.tsx` - Displaying rent amounts and dates
 - `PaymentsSection.tsx` - Showing payment amounts and due dates
 - `DashboardStats.tsx` - Formatting financial summaries
@@ -188,11 +197,13 @@ These functions are called in:
 ## 🚀 Next Steps (From Unit Test Plan)
 
 ### Phase 1: Remaining Tasks
+
 1. ✅ Test `utils.ts` ← **COMPLETED**
 2. ⏳ Test `flat-detail-transformers.ts`
 3. ⏳ Test `flats-list-transformers.ts`
 
 ### Future Phases
+
 - Phase 2: Extract & test validation schemas
 - Phase 3: Service logic with mocks
 - Phase 4: Critical UI components
@@ -213,6 +224,7 @@ npm test -- src/lib/utils.test.ts --watch
 ```
 
 ### Results
+
 ```
 ✓ src/lib/utils.test.ts (34 tests) 22ms
   ✓ utils (34)
@@ -241,4 +253,3 @@ Test Files  1 passed (1)
 **Coverage:** 100% of utility functions (cn, formatCurrency, formatDate, formatDateShort)  
 **Test Quality:** High (31 new tests, all edge cases covered)  
 **Ready for:** Production use & refactoring
-

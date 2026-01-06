@@ -1,4 +1,4 @@
-import type { Page, Locator } from '@playwright/test';
+import type { Page, Locator } from "@playwright/test";
 
 /**
  * Page Object Model for Flat Detail Page
@@ -20,17 +20,17 @@ export class FlatDetailPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.header = page.getByTestId('flat-detail-header');
-    this.name = page.getByTestId('flat-detail-name');
-    this.address = page.getByTestId('flat-detail-address');
-    this.editButton = page.getByTestId('edit-flat-button');
-    this.deleteButton = page.getByTestId('delete-flat-button');
-    this.totalDebtCard = page.getByTestId('flat-detail-total-debt');
-    this.paymentTypesCountCard = page.getByTestId('flat-detail-payment-types-count');
-    this.pendingPaymentsCountCard = page.getByTestId('flat-detail-pending-payments-count');
-    this.deleteDialog = page.locator('.fixed.inset-0').filter({ hasText: /delete flat/i });
-    this.deleteConfirmButton = page.getByRole('button', { name: /delete flat/i }).last();
-    this.deleteCancelButton = page.getByRole('button', { name: /cancel/i });
+    this.header = page.getByTestId("flat-detail-header");
+    this.name = page.getByTestId("flat-detail-name");
+    this.address = page.getByTestId("flat-detail-address");
+    this.editButton = page.getByTestId("edit-flat-button");
+    this.deleteButton = page.getByTestId("delete-flat-button");
+    this.totalDebtCard = page.getByTestId("flat-detail-total-debt");
+    this.paymentTypesCountCard = page.getByTestId("flat-detail-payment-types-count");
+    this.pendingPaymentsCountCard = page.getByTestId("flat-detail-pending-payments-count");
+    this.deleteDialog = page.locator(".fixed.inset-0").filter({ hasText: /delete flat/i });
+    this.deleteConfirmButton = page.getByRole("button", { name: /delete flat/i }).last();
+    this.deleteCancelButton = page.getByRole("button", { name: /cancel/i });
   }
 
   /**
@@ -44,31 +44,31 @@ export class FlatDetailPage {
    * Get the flat name
    */
   async getName(): Promise<string> {
-    return await this.name.textContent() || '';
+    return (await this.name.textContent()) || "";
   }
 
   /**
    * Get the flat address
    */
   async getAddress(): Promise<string> {
-    return await this.address.textContent() || '';
+    return (await this.address.textContent()) || "";
   }
 
   /**
    * Get the total debt value
    */
   async getTotalDebt(): Promise<string> {
-    const text = await this.totalDebtCard.textContent() || '';
+    const text = (await this.totalDebtCard.textContent()) || "";
     // Extract just the currency value
     const match = text.match(/[\d\s,]+\s*zł/);
-    return match ? match[0].trim() : '';
+    return match ? match[0].trim() : "";
   }
 
   /**
    * Get payment types count
    */
   async getPaymentTypesCount(): Promise<number> {
-    const text = await this.paymentTypesCountCard.textContent() || '';
+    const text = (await this.paymentTypesCountCard.textContent()) || "";
     const match = text.match(/\d+/);
     return match ? parseInt(match[0], 10) : 0;
   }
@@ -77,7 +77,7 @@ export class FlatDetailPage {
    * Get pending payments count
    */
   async getPendingPaymentsCount(): Promise<number> {
-    const text = await this.pendingPaymentsCountCard.textContent() || '';
+    const text = (await this.pendingPaymentsCountCard.textContent()) || "";
     const match = text.match(/\d+/);
     return match ? parseInt(match[0], 10) : 0;
   }
@@ -95,7 +95,7 @@ export class FlatDetailPage {
    */
   async clickDelete() {
     await this.deleteButton.click();
-    await this.deleteDialog.waitFor({ state: 'visible' });
+    await this.deleteDialog.waitFor({ state: "visible" });
   }
 
   /**
@@ -103,7 +103,7 @@ export class FlatDetailPage {
    */
   async confirmDelete() {
     await this.deleteConfirmButton.click();
-    await this.page.waitForURL('**/dashboard**');
+    await this.page.waitForURL("**/dashboard**");
   }
 
   /**
@@ -111,7 +111,7 @@ export class FlatDetailPage {
    */
   async cancelDelete() {
     await this.deleteCancelButton.click();
-    await this.deleteDialog.waitFor({ state: 'hidden' });
+    await this.deleteDialog.waitFor({ state: "hidden" });
   }
 
   /**
@@ -144,4 +144,3 @@ export class FlatDetailPage {
     }
   }
 }
-

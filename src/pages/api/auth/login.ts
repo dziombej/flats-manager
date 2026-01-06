@@ -20,7 +20,7 @@ function getUserFriendlyError(errorMessage: string): string {
   return ERROR_MESSAGES[errorMessage] || ERROR_MESSAGES.default;
 }
 
-export const POST: APIRoute = async ({ request, cookies, locals }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     // Parse request body
     const body = await request.json();
@@ -30,7 +30,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     if (!email || !password) {
       return new Response(
         JSON.stringify({
-          error: "Email and password are required."
+          error: "Email and password are required.",
         }),
         {
           status: 400,
@@ -45,7 +45,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     if (error) {
       return new Response(
         JSON.stringify({
-          error: getUserFriendlyError(error.message)
+          error: getUserFriendlyError(error.message),
         }),
         {
           status: 401,
@@ -57,7 +57,7 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     if (!data.user) {
       return new Response(
         JSON.stringify({
-          error: "Login failed. Please try again."
+          error: "Login failed. Please try again.",
         }),
         {
           status: 401,
@@ -80,11 +80,10 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
         headers: { "Content-Type": "application/json" },
       }
     );
-  } catch (error) {
-    console.error("Login error:", error);
+  } catch {
     return new Response(
       JSON.stringify({
-        error: "An unexpected error occurred. Please try again."
+        error: "An unexpected error occurred. Please try again.",
       }),
       {
         status: 500,
@@ -93,4 +92,3 @@ export const POST: APIRoute = async ({ request, cookies, locals }) => {
     );
   }
 };
-

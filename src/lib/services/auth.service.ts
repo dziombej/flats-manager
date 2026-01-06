@@ -41,4 +41,3 @@ export const authService = {
     return { error };
   },
 };
-

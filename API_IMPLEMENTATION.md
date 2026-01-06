@@ -3,6 +3,7 @@
 ## Overview
 
 Zaimplementowano 3 endpointy API z integracją Supabase:
+
 - `GET /api/dashboard` - pobieranie mieszkań z wyliczonym długiem
 - `GET /api/flats` - pobieranie wszystkich mieszkań użytkownika
 - `GET /api/flats/:id` - pobieranie szczegółów pojedynczego mieszkania
@@ -43,6 +44,7 @@ Klasa odpowiedzialna za logikę biznesową związaną z mieszkaniami:
 **Autoryzacja:** Wymagana (Supabase Auth)
 
 **Response (200 OK):**
+
 ```json
 {
   "flats": [
@@ -50,7 +52,7 @@ Klasa odpowiedzialna za logikę biznesową związaną z mieszkaniami:
       "id": "uuid",
       "name": "Żoliborz 1",
       "address": "ul. Słowackiego 1",
-      "debt": 1200.00,
+      "debt": 1200.0,
       "created_at": "2024-01-15T10:30:00Z",
       "updated_at": "2024-01-15T10:30:00Z"
     }
@@ -59,6 +61,7 @@ Klasa odpowiedzialna za logikę biznesową związaną z mieszkaniami:
 ```
 
 **Response (401 Unauthorized):**
+
 ```json
 {
   "error": "Unauthorized"
@@ -76,6 +79,7 @@ Klasa odpowiedzialna za logikę biznesową związaną z mieszkaniami:
 **Autoryzacja:** Wymagana (Supabase Auth)
 
 **Response (200 OK):**
+
 ```json
 {
   "flats": [
@@ -92,6 +96,7 @@ Klasa odpowiedzialna za logikę biznesową związaną z mieszkaniami:
 ```
 
 **Response (401 Unauthorized):**
+
 ```json
 {
   "error": "Unauthorized"
@@ -109,9 +114,11 @@ Klasa odpowiedzialna za logikę biznesową związaną z mieszkaniami:
 **Autoryzacja:** Wymagana (Supabase Auth)
 
 **Parametry:**
+
 - `id` (path) - UUID mieszkania
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "uuid",
@@ -124,6 +131,7 @@ Klasa odpowiedzialna za logikę biznesową związaną z mieszkaniami:
 ```
 
 **Response (404 Not Found):**
+
 ```json
 {
   "error": "Flat not found"
@@ -131,6 +139,7 @@ Klasa odpowiedzialna za logikę biznesową związaną z mieszkaniami:
 ```
 
 **Response (401 Unauthorized):**
+
 ```json
 {
   "error": "Unauthorized"
@@ -138,6 +147,7 @@ Klasa odpowiedzialna za logikę biznesową związaną z mieszkaniami:
 ```
 
 **Response (400 Bad Request):**
+
 ```json
 {
   "error": "Flat ID is required"
@@ -147,16 +157,19 @@ Klasa odpowiedzialna za logikę biznesową związaną z mieszkaniami:
 ## Bezpieczeństwo
 
 ### Autoryzacja
+
 - Wszystkie endpointy wymagają autoryzacji przez Supabase Auth
 - Używamy `locals.supabase` z middleware (zgodnie z best practices)
 - User ID pobierany z `supabase.auth.getUser()`
 
 ### Row Level Security (RLS)
+
 - Zapytania do bazy danych automatycznie filtrowane przez `user_id`
 - Użytkownik może dostać tylko swoje mieszkania
 - Dodatkowo weryfikowane w serwisie przez `.eq("user_id", userId)`
 
 ### Error Handling
+
 - Early returns dla błędów autoryzacji
 - Try-catch dla błędów bazy danych
 - Logowanie błędów do konsoli
@@ -201,6 +214,7 @@ curl http://localhost:4321/api/flats/550e8400-e29b-41d4-a716-446655440000
 ## Uwagi implementacyjne
 
 ### Zgodność z coding guidelines
+
 ✅ Use feedback from linters  
 ✅ Prioritize error handling and edge cases  
 ✅ Handle errors at the beginning of functions  
@@ -208,13 +222,14 @@ curl http://localhost:4321/api/flats/550e8400-e29b-41d4-a716-446655440000
 ✅ Place the happy path last  
 ✅ Avoid unnecessary else statements  
 ✅ Use guard clauses  
-✅ Implement proper error logging  
+✅ Implement proper error logging
 
 ### Zgodność z Supabase guidelines
+
 ✅ Use supabase from `context.locals`  
 ✅ Use `SupabaseClient` type from `src/db/supabase.client.ts`  
 ✅ Extract logic into services in `src/lib/services`  
-✅ Use `export const prerender = false` for API routes  
+✅ Use `export const prerender = false` for API routes
 
 ## Zależności
 
@@ -225,6 +240,7 @@ curl http://localhost:4321/api/flats/550e8400-e29b-41d4-a716-446655440000
 ## Następne kroki
 
 Pozostałe endpointy do zaimplementowania (z view-implementation-plan.md):
+
 - POST /api/flats
 - PUT /api/flats/:id
 - DELETE /api/flats/:id
@@ -234,4 +250,3 @@ Pozostałe endpointy do zaimplementowania (z view-implementation-plan.md):
 - GET /api/flats/:flatId/payments
 - POST /api/flats/:flatId/payments/generate
 - POST /api/payments/:id/mark-paid
-

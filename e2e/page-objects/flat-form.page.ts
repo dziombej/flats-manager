@@ -1,4 +1,4 @@
-import type { Page, Locator } from '@playwright/test';
+import type { Page, Locator } from "@playwright/test";
 
 /**
  * Page Object Model for Flat Form
@@ -18,22 +18,22 @@ export class FlatFormPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.form = page.getByTestId('flat-form');
-    this.nameInput = page.getByTestId('flat-name-input');
-    this.addressInput = page.getByTestId('flat-address-input');
-    this.submitButton = page.getByTestId('flat-form-submit-button');
-    this.cancelButton = page.getByRole('button', { name: /cancel/i });
+    this.form = page.getByTestId("flat-form");
+    this.nameInput = page.getByTestId("flat-name-input");
+    this.addressInput = page.getByTestId("flat-address-input");
+    this.submitButton = page.getByTestId("flat-form-submit-button");
+    this.cancelButton = page.getByRole("button", { name: /cancel/i });
     this.nameError = page.locator('#\\:r0\\:-error, [id$="-error"]').first();
     this.addressError = page.locator('#\\:r1\\:-error, [id$="-error"]').nth(1);
-    this.formError = page.getByRole('alert');
-    this.successMessage = page.getByRole('status');
+    this.formError = page.getByRole("alert");
+    this.successMessage = page.getByRole("status");
   }
 
   /**
    * Navigate to the create flat page
    */
   async gotoCreate() {
-    await this.page.goto('/flats/new');
+    await this.page.goto("/flats/new");
   }
 
   /**
@@ -48,8 +48,8 @@ export class FlatFormPage {
    */
   async fillForm(name: string, address: string) {
     // Wait for form to be ready (React hydration)
-    await this.nameInput.waitFor({ state: 'attached' });
-    await this.addressInput.waitFor({ state: 'attached' });
+    await this.nameInput.waitFor({ state: "attached" });
+    await this.addressInput.waitFor({ state: "attached" });
 
     // Small delay for React hydration
     await this.page.waitForTimeout(500);
@@ -69,7 +69,7 @@ export class FlatFormPage {
    */
   async submit() {
     // Wait for button to be enabled (form validation passes)
-    await this.submitButton.waitFor({ state: 'visible' });
+    await this.submitButton.waitFor({ state: "visible" });
     await this.page.waitForTimeout(200); // Allow validation to complete
     await this.submitButton.click({ force: false });
   }
@@ -143,7 +143,7 @@ export class FlatFormPage {
    * Get form error text
    */
   async getFormErrorText(): Promise<string> {
-    return await this.formError.textContent() || '';
+    return (await this.formError.textContent()) || "";
   }
 
   /**
@@ -153,4 +153,3 @@ export class FlatFormPage {
     await this.page.waitForURL(expectedUrl);
   }
 }
-

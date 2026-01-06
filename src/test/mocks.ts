@@ -1,5 +1,5 @@
-import type { SupabaseClient } from '@/db/supabase.client';
-import { vi } from 'vitest';
+import type { SupabaseClient } from "@/db/supabase.client";
+import { vi } from "vitest";
 
 /**
  * Creates a mock Supabase client for testing
@@ -39,8 +39,8 @@ export function createMockSupabaseClient(): SupabaseClient {
  */
 export function createMockUser(overrides = {}) {
   return {
-    id: 'test-user-id',
-    email: 'test@example.com',
+    id: "test-user-id",
+    email: "test@example.com",
     created_at: new Date().toISOString(),
     ...overrides,
   };
@@ -51,11 +51,10 @@ export function createMockUser(overrides = {}) {
  */
 export function createMockSession(user = createMockUser()) {
   return {
-    access_token: 'mock-access-token',
-    refresh_token: 'mock-refresh-token',
+    access_token: "mock-access-token",
+    refresh_token: "mock-refresh-token",
     expires_in: 3600,
-    token_type: 'bearer',
+    token_type: "bearer",
     user,
   };
 }
-

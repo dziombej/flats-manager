@@ -1,4 +1,4 @@
-import type { Page, Locator } from '@playwright/test';
+import type { Page, Locator } from "@playwright/test";
 
 /**
  * Page Object Model for Header Navigation
@@ -12,9 +12,9 @@ export class HeaderNavigationPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.addFlatButton = page.getByTestId('add-flat-button');
-    this.dashboardLink = page.getByTestId('dashboard-link');
-    this.allFlatsLink = page.getByRole('link', { name: /all flats/i });
+    this.addFlatButton = page.getByTestId("add-flat-button");
+    this.dashboardLink = page.getByTestId("dashboard-link");
+    this.allFlatsLink = page.getByRole("link", { name: /all flats/i });
   }
 
   /**
@@ -22,7 +22,7 @@ export class HeaderNavigationPage {
    */
   async goToAddFlat() {
     await this.addFlatButton.click();
-    await this.page.waitForURL('**/flats/new');
+    await this.page.waitForURL("**/flats/new");
   }
 
   /**
@@ -30,7 +30,7 @@ export class HeaderNavigationPage {
    */
   async goToDashboard() {
     await this.dashboardLink.click();
-    await this.page.waitForURL('**/dashboard');
+    await this.page.waitForURL("**/dashboard");
   }
 
   /**
@@ -38,7 +38,7 @@ export class HeaderNavigationPage {
    */
   async goToAllFlats() {
     await this.allFlatsLink.click();
-    await this.page.waitForURL('**/flats');
+    await this.page.waitForURL("**/flats");
   }
 
   /**
@@ -48,4 +48,3 @@ export class HeaderNavigationPage {
     return await this.addFlatButton.isVisible();
   }
 }
-

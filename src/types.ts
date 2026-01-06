@@ -291,9 +291,8 @@ export interface FlatDetailViewModel {
  * View model for flat form component
  */
 export interface FlatFormViewModel {
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   flatId?: string;
   initialName: string;
   initialAddress: string;
 }
-

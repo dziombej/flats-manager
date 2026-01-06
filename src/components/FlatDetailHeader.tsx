@@ -33,8 +33,7 @@ export default function FlatDetailHeader({ flat }: FlatDetailHeaderProps) {
 
       // Redirect to dashboard with success message
       window.location.href = "/dashboard?message=flat_deleted";
-    } catch (error) {
-      console.error("Error deleting flat:", error);
+    } catch {
       alert("Failed to delete flat. Please try again.");
       setIsDeleting(false);
       setShowDeleteDialog(false);
@@ -50,7 +49,9 @@ export default function FlatDetailHeader({ flat }: FlatDetailHeaderProps) {
       <div className="mb-8" data-test-id="flat-detail-header">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold mb-2" data-test-id="flat-detail-name">{flat.name}</h1>
+            <h1 className="text-3xl font-bold mb-2" data-test-id="flat-detail-name">
+              {flat.name}
+            </h1>
             <div className="flex items-center text-muted-foreground">
               <svg
                 className="w-4 h-4 mr-2"
@@ -121,22 +122,14 @@ export default function FlatDetailHeader({ flat }: FlatDetailHeaderProps) {
           <div className="bg-card text-card-foreground rounded-lg p-6 max-w-md w-full mx-4 shadow-lg">
             <h2 className="text-xl font-bold mb-4">Delete Flat</h2>
             <p className="text-muted-foreground mb-6">
-              Are you sure you want to delete "{flat.name}"? This action cannot be undone.
-              All payment types and payments associated with this flat will also be deleted.
+              Are you sure you want to delete &quot;{flat.name}&quot;? This action cannot be undone. All payment types
+              and payments associated with this flat will also be deleted.
             </p>
             <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={handleCancelDelete}
-                disabled={isDeleting}
-              >
+              <Button variant="outline" onClick={handleCancelDelete} disabled={isDeleting}>
                 Cancel
               </Button>
-              <Button
-                variant="destructive"
-                onClick={handleConfirmDelete}
-                disabled={isDeleting}
-              >
+              <Button variant="destructive" onClick={handleConfirmDelete} disabled={isDeleting}>
                 {isDeleting ? "Deleting..." : "Delete Flat"}
               </Button>
             </div>
@@ -146,4 +139,3 @@ export default function FlatDetailHeader({ flat }: FlatDetailHeaderProps) {
     </>
   );
 }
-

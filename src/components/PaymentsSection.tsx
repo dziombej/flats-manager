@@ -2,14 +2,7 @@ import { useState } from "react";
 import { Calendar, Check, Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import type { PaymentViewModel } from "../types";
 import { formatCurrency, formatMonthYear, formatDate } from "../lib/formatters";
 import { getPaymentBadgeVariant, getPaymentBadgeLabel } from "../lib/payment-status";
@@ -21,10 +14,7 @@ interface PaymentsSectionProps {
   flatId: string;
 }
 
-export default function PaymentsSection({
-  payments,
-  flatId,
-}: PaymentsSectionProps) {
+export default function PaymentsSection({ payments, flatId }: PaymentsSectionProps) {
   const navigation = useNavigation();
   const [localPayments, setLocalPayments] = useState(payments);
 
@@ -48,22 +38,14 @@ export default function PaymentsSection({
   const handleMarkAsPaid = async (paymentId: string) => {
     // Optimistic update
     setLocalPayments((prev) =>
-      prev.map((p) =>
-        p.id === paymentId
-          ? { ...p, isPaid: true, paidAt: new Date().toISOString() }
-          : p
-      )
+      prev.map((p) => (p.id === paymentId ? { ...p, isPaid: true, paidAt: new Date().toISOString() } : p))
     );
 
     await markAsPaid(paymentId);
   };
 
   const getStatusBadge = (payment: PaymentViewModel) => {
-    return (
-      <Badge variant={getPaymentBadgeVariant(payment)}>
-        {getPaymentBadgeLabel(payment)}
-      </Badge>
-    );
+    return <Badge variant={getPaymentBadgeVariant(payment)}>{getPaymentBadgeLabel(payment)}</Badge>;
   };
 
   return (
@@ -78,9 +60,7 @@ export default function PaymentsSection({
 
       {localPayments.length === 0 ? (
         <div className="bg-card text-card-foreground rounded-lg border p-8 text-center">
-          <p className="text-muted-foreground mb-4">
-            No payments generated. Generate payments for a specific month.
-          </p>
+          <p className="text-muted-foreground mb-4">No payments generated. Generate payments for a specific month.</p>
           <Button onClick={handleGeneratePayments}>Generate Payments</Button>
         </div>
       ) : (
@@ -97,16 +77,9 @@ export default function PaymentsSection({
             </TableHeader>
             <TableBody>
               {localPayments.map((payment) => (
-                <TableRow
-                  key={payment.id}
-                  className={payment.isPaid ? "opacity-60" : ""}
-                >
-                  <TableCell>
-                    {formatMonthYear(payment.month, payment.year)}
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    {payment.paymentTypeName}
-                  </TableCell>
+                <TableRow key={payment.id} className={payment.isPaid ? "opacity-60" : ""}>
+                  <TableCell>{formatMonthYear(payment.month, payment.year)}</TableCell>
+                  <TableCell className="font-medium">{payment.paymentTypeName}</TableCell>
                   <TableCell>{formatCurrency(payment.amount)}</TableCell>
                   <TableCell>{getStatusBadge(payment)}</TableCell>
                   <TableCell className="text-right">
@@ -130,10 +103,8 @@ export default function PaymentsSection({
                         )}
                       </Button>
                     )}
-                    {payment.isPaid && (
-                      <span className="text-muted-foreground text-sm">
-                        Paid on {formatDate(payment.paidAt!)}
-                      </span>
+                    {payment.isPaid && payment.paidAt && (
+                      <span className="text-muted-foreground text-sm">Paid on {formatDate(payment.paidAt)}</span>
                     )}
                   </TableCell>
                 </TableRow>
@@ -145,4 +116,3 @@ export default function PaymentsSection({
     </section>
   );
 }
-

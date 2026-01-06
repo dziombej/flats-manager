@@ -21,21 +21,19 @@ export default function UserMenu({ user }: UserMenuProps) {
     setIsLoggingOut(true);
 
     try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
       });
 
       if (!response.ok) {
-        console.error('Logout failed');
         setIsLoggingOut(false);
         return;
       }
 
       // Redirect to login page (server-side reload)
-      window.location.href = '/auth/login';
-    } catch (error) {
-      console.error('Logout error:', error);
+      window.location.href = "/auth/login";
+    } catch {
       setIsLoggingOut(false);
     }
   }, [isLoggingOut]);
@@ -66,11 +64,8 @@ export default function UserMenu({ user }: UserMenuProps) {
             d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
           />
         </svg>
-        <span className="hidden sm:inline">
-          {isLoggingOut ? 'Logging out...' : 'Log out'}
-        </span>
+        <span className="hidden sm:inline">{isLoggingOut ? "Logging out..." : "Log out"}</span>
       </button>
     </div>
   );
 }
-

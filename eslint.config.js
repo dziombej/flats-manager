@@ -62,5 +62,21 @@ export default tseslint.config(
   jsxA11yConfig,
   reactConfig,
   eslintPluginAstro.configs["flat/recommended"],
-  eslintPluginPrettier
+  eslintPluginPrettier,
+  // Override rules for test files, service files, and mocks
+  {
+    files: [
+      "**/*.test.{ts,tsx}",
+      "**/*.spec.{ts,tsx}",
+      "e2e/**/*.{ts,tsx}",
+      "src/lib/services/**/*.ts",
+      "src/test/**/*.ts",
+      "src/pages/api/**/*.ts", // Allow console in API endpoints for logging
+    ],
+    rules: {
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "no-console": "off",
+    },
+  }
 );

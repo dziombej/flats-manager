@@ -35,7 +35,6 @@ try {
   flatsData = await response.json();
 } catch (err) {
   error = err instanceof Error ? err.message : "Failed to load flats";
-  console.error("Error fetching flats:", err);
 }
 
 // Transform data to view model
@@ -49,14 +48,10 @@ const viewModel = flatsData ? transformFlatsListData(flatsData) : null;
       <nav class="mb-6 text-sm text-muted-foreground" aria-label="Breadcrumb">
         <ol class="flex items-center space-x-2">
           <li>
-            <a href="/dashboard" class="hover:text-foreground transition-colors">
-              Dashboard
-            </a>
+            <a href="/dashboard" class="hover:text-foreground transition-colors"> Dashboard </a>
           </li>
           <li aria-hidden="true">/</li>
-          <li aria-current="page" class="text-foreground font-medium">
-            Flats
-          </li>
+          <li aria-current="page" class="text-foreground font-medium">Flats</li>
         </ol>
       </nav>
 
@@ -65,7 +60,8 @@ const viewModel = flatsData ? transformFlatsListData(flatsData) : null;
         <div>
           <h1 class="text-4xl font-bold mb-2">Your Flats</h1>
           <p class="text-muted-foreground text-lg">
-            {viewModel?.totalCount || 0} {viewModel?.totalCount === 1 ? "property" : "properties"}
+            {viewModel?.totalCount || 0}
+            {viewModel?.totalCount === 1 ? "property" : "properties"}
           </p>
         </div>
         <a
@@ -80,102 +76,88 @@ const viewModel = flatsData ? transformFlatsListData(flatsData) : null;
             stroke="currentColor"
             aria-hidden="true"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 4v16m8-8H4"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
           </svg>
           Add New Flat
         </a>
       </div>
 
       <!-- Content Area -->
-      {error ? (
-        <!-- Error State -->
-        <div class="flex items-center justify-center min-h-[400px]">
-          <div class="text-center max-w-md">
-            <div class="mb-4 text-destructive">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-12 w-12 mx-auto"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
+      {
+        error ? (
+          <div class="flex items-center justify-center min-h-[400px]">
+            <div class="text-center max-w-md">
+              <div class="mb-4 text-destructive">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-12 w-12 mx-auto"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <h2 class="text-xl font-semibold mb-2">Failed to load flats</h2>
+              <p class="text-muted-foreground mb-4">{error}</p>
+              <button
+                onclick="window.location.reload()"
+                class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+                Retry
+              </button>
             </div>
-            <h2 class="text-xl font-semibold mb-2">Failed to load flats</h2>
-            <p class="text-muted-foreground mb-4">{error}</p>
-            <button
-              onclick="window.location.reload()"
-              class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-            >
-              Retry
-            </button>
           </div>
-        </div>
-      ) : viewModel && viewModel.isEmpty ? (
-        <!-- Empty State -->
-        <div class="flex items-center justify-center min-h-[400px]">
-          <div class="text-center max-w-md">
-            <div class="mb-4 text-muted-foreground">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-16 w-16 mx-auto"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
+        ) : viewModel && viewModel.isEmpty ? (
+          <div class="flex items-center justify-center min-h-[400px]">
+            <div class="text-center max-w-md">
+              <div class="mb-4 text-muted-foreground">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-16 w-16 mx-auto"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  />
+                </svg>
+              </div>
+              <h2 class="text-2xl font-semibold mb-2">No flats yet</h2>
+              <p class="text-muted-foreground mb-6">Create your first flat to start managing payments</p>
+              <a
+                href="/flats/new"
+                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                />
-              </svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Create Your First Flat
+              </a>
             </div>
-            <h2 class="text-2xl font-semibold mb-2">No flats yet</h2>
-            <p class="text-muted-foreground mb-6">
-              Create your first flat to start managing payments
-            </p>
-            <a
-              href="/flats/new"
-              class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              Create Your First Flat
-            </a>
           </div>
-        </div>
-      ) : viewModel && (
-        <!-- Flats Grid -->
-        <FlatsListGrid flats={viewModel.flats} client:load />
-      )}
+        ) : (
+          viewModel && <FlatsListGrid flats={viewModel.flats} client:load />
+        )
+      }
     </div>
   </main>
 </Layout>
-

@@ -7,9 +7,11 @@ Successfully created comprehensive unit tests for 3 key UI components following 
 ## Test Coverage
 
 ### 1. FlatCard Component (`src/components/FlatCard.test.tsx`)
+
 **22 tests - All passing ✓**
 
 #### Test Categories:
+
 - **Rendering (2 tests)**
   - Renders flat name and address
   - Renders both action buttons (View Details, Payments)
@@ -47,6 +49,7 @@ Successfully created comprehensive unit tests for 3 key UI components following 
   - Descriptive button text
 
 #### Key Business Rules Tested:
+
 - **Debt Threshold**: Any debt > 0 is "Outstanding", exactly 0 is "Paid"
 - **Currency Format**: Polish locale (pl-PL) with PLN currency, comma decimal separator, non-breaking space before "zł"
 - **Navigation**: Correct URL construction for flat details and payments pages
@@ -54,9 +57,11 @@ Successfully created comprehensive unit tests for 3 key UI components following 
 ---
 
 ### 2. FilterBar Component (`src/components/FilterBar.test.tsx`)
+
 **34 tests - 26 passing, 8 skipped ✓**
 
 #### Test Categories:
+
 - **Rendering (4 tests)**
   - Renders search input with placeholder
   - Renders filter status select
@@ -102,20 +107,24 @@ Successfully created comprehensive unit tests for 3 key UI components following 
   - Handles whitespace-only search query
 
 #### Key Business Rules Tested:
+
 - **Filter Options**: "all" | "debt" | "paid"
 - **Sort Options**: "name" | "debt-desc" | "debt-asc" | "date-desc" | "date-asc"
 - **User Input**: Real-time onChange callbacks for every keystroke
 - **Accessibility**: Proper ARIA labels for screen readers
 
 #### Note on Skipped Tests:
+
 8 tests are skipped due to known limitations with Radix UI Select component in jsdom (hasPointerCapture not supported). These user interactions are covered in E2E tests with Playwright which use a real browser.
 
 ---
 
 ### 3. DashboardStats Component (`src/components/DashboardStats.test.tsx`)
+
 **34 tests - All passing ✓**
 
 #### Test Categories:
+
 - **Rendering (3 tests)**
   - Renders all four stat cards
   - Renders stat descriptions
@@ -169,13 +178,14 @@ Successfully created comprehensive unit tests for 3 key UI components following 
   - Always shows two decimal places
 
 #### Key Business Rules Tested:
+
 - **Total Flats**: Simple count of all flats
 - **Total Debt**: Sum of all flat debts (reduced)
 - **With Debt**: Count where `debt > 0`
 - **Paid Up**: Count where `debt === 0`
 - **Invariant**: flatsWithDebt + flatsPaidUp === totalFlats
 - **Currency Format**: Polish locale (pl-PL), PLN currency, 2 decimal places, non-breaking space before "zł"
-- **Conditional Styling**: 
+- **Conditional Styling**:
   - Destructive (red) for debt > 0
   - Green for paid up/zero debt
   - Muted for neutral states
@@ -185,11 +195,13 @@ Successfully created comprehensive unit tests for 3 key UI components following 
 ## Testing Approach
 
 ### Technologies Used
+
 - **Vitest**: Test runner and assertion library
 - **React Testing Library**: Component testing utilities
 - **@testing-library/user-event**: User interaction simulation
 
 ### Best Practices Applied
+
 1. **Arrange-Act-Assert Pattern**: Clear test structure
 2. **Descriptive Test Names**: Tests read like specifications
 3. **Edge Case Coverage**: Zero, negative, very large, very small values
@@ -199,12 +211,15 @@ Successfully created comprehensive unit tests for 3 key UI components following 
 7. **Regex Patterns**: Flexible matchers for currency formats (handles non-breaking spaces)
 
 ### Known Limitations
+
 - **Radix UI Select Tests**: 8 tests skipped due to jsdom limitations with pointer capture
   - These interactions are covered in E2E tests with Playwright
   - Tests verify component renders correctly and props work as expected
 
 ### Currency Format Handling
+
 Special attention to Polish currency formatting:
+
 - Uses `Intl.NumberFormat("pl-PL")` with PLN currency
 - Adds non-breaking space (U+00A0) before "zł"
 - Uses space as thousands separator for large numbers
@@ -216,11 +231,13 @@ Special attention to Polish currency formatting:
 ## Test Execution
 
 ### Run All UI Component Tests
+
 ```bash
 npm run test -- src/components/FlatCard.test.tsx src/components/FilterBar.test.tsx src/components/DashboardStats.test.tsx
 ```
 
 ### Results
+
 ```
 ✓ src/components/FlatCard.test.tsx (22 tests) 113ms
 ✓ src/components/DashboardStats.test.tsx (34 tests) 132ms
@@ -238,12 +255,14 @@ Duration    1.08s
 ### From Unit Test Plan - Section 5: UI Components
 
 ✅ **FlatCard**
+
 - Badge display (Outstanding/Paid) with correct colors
 - Navigation to flat details
 - Currency formatting
 - Status-based styling
 
 ✅ **FilterBar**
+
 - Search input with real-time onChange
 - Filter status dropdown (all/debt/paid)
 - Sort options (name, debt, date)
@@ -251,6 +270,7 @@ Duration    1.08s
 - Accessibility (ARIA labels)
 
 ✅ **DashboardStats**
+
 - Aggregate calculations (total, with debt, paid up)
 - Currency formatting
 - Conditional rendering based on debt status
@@ -275,4 +295,3 @@ Duration    1.08s
 3. `src/components/DashboardStats.test.tsx` - 34 tests for DashboardStats component
 
 **Total**: 90 tests (82 passing, 8 intentionally skipped for E2E coverage)
-

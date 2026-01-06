@@ -59,4 +59,3 @@ export const paymentFiltersSchema = z.object({
   year: z.number().int().min(1900).max(2100).optional(),
   is_paid: z.boolean().optional(),
 });
-

@@ -1,13 +1,6 @@
-import { useState } from "react";
+import { useCallback } from "react";
 import { Button } from "./ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import type { PaymentTypeViewModel } from "../types";
 
 interface PaymentTypesSectionProps {
@@ -15,17 +8,14 @@ interface PaymentTypesSectionProps {
   flatId: string;
 }
 
-export default function PaymentTypesSection({
-  paymentTypes,
-  flatId,
-}: PaymentTypesSectionProps) {
-  const handleAddPaymentType = () => {
+export default function PaymentTypesSection({ paymentTypes, flatId }: PaymentTypesSectionProps) {
+  const handleAddPaymentType = useCallback(() => {
     window.location.href = `/flats/${flatId}/payment-types/new`;
-  };
+  }, [flatId]);
 
-  const handleEditPaymentType = (paymentTypeId: string) => {
+  const handleEditPaymentType = useCallback((paymentTypeId: string) => {
     window.location.href = `/payment-types/${paymentTypeId}/edit`;
-  };
+  }, []);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("pl-PL", {
@@ -46,12 +36,7 @@ export default function PaymentTypesSection({
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           Add Payment Type
         </Button>
@@ -59,9 +44,7 @@ export default function PaymentTypesSection({
 
       {paymentTypes.length === 0 ? (
         <div className="bg-card text-card-foreground rounded-lg border p-8 text-center">
-          <p className="text-muted-foreground mb-4">
-            No payment types defined. Add your first payment type to start.
-          </p>
+          <p className="text-muted-foreground mb-4">No payment types defined. Add your first payment type to start.</p>
           <Button onClick={handleAddPaymentType}>Add Payment Type</Button>
         </div>
       ) : (
@@ -77,16 +60,10 @@ export default function PaymentTypesSection({
             <TableBody>
               {paymentTypes.map((paymentType) => (
                 <TableRow key={paymentType.id}>
-                  <TableCell className="font-medium">
-                    {paymentType.name}
-                  </TableCell>
+                  <TableCell className="font-medium">{paymentType.name}</TableCell>
                   <TableCell>{formatCurrency(paymentType.baseAmount)}</TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEditPaymentType(paymentType.id)}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => handleEditPaymentType(paymentType.id)}>
                       <svg
                         className="w-4 h-4"
                         fill="none"
@@ -113,4 +90,3 @@ export default function PaymentTypesSection({
     </section>
   );
 }
-

@@ -25,11 +25,13 @@ This document contains implementation details for all API endpoints. All endpoin
 **Auth Required:** Yes
 
 ## Request
+
 ```
 GET /api/dashboard
 ```
 
 ## Response (200 OK)
+
 ```json
 {
   "flats": [
@@ -38,7 +40,7 @@ GET /api/dashboard
       "user_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
       "name": "Mokotów 2",
       "address": "ul. Puławska 2",
-      "debt": 0.00,
+      "debt": 0.0,
       "created_at": "2024-01-16T11:00:00Z",
       "updated_at": "2024-01-16T11:00:00Z"
     },
@@ -47,7 +49,7 @@ GET /api/dashboard
       "user_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
       "name": "Żoliborz 1",
       "address": "ul. Słowackiego 1",
-      "debt": 1200.00,
+      "debt": 1200.0,
       "created_at": "2024-01-15T10:30:00Z",
       "updated_at": "2024-01-15T10:30:00Z"
     }
@@ -113,6 +115,7 @@ export const GET: APIRoute = async ({ locals }) => {
 ```
 
 **Key Features:**
+
 - Uses Supabase authentication via `locals.supabase`
 - Retrieves flats with calculated debt using `FlatsService.getFlatsWithDebt()`
 - Debt is calculated by summing unpaid payments across payment types
@@ -127,11 +130,13 @@ export const GET: APIRoute = async ({ locals }) => {
 **Auth Required:** Yes
 
 ## Request
+
 ```
 GET /api/flats
 ```
 
 ## Response (200 OK)
+
 ```json
 {
   "flats": [
@@ -290,6 +295,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 ```
 
 **Key Features:**
+
 - GET: Fetches all flats for authenticated user via `FlatsService.getAllFlats()`
 - POST: Creates new flat with Zod validation
 - Uses Supabase for data persistence
@@ -303,11 +309,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
 **Auth Required:** Yes
 
 ## Request
+
 ```
 GET /api/flats/550e8400-e29b-41d4-a716-446655440000
 ```
 
 ## Response (200 OK)
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -320,6 +328,7 @@ GET /api/flats/550e8400-e29b-41d4-a716-446655440000
 ```
 
 ## Response (404 Not Found)
+
 ```json
 {
   "error": "Flat not found"
@@ -545,6 +554,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
 ```
 
 **Key Features:**
+
 - GET: Retrieves single flat by ID via `FlatsService.getFlatById()`
 - PUT: Updates flat with Zod validation
 - DELETE: Deletes flat and returns success message
@@ -577,11 +587,13 @@ See implementation in [GET /api/flats/:id](#3-get-apiflatsid)
 **Auth Required:** Yes
 
 ## Request
+
 ```
 GET /api/flats/550e8400-e29b-41d4-a716-446655440000/payment-types
 ```
 
 ## Response (200 OK)
+
 ```json
 {
   "payment_types": [
@@ -589,7 +601,7 @@ GET /api/flats/550e8400-e29b-41d4-a716-446655440000/payment-types
       "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
       "flat_id": "550e8400-e29b-41d4-a716-446655440000",
       "name": "Czynsz",
-      "base_amount": 1000.00,
+      "base_amount": 1000.0,
       "created_at": "2024-01-15T10:30:00Z",
       "updated_at": "2024-01-15T10:30:00Z"
     },
@@ -597,7 +609,7 @@ GET /api/flats/550e8400-e29b-41d4-a716-446655440000/payment-types
       "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
       "flat_id": "550e8400-e29b-41d4-a716-446655440000",
       "name": "Administracja",
-      "base_amount": 200.00,
+      "base_amount": 200.0,
       "created_at": "2024-01-15T10:35:00Z",
       "updated_at": "2024-01-15T10:35:00Z"
     }
@@ -774,6 +786,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 ```
 
 **Key Features:**
+
 - GET: Retrieves all payment types for a specific flat
 - POST: Creates new payment type with Zod validation (name and base_amount)
 - Verifies flat ownership before operations
@@ -793,6 +806,7 @@ See implementation in [GET /api/flats/:flatId/payment-types](#7-get-apiflatsflat
 **Auth Required:** Yes
 
 ## Request
+
 ```
 PUT /api/payment-types/6ba7b810-9dad-11d1-80b4-00c04fd430c8
 Content-Type: application/json
@@ -804,12 +818,13 @@ Content-Type: application/json
 ```
 
 ## Response (200 OK)
+
 ```json
 {
   "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
   "flat_id": "550e8400-e29b-41d4-a716-446655440000",
   "name": "Czynsz Updated",
-  "base_amount": 1100.00,
+  "base_amount": 1100.0,
   "created_at": "2024-01-15T10:30:00Z",
   "updated_at": "2024-01-15T12:00:00Z"
 }
@@ -927,6 +942,7 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
 ```
 
 **Key Features:**
+
 - Updates payment type with Zod validation
 - Verifies user owns the flat associated with the payment type
 - Returns 404 if payment type not found or not owned by user
@@ -939,6 +955,7 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
 **Auth Required:** Yes
 
 ## Request
+
 ```
 GET /api/flats/550e8400-e29b-41d4-a716-446655440000/payments
 GET /api/flats/550e8400-e29b-41d4-a716-446655440000/payments?month=3&year=2024
@@ -946,11 +963,13 @@ GET /api/flats/550e8400-e29b-41d4-a716-446655440000/payments?is_paid=true
 ```
 
 ## Query Parameters
+
 - `month` (optional): Filter by month (1-12)
 - `year` (optional): Filter by year
 - `is_paid` (optional): Filter by payment status (default: false)
 
 ## Response (200 OK)
+
 ```json
 {
   "payments": [
@@ -958,7 +977,7 @@ GET /api/flats/550e8400-e29b-41d4-a716-446655440000/payments?is_paid=true
       "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
       "payment_type_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
       "payment_type_name": "Czynsz",
-      "amount": 1000.00,
+      "amount": 1000.0,
       "month": 3,
       "year": 2024,
       "is_paid": false,
@@ -970,7 +989,7 @@ GET /api/flats/550e8400-e29b-41d4-a716-446655440000/payments?is_paid=true
       "id": "b2c3d4e5-f6g7-8901-bcde-f12345678901",
       "payment_type_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
       "payment_type_name": "Administracja",
-      "amount": 200.00,
+      "amount": 200.0,
       "month": 3,
       "year": 2024,
       "is_paid": false,
@@ -1103,6 +1122,7 @@ export const GET: APIRoute = async ({ params, url, locals }) => {
 ```
 
 **Key Features:**
+
 - Retrieves payments for a specific flat with optional filters
 - Query parameters validated with Zod (month, year, is_paid)
 - Default behavior: returns unpaid payments only
@@ -1117,6 +1137,7 @@ export const GET: APIRoute = async ({ params, url, locals }) => {
 **Auth Required:** Yes
 
 ## Request
+
 ```
 POST /api/flats/550e8400-e29b-41d4-a716-446655440000/payments/generate
 Content-Type: application/json
@@ -1128,6 +1149,7 @@ Content-Type: application/json
 ```
 
 ## Response (201 Created)
+
 ```json
 {
   "message": "Payments generated successfully",
@@ -1140,7 +1162,7 @@ Content-Type: application/json
       "id": "new-payment-id-1",
       "payment_type_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
       "payment_type_name": "Czynsz",
-      "amount": 1000.00,
+      "amount": 1000.0,
       "month": 1,
       "year": 2024,
       "is_paid": false,
@@ -1152,7 +1174,7 @@ Content-Type: application/json
       "id": "new-payment-id-2",
       "payment_type_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
       "payment_type_name": "Administracja",
-      "amount": 200.00,
+      "amount": 200.0,
       "month": 1,
       "year": 2024,
       "is_paid": false,
@@ -1165,6 +1187,7 @@ Content-Type: application/json
 ```
 
 ## Response (400 Bad Request)
+
 ```json
 {
   "error": "No payment types found for this flat. Create payment types first."
@@ -1308,6 +1331,7 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 ```
 
 **Key Features:**
+
 - Generates monthly payments for all payment types in a flat
 - Validates month (1-12) and year (1900-2100) with Zod
 - Creates one payment per payment type for the specified month/year
@@ -1323,16 +1347,18 @@ export const POST: APIRoute = async ({ params, request, locals }) => {
 **Auth Required:** Yes
 
 ## Request
+
 ```
 POST /api/payments/a1b2c3d4-e5f6-7890-abcd-ef1234567890/mark-paid
 ```
 
 ## Response (200 OK)
+
 ```json
 {
   "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "payment_type_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-  "amount": 1000.00,
+  "amount": 1000.0,
   "month": 1,
   "year": 2024,
   "is_paid": true,
@@ -1343,6 +1369,7 @@ POST /api/payments/a1b2c3d4-e5f6-7890-abcd-ef1234567890/mark-paid
 ```
 
 ## Response (400 Bad Request)
+
 ```json
 {
   "error": "Payment is already marked as paid"
@@ -1350,6 +1377,7 @@ POST /api/payments/a1b2c3d4-e5f6-7890-abcd-ef1234567890/mark-paid
 ```
 
 ## Response (404 Not Found)
+
 ```json
 {
   "error": "Payment not found"
@@ -1427,6 +1455,7 @@ export const POST: APIRoute = async ({ params, locals }) => {
 ```
 
 **Key Features:**
+
 - Marks a payment as paid by setting is_paid to true and paid_at to current timestamp
 - Verifies user owns the flat associated with the payment
 - Returns updated payment object
@@ -1438,24 +1467,25 @@ export const POST: APIRoute = async ({ params, locals }) => {
 
 ### All Endpoints Summary
 
-| # | Method | Endpoint | Description |
-|---|--------|----------|-------------|
-| 1 | GET | `/api/dashboard` | Get all flats with debt |
-| 2 | GET | `/api/flats` | List all flats |
-| 3 | GET | `/api/flats/:id` | Get single flat |
-| 4 | POST | `/api/flats` | Create flat |
-| 5 | PUT | `/api/flats/:id` | Update flat |
-| 6 | DELETE | `/api/flats/:id` | Delete flat |
-| 7 | GET | `/api/flats/:flatId/payment-types` | List payment types |
-| 8 | POST | `/api/flats/:flatId/payment-types` | Create payment type |
-| 9 | PUT | `/api/payment-types/:id` | Update payment type |
-| 10 | GET | `/api/flats/:flatId/payments` | List payments (with filters) |
-| 11 | POST | `/api/flats/:flatId/payments/generate` | Generate monthly payments |
-| 12 | POST | `/api/payments/:id/mark-paid` | Mark payment as paid |
+| #   | Method | Endpoint                               | Description                  |
+| --- | ------ | -------------------------------------- | ---------------------------- |
+| 1   | GET    | `/api/dashboard`                       | Get all flats with debt      |
+| 2   | GET    | `/api/flats`                           | List all flats               |
+| 3   | GET    | `/api/flats/:id`                       | Get single flat              |
+| 4   | POST   | `/api/flats`                           | Create flat                  |
+| 5   | PUT    | `/api/flats/:id`                       | Update flat                  |
+| 6   | DELETE | `/api/flats/:id`                       | Delete flat                  |
+| 7   | GET    | `/api/flats/:flatId/payment-types`     | List payment types           |
+| 8   | POST   | `/api/flats/:flatId/payment-types`     | Create payment type          |
+| 9   | PUT    | `/api/payment-types/:id`               | Update payment type          |
+| 10  | GET    | `/api/flats/:flatId/payments`          | List payments (with filters) |
+| 11  | POST   | `/api/flats/:flatId/payments/generate` | Generate monthly payments    |
+| 12  | POST   | `/api/payments/:id/mark-paid`          | Mark payment as paid         |
 
 ### Common Error Responses
 
 **401 Unauthorized**
+
 ```json
 {
   "error": "Unauthorized"
@@ -1463,6 +1493,7 @@ export const POST: APIRoute = async ({ params, locals }) => {
 ```
 
 **404 Not Found**
+
 ```json
 {
   "error": "Resource not found"
@@ -1470,6 +1501,7 @@ export const POST: APIRoute = async ({ params, locals }) => {
 ```
 
 **400 Bad Request**
+
 ```json
 {
   "error": "Validation failed",
@@ -1480,6 +1512,7 @@ export const POST: APIRoute = async ({ params, locals }) => {
 ```
 
 **500 Internal Server Error**
+
 ```json
 {
   "error": "Internal server error"
@@ -1491,35 +1524,42 @@ export const POST: APIRoute = async ({ params, locals }) => {
 ## Implementation Notes
 
 ### Architecture
+
 - All endpoints use **Supabase** for data persistence and authentication
 - Business logic is centralized in **FlatsService** (`src/lib/services/flats.service.ts`)
 - All requests require authentication via Supabase session
 - User ownership is verified on all operations
 
 ### Authentication
+
 - Authentication handled via `locals.supabase` from Astro middleware
 - User session validated using `supabase.auth.getUser()`
 - Returns 401 Unauthorized if no valid session
 
 ### Validation
+
 - Request body validation using **Zod** schemas
 - Field-level error messages returned for validation failures
 - Query parameter validation for GET requests with filters
 
 ### Error Handling
+
 - Comprehensive error handling with try-catch blocks
 - Consistent error response format
 - Console logging for debugging (e.g., `console.error`)
 - HTTP status codes: 200 (OK), 201 (Created), 400 (Bad Request), 401 (Unauthorized), 404 (Not Found), 500 (Internal Server Error)
 
 ### Security
+
 - Row Level Security (RLS) enabled in Supabase
 - User can only access their own flats and related data
 - UUID validation to prevent injection attacks
 - All mutations verify ownership before modification
 
 ### Service Layer
+
 **FlatsService** methods:
+
 - `getFlatsWithDebt(userId)` - Dashboard flats with calculated debt
 - `getAllFlats(userId)` - All user's flats
 - `getFlatById(flatId, userId)` - Single flat by ID
@@ -1534,6 +1574,7 @@ export const POST: APIRoute = async ({ params, locals }) => {
 - `markPaymentAsPaid(paymentId, userId)` - Mark payment as paid
 
 ### Data Flow
+
 1. Request received by Astro API route
 2. Authentication check via Supabase
 3. Request validation with Zod
@@ -1542,8 +1583,7 @@ export const POST: APIRoute = async ({ params, locals }) => {
 6. Response formatting and return
 
 ### TypeScript Types
+
 - All DTOs defined in `src/types.ts`
 - Database types auto-generated from Supabase schema
 - Type safety enforced throughout the application
-
-

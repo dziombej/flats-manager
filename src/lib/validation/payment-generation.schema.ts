@@ -25,4 +25,3 @@ export const paymentGenerationSchema = z.object({
  * Type inferred from the validation schema
  */
 export type PaymentGenerationFormData = z.infer<typeof paymentGenerationSchema>;
-

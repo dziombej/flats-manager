@@ -29,7 +29,9 @@ export default function FlatCard({ flat }: FlatCardProps) {
   return (
     <Card className="hover:shadow-lg transition-shadow" data-test-id={`flat-card-${flat.id}`}>
       <CardHeader>
-        <CardTitle className="text-xl" data-test-id="flat-card-name">{flat.name}</CardTitle>
+        <CardTitle className="text-xl" data-test-id="flat-card-name">
+          {flat.name}
+        </CardTitle>
         <CardDescription data-test-id="flat-card-address">{flat.address}</CardDescription>
       </CardHeader>
 
@@ -37,14 +39,20 @@ export default function FlatCard({ flat }: FlatCardProps) {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Debt Status:</span>
-            <span className={`text-sm font-semibold ${hasDebt ? "text-destructive" : "text-green-600"}`} data-test-id="flat-card-status">
+            <span
+              className={`text-sm font-semibold ${hasDebt ? "text-destructive" : "text-green-600"}`}
+              data-test-id="flat-card-status"
+            >
               {hasDebt ? "Outstanding" : "Paid"}
             </span>
           </div>
 
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Total Debt:</span>
-            <span className={`text-lg font-bold ${hasDebt ? "text-destructive" : "text-green-600"}`} data-test-id="flat-card-total-debt">
+            <span
+              className={`text-lg font-bold ${hasDebt ? "text-destructive" : "text-green-600"}`}
+              data-test-id="flat-card-total-debt"
+            >
               {formatCurrency(flat.debt)}
             </span>
           </div>

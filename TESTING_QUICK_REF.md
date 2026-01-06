@@ -9,7 +9,7 @@ npm run test:run           # Run once
 npm run test:ui            # Visual UI
 npm run test:coverage      # With coverage
 
-# E2E Tests  
+# E2E Tests
 npm run test:e2e           # Run all e2e tests
 npm run test:e2e:ui        # Playwright UI mode
 npm run test:e2e:debug     # Debug mode
@@ -38,11 +38,11 @@ describe('ComponentName', () => {
   it('does something', async () => {
     // Arrange
     const user = userEvent.setup();
-    
+
     // Act
     render(<Component />);
     await user.click(screen.getByRole('button'));
-    
+
     // Assert
     expect(screen.getByText('Result')).toBeInTheDocument();
   });
@@ -52,17 +52,17 @@ describe('ComponentName', () => {
 ## 🎭 E2E Test Template
 
 ```typescript
-import { test, expect } from './fixtures/test';
-import { PageObject } from './pages/page.page';
+import { test, expect } from "./fixtures/test";
+import { PageObject } from "./pages/page.page";
 
-test.describe('Feature Name', () => {
-  test('does something', async ({ page }) => {
+test.describe("Feature Name", () => {
+  test("does something", async ({ page }) => {
     const pageObject = new PageObject(page);
-    
+
     await pageObject.goto();
     await pageObject.doAction();
-    
-    await expect(page).toHaveURL('/expected');
+
+    await expect(page).toHaveURL("/expected");
   });
 });
 ```
@@ -97,41 +97,41 @@ findBy...   // Async, waits for element
 
 ```typescript
 // Vitest
-expect(value).toBe(expected)
-expect(value).toEqual(expected)
-expect(array).toHaveLength(3)
-expect(fn).toHaveBeenCalledWith('arg')
-expect(fn).toHaveBeenCalledOnce()
+expect(value).toBe(expected);
+expect(value).toEqual(expected);
+expect(array).toHaveLength(3);
+expect(fn).toHaveBeenCalledWith("arg");
+expect(fn).toHaveBeenCalledOnce();
 
 // Testing Library
-expect(element).toBeInTheDocument()
-expect(element).toBeVisible()
-expect(element).toHaveClass('btn')
-expect(element).toHaveAttribute('href', '/path')
-expect(element).toHaveTextContent('text')
+expect(element).toBeInTheDocument();
+expect(element).toBeVisible();
+expect(element).toHaveClass("btn");
+expect(element).toHaveAttribute("href", "/path");
+expect(element).toHaveTextContent("text");
 
 // Playwright
-await expect(page).toHaveURL('/path')
-await expect(locator).toBeVisible()
-await expect(locator).toHaveText('text')
-await expect(locator).toHaveAttribute('href', '/path')
+await expect(page).toHaveURL("/path");
+await expect(locator).toBeVisible();
+await expect(locator).toHaveText("text");
+await expect(locator).toHaveAttribute("href", "/path");
 ```
 
 ## 🎨 Mocking Examples
 
 ```typescript
 // Mock function
-const mockFn = vi.fn()
-mockFn.mockReturnValue('value')
-mockFn.mockResolvedValue('async value')
+const mockFn = vi.fn();
+mockFn.mockReturnValue("value");
+mockFn.mockResolvedValue("async value");
 
 // Mock module
-vi.mock('@/lib/api', () => ({
-  fetchData: vi.fn().mockResolvedValue({ data: [] })
-}))
+vi.mock("@/lib/api", () => ({
+  fetchData: vi.fn().mockResolvedValue({ data: [] }),
+}));
 
 // Mock Supabase
-import { createMockSupabaseClient } from '@/test/mocks';
+import { createMockSupabaseClient } from "@/test/mocks";
 const mockSupabase = createMockSupabaseClient();
 ```
 
@@ -169,4 +169,3 @@ open coverage/index.html
 - Page objects: `e2e/pages/`
 - Full guide: `TESTING_GUIDE.md`
 - Setup summary: `TESTING_SETUP_SUMMARY.md`
-

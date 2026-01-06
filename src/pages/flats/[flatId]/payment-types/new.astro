@@ -38,8 +38,7 @@ try {
   }
 
   flat = await flatResponse.json();
-} catch (error) {
-  console.error("Error fetching flat:", error);
+} catch {
   return Astro.redirect("/dashboard?error=fetch_failed");
 }
 ---
@@ -51,15 +50,11 @@ try {
       <nav class="mb-6 text-sm text-muted-foreground" aria-label="Breadcrumb">
         <ol class="flex items-center space-x-2">
           <li>
-            <a href="/dashboard" class="hover:text-foreground transition-colors">
-              Dashboard
-            </a>
+            <a href="/dashboard" class="hover:text-foreground transition-colors"> Dashboard </a>
           </li>
           <li aria-hidden="true">/</li>
           <li>
-            <a href="/flats" class="hover:text-foreground transition-colors">
-              Flats
-            </a>
+            <a href="/flats" class="hover:text-foreground transition-colors"> Flats </a>
           </li>
           <li aria-hidden="true">/</li>
           <li>
@@ -68,9 +63,7 @@ try {
             </a>
           </li>
           <li aria-hidden="true">/</li>
-          <li aria-current="page" class="text-foreground font-medium">
-            New Payment Type
-          </li>
+          <li aria-current="page" class="text-foreground font-medium">New Payment Type</li>
         </ol>
       </nav>
 
@@ -83,12 +76,7 @@ try {
       </div>
 
       <!-- Payment Type Form -->
-      <PaymentTypeForm
-        client:load
-        mode="create"
-        flatId={flat.id}
-      />
+      <PaymentTypeForm client:load mode="create" flatId={flat.id} />
     </div>
   </main>
 </Layout>
-

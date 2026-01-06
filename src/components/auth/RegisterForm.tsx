@@ -12,7 +12,9 @@ interface RegisterFormData {
 }
 
 // Client-side validation
-const validateRegisterForm = (data: RegisterFormData): { email?: string; password?: string; confirmPassword?: string } => {
+const validateRegisterForm = (
+  data: RegisterFormData
+): { email?: string; password?: string; confirmPassword?: string } => {
   const errors: { email?: string; password?: string; confirmPassword?: string } = {};
 
   // Email validation
@@ -51,78 +53,80 @@ export default function RegisterForm() {
   const formErrorId = useId();
   const successMessageId = useId();
 
-  const {
-    formData,
-    errors,
-    isSubmitting,
-    isSuccess,
-    updateField,
-    setErrors,
-    setSubmitting,
-    setSuccess,
-    validate,
-  } = useFormState<RegisterFormData>({
-    initialData: {
-      email: '',
-      password: '',
-      confirmPassword: '',
+  const { formData, errors, isSubmitting, isSuccess, updateField, setErrors, setSubmitting, setSuccess, validate } =
+    useFormState<RegisterFormData>({
+      initialData: {
+        email: "",
+        password: "",
+        confirmPassword: "",
+      },
+      validate: validateRegisterForm,
+    });
+
+  const handleEmailChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateField("email", e.target.value);
     },
-    validate: validateRegisterForm,
-  });
+    [updateField]
+  );
 
-  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    updateField('email', e.target.value);
-  }, [updateField]);
+  const handlePasswordChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateField("password", e.target.value);
+    },
+    [updateField]
+  );
 
-  const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    updateField('password', e.target.value);
-  }, [updateField]);
+  const handleConfirmPasswordChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateField("confirmPassword", e.target.value);
+    },
+    [updateField]
+  );
 
-  const handleConfirmPasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    updateField('confirmPassword', e.target.value);
-  }, [updateField]);
+  const handleSubmit = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-  const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    // Client-side validation
-    if (!validate()) {
-      return;
-    }
-
-    setSubmitting(true);
-
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setErrors({ form: data.error || 'Registration failed. Please try again.' });
+      // Client-side validation
+      if (!validate()) {
         return;
       }
 
-      // On success: Show success message, then redirect to login
-      setSuccess(true);
+      setSubmitting(true);
 
-      // Redirect to login page after 2 seconds
-      setTimeout(() => {
-        window.location.href = '/auth/login';
-      }, 2000);
-    } catch (error) {
-      console.error('Registration error:', error);
-      setErrors({ form: 'An error occurred. Please try again.' });
-    } finally {
-      setSubmitting(false);
-    }
-  }, [formData.email, formData.password, validate, setSubmitting, setSuccess, setErrors]);
+      try {
+        const response = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setErrors({ form: data.error || "Registration failed. Please try again." });
+          return;
+        }
+
+        // On success: Show success message, then redirect to login
+        setSuccess(true);
+
+        // Redirect to login page after 2 seconds
+        setTimeout(() => {
+          window.location.href = "/auth/login";
+        }, 2000);
+      } catch {
+        setErrors({ form: "An error occurred. Please try again." });
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [formData.email, formData.password, validate, setSubmitting, setSuccess, setErrors]
+  );
 
   // Success message
   if (isSuccess) {
@@ -136,9 +140,7 @@ export default function RegisterForm() {
           <CheckCircle2 className="h-12 w-12 text-primary" />
           <div>
             <h3 className="font-semibold text-lg mb-1">Account created successfully!</h3>
-            <p className="text-sm text-muted-foreground">
-              Redirecting to login page...
-            </p>
+            <p className="text-sm text-muted-foreground">Redirecting to login page...</p>
           </div>
         </div>
       </div>
@@ -204,9 +206,7 @@ export default function RegisterForm() {
             {errors.password}
           </p>
         )}
-        <p className="text-xs text-muted-foreground">
-          Minimum 8 characters
-        </p>
+        <p className="text-xs text-muted-foreground">Minimum 8 characters</p>
       </div>
 
       {/* Confirm Password field */}
@@ -234,21 +234,16 @@ export default function RegisterForm() {
       </div>
 
       {/* Submit button */}
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={isSubmitting}
-      >
+      <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? (
           <>
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             Creating account...
           </>
         ) : (
-          'Create account'
+          "Create account"
         )}
       </Button>
     </form>
   );
 }
-

@@ -100,6 +100,7 @@ Layout.astro
 ## State Management
 
 ### Initial Load
+
 ```
 1. Component mounts
 2. useEffect triggers fetchDashboardData()
@@ -113,24 +114,28 @@ Layout.astro
 ### User Interactions
 
 #### Search
+
 ```
 User types → onSearchChange(query) → setSearchQuery(query)
   → useMemo recalculates → filtered list updates → re-render
 ```
 
 #### Filter by Status
+
 ```
 User selects → onFilterStatusChange(status) → setFilterStatus(status)
   → useMemo recalculates → filtered list updates → re-render
 ```
 
 #### Sort
+
 ```
 User selects → onSortByChange(sort) → setSortBy(sort)
   → useMemo recalculates → sorted list updates → re-render
 ```
 
 #### Navigate to Details
+
 ```
 User clicks "View Details" → handleViewDetails()
   → window.location.href = `/flats/${flat.id}`
@@ -214,4 +219,3 @@ Interactive Elements:
 - Secondary        → Outline (variant="outline")
 - Hover States     → Opacity/color transition
 ```
-

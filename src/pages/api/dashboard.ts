@@ -44,9 +44,8 @@ export const GET: APIRoute = async ({ locals }) => {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
-  } catch (error) {
+  } catch {
     // Handle unexpected errors
-    console.error("Error in GET /api/dashboard:", error);
 
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,

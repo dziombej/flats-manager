@@ -11,7 +11,7 @@ export const prerender = false;
 // Redirect authenticated users to dashboard
 const user = Astro.locals.user;
 if (user) {
-  return Astro.redirect('/dashboard');
+  return Astro.redirect("/dashboard");
 }
 ---
 
@@ -39,9 +39,7 @@ if (user) {
             </svg>
           </div>
           <h1 class="text-2xl font-bold mb-2">Create an account</h1>
-          <p class="text-muted-foreground">
-            Get started with managing your flats
-          </p>
+          <p class="text-muted-foreground">Get started with managing your flats</p>
         </div>
 
         <!-- Registration Form -->
@@ -51,20 +49,15 @@ if (user) {
         <div class="mt-6 text-center text-sm">
           <p class="text-muted-foreground">
             Already have an account?{" "}
-            <a href="/auth/login" class="text-primary hover:underline font-medium">
-              Sign in
-            </a>
+            <a href="/auth/login" class="text-primary hover:underline font-medium"> Sign in </a>
           </p>
         </div>
       </div>
 
       <!-- Back to home link -->
       <div class="mt-4 text-center">
-        <a href="/" class="text-sm text-muted-foreground hover:text-primary transition-colors">
-          ← Back to home
-        </a>
+        <a href="/" class="text-sm text-muted-foreground hover:text-primary transition-colors"> ← Back to home </a>
       </div>
     </div>
   </main>
 </Layout>
-

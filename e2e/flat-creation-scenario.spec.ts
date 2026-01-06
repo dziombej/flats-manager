@@ -1,10 +1,5 @@
-import { test, expect } from './fixtures/test';
-import {
-  HeaderNavigationPage,
-  FlatFormPage,
-  FlatDetailPage,
-  DashboardPage,
-} from './page-objects';
+import { test, expect } from "./fixtures/test";
+import { HeaderNavigationPage, FlatFormPage, FlatDetailPage, DashboardPage } from "./page-objects";
 
 /**
  * E2E Test: Create Flat - Complete User Scenario
@@ -19,11 +14,13 @@ import {
  * 7. Click dashboard
  * 8. Verify flat card exists with status "Paid" and total debt "0.00 zł"
  */
-test.describe('Create Flat - Complete Scenario', () => {
-  test('should complete full flat creation flow from dashboard to verification', async ({ authenticatedPage: page }) => {
+test.describe("Create Flat - Complete Scenario", () => {
+  test("should complete full flat creation flow from dashboard to verification", async ({
+    authenticatedPage: page,
+  }) => {
     // Test data
-    const testFlatName = 'NazwaTest';
-    const testFlatAddress = 'TestowyAdres 54';
+    const testFlatName = "NazwaTest";
+    const testFlatAddress = "TestowyAdres 54";
 
     // Initialize Page Objects
     const headerNav = new HeaderNavigationPage(page);
@@ -43,7 +40,7 @@ test.describe('Create Flat - Complete Scenario', () => {
     });
 
     // Step 3 & 4: Fill in the form
-    await test.step('Fill flat creation form', async () => {
+    await test.step("Fill flat creation form", async () => {
       await expect(flatForm.form).toBeVisible();
 
       // Enter name
@@ -56,7 +53,7 @@ test.describe('Create Flat - Complete Scenario', () => {
     });
 
     // Step 5: Click "Create Flat"
-    await test.step('Submit the form', async () => {
+    await test.step("Submit the form", async () => {
       await expect(flatForm.submitButton).toBeEnabled();
       await flatForm.submit();
 
@@ -65,7 +62,7 @@ test.describe('Create Flat - Complete Scenario', () => {
     });
 
     // Step 6: Verify on flat detail page
-    await test.step('Verify flat detail page', async () => {
+    await test.step("Verify flat detail page", async () => {
       // Check URL is flat detail page
       expect(page.url()).toMatch(/\/flats\/[a-f0-9-]+$/);
 
@@ -92,7 +89,7 @@ test.describe('Create Flat - Complete Scenario', () => {
     });
 
     // Step 7: Click dashboard
-    await test.step('Navigate back to dashboard', async () => {
+    await test.step("Navigate back to dashboard", async () => {
       await headerNav.goToDashboard();
       await expect(page).toHaveURL(/\/dashboard/);
 
@@ -101,7 +98,7 @@ test.describe('Create Flat - Complete Scenario', () => {
     });
 
     // Step 8: Verify flat card on dashboard
-    await test.step('Verify flat card on dashboard', async () => {
+    await test.step("Verify flat card on dashboard", async () => {
       // Find the flat card by name
       const flatId = await dashboard.findFlatCardIdByName(testFlatName);
 
@@ -127,7 +124,7 @@ test.describe('Create Flat - Complete Scenario', () => {
         // Verify status is "Paid"
         const cardStatus = dashboard.getFlatCardStatus(flatId);
         await expect(cardStatus).toBeVisible();
-        await expect(cardStatus).toHaveText('Paid');
+        await expect(cardStatus).toHaveText("Paid");
 
         // Verify total debt is "0,00 zł" or "0.00 zł"
         const cardDebt = dashboard.getFlatCardTotalDebt(flatId);
@@ -138,4 +135,3 @@ test.describe('Create Flat - Complete Scenario', () => {
     });
   });
 });
-

@@ -24,17 +24,20 @@ e2e/page-objects/
 Enkapsuluje interakcje z głównym nagłówkiem nawigacyjnym.
 
 **Locatory:**
+
 - `addFlatButton` - Przycisk "+ Add Flat"
 - `dashboardLink` - Link do dashboardu
 - `allFlatsLink` - Link do listy wszystkich mieszkań
 
 **Metody:**
+
 - `goToAddFlat()` - Przejdź do formularza tworzenia mieszkania
 - `goToDashboard()` - Przejdź do dashboardu
 - `goToAllFlats()` - Przejdź do listy mieszkań
 - `isAddFlatButtonVisible()` - Sprawdź widoczność przycisku Add Flat
 
 **Przykład użycia:**
+
 ```typescript
 const headerNav = new HeaderNavigationPage(page);
 await headerNav.goToAddFlat();
@@ -47,6 +50,7 @@ await headerNav.goToAddFlat();
 Enkapsuluje interakcje z formularzem tworzenia/edycji mieszkania.
 
 **Locatory:**
+
 - `form` - Element formularza
 - `nameInput` - Pole Name
 - `addressInput` - Pole Address
@@ -56,6 +60,7 @@ Enkapsuluje interakcje z formularzem tworzenia/edycji mieszkania.
 - `successMessage` - Komunikat sukcesu
 
 **Metody:**
+
 - `gotoCreate()` - Przejdź do strony tworzenia
 - `gotoEdit(flatId)` - Przejdź do strony edycji
 - `fillForm(name, address)` - Wypełnij formularz
@@ -71,10 +76,11 @@ Enkapsuluje interakcje z formularzem tworzenia/edycji mieszkania.
 - `waitForRedirect(url)` - Poczekaj na przekierowanie
 
 **Przykład użycia:**
+
 ```typescript
 const flatForm = new FlatFormPage(page);
 await flatForm.gotoCreate();
-await flatForm.createFlat('Mieszkanie 1', 'ul. Testowa 1');
+await flatForm.createFlat("Mieszkanie 1", "ul. Testowa 1");
 ```
 
 ### 3. FlatDetailPage
@@ -84,6 +90,7 @@ await flatForm.createFlat('Mieszkanie 1', 'ul. Testowa 1');
 Enkapsuluje interakcje ze stroną szczegółów mieszkania.
 
 **Locatory:**
+
 - `header` - Nagłówek strony
 - `name` - Nazwa mieszkania
 - `address` - Adres mieszkania
@@ -96,6 +103,7 @@ Enkapsuluje interakcje ze stroną szczegółów mieszkania.
 - `deleteConfirmButton`, `deleteCancelButton` - Przyciski w dialogu
 
 **Metody:**
+
 - `goto(flatId)` - Przejdź do strony szczegółów
 - `getName()`, `getAddress()` - Pobierz nazwę/adres
 - `getTotalDebt()` - Pobierz całkowite zadłużenie
@@ -110,10 +118,11 @@ Enkapsuluje interakcje ze stroną szczegółów mieszkania.
 - `verifyFlatDetails(name, address)` - Zweryfikuj szczegóły mieszkania
 
 **Przykład użycia:**
+
 ```typescript
 const flatDetail = new FlatDetailPage(page);
 await flatDetail.goto(flatId);
-await expect(flatDetail.name).toHaveText('Mieszkanie 1');
+await expect(flatDetail.name).toHaveText("Mieszkanie 1");
 await flatDetail.clickEdit();
 ```
 
@@ -124,6 +133,7 @@ await flatDetail.clickEdit();
 Enkapsuluje interakcje z dashboardem.
 
 **Locatory (dynamiczne):**
+
 - `getFlatCard(flatId)` - Karta mieszkania
 - `getFlatCardName(flatId)` - Nazwa na karcie
 - `getFlatCardAddress(flatId)` - Adres na karcie
@@ -132,6 +142,7 @@ Enkapsuluje interakcje z dashboardem.
 - `getAllFlatCards()` - Wszystkie karty
 
 **Metody:**
+
 - `goto()` - Przejdź do dashboardu
 - `getFlatCard(flatId)` - Pobierz locator karty mieszkania
 - `hasFlatCard(flatId)` - Sprawdź czy karta istnieje
@@ -146,11 +157,12 @@ Enkapsuluje interakcje z dashboardem.
 - `findFlatCardIdByName(name)` - Znajdź ID karty po nazwie
 
 **Przykład użycia:**
+
 ```typescript
 const dashboard = new DashboardPage(page);
 await dashboard.goto();
-const flatId = await dashboard.findFlatCardIdByName('Mieszkanie 1');
-await expect(dashboard.getFlatCardStatus(flatId!)).toHaveText('Paid');
+const flatId = await dashboard.findFlatCardIdByName("Mieszkanie 1");
+await expect(dashboard.getFlatCardStatus(flatId!)).toHaveText("Paid");
 ```
 
 ## Wzorce użycia
@@ -160,11 +172,11 @@ await expect(dashboard.getFlatCardStatus(flatId!)).toHaveText('Paid');
 Wszystkie testy powinny stosować wzorzec AAA:
 
 ```typescript
-test('should create flat', async ({ page }) => {
+test("should create flat", async ({ page }) => {
   // Arrange - Przygotuj obiekty POM i dane testowe
   const flatForm = new FlatFormPage(page);
-  const testName = 'Test Flat';
-  const testAddress = 'Test Address';
+  const testName = "Test Flat";
+  const testAddress = "Test Address";
 
   // Act - Wykonaj akcje
   await flatForm.gotoCreate();
@@ -180,7 +192,7 @@ test('should create flat', async ({ page }) => {
 Łącz różne obiekty POM w jednym teście:
 
 ```typescript
-test('complete flow', async ({ page }) => {
+test("complete flow", async ({ page }) => {
   const headerNav = new HeaderNavigationPage(page);
   const flatForm = new FlatFormPage(page);
   const flatDetail = new FlatDetailPage(page);
@@ -188,10 +200,10 @@ test('complete flow', async ({ page }) => {
 
   await dashboard.goto();
   await headerNav.goToAddFlat();
-  await flatForm.createFlat('Name', 'Address');
+  await flatForm.createFlat("Name", "Address");
   await headerNav.goToDashboard();
-  
-  const flatId = await dashboard.findFlatCardIdByName('Name');
+
+  const flatId = await dashboard.findFlatCardIdByName("Name");
   await dashboard.clickFlatCard(flatId!);
 });
 ```
@@ -202,13 +214,13 @@ POM zawierają metody pomocnicze do weryfikacji:
 
 ```typescript
 // Zamiast:
-const name = await page.getByTestId('flat-detail-name').textContent();
-const address = await page.getByTestId('flat-detail-address').textContent();
-expect(name).toBe('Expected Name');
-expect(address).toBe('Expected Address');
+const name = await page.getByTestId("flat-detail-name").textContent();
+const address = await page.getByTestId("flat-detail-address").textContent();
+expect(name).toBe("Expected Name");
+expect(address).toBe("Expected Address");
 
 // Użyj:
-await flatDetail.verifyFlatDetails('Expected Name', 'Expected Address');
+await flatDetail.verifyFlatDetails("Expected Name", "Expected Address");
 ```
 
 ## Konwencje
@@ -229,11 +241,11 @@ Preferuj `data-testid` dla stabilności:
 
 ```typescript
 // ✅ Dobre - stabilne
-this.nameInput = page.getByTestId('flat-name-input');
+this.nameInput = page.getByTestId("flat-name-input");
 
 // ❌ Unikaj - niestabilne
 this.nameInput = page.locator('input[name="name"]');
-this.nameInput = page.locator('.form-input:nth-child(1)');
+this.nameInput = page.locator(".form-input:nth-child(1)");
 ```
 
 ### Metody
@@ -258,21 +270,16 @@ async createFlat(name: string, address: string) {
 ### Importowanie z barrel export
 
 ```typescript
-import {
-  HeaderNavigationPage,
-  FlatFormPage,
-  FlatDetailPage,
-  DashboardPage,
-} from './page-objects';
+import { HeaderNavigationPage, FlatFormPage, FlatDetailPage, DashboardPage } from "./page-objects";
 ```
 
 ### Inicjalizacja w testach
 
 ```typescript
-test('my test', async ({ page }) => {
+test("my test", async ({ page }) => {
   const dashboard = new DashboardPage(page);
   const flatForm = new FlatFormPage(page);
-  
+
   // Użyj obiektów POM
   await dashboard.goto();
   await flatForm.gotoCreate();
@@ -306,4 +313,3 @@ Gdy dodajesz nowe komponenty:
 3. Dodaj export do `index.ts`
 4. Użyj `data-testid` w komponentach
 5. Stwórz testy używające nowego POM
-

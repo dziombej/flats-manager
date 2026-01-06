@@ -7,6 +7,7 @@ Simple authentication using Supabase Auth with **user registration support**. Us
 **Tech**: Astro 5, React 19, TypeScript, Supabase Auth, Zustand
 
 **MVP Scope:**
+
 - ✅ User Registration (email + password, min 8 chars)
 - ✅ Login/Logout with session management
 - ✅ Row Level Security (RLS) for data isolation
@@ -25,14 +26,17 @@ Server (Astro) → Layout → window.__AUTH_USER__ → Client Auth Store
 ## Pages to Create
 
 ### `/src/pages/auth/login.astro`
+
 - Contains `LoginForm` component
 - Redirect if authenticated
 
 ### `/src/pages/auth/register.astro`
-- Contains `RegisterForm` component  
+
+- Contains `RegisterForm` component
 - Redirect if authenticated
 
 ### `/src/pages/index.astro` (MODIFY)
+
 - Show landing page if unauthenticated
   - App description
   - Login button → `/auth/login`
@@ -44,6 +48,7 @@ Server (Astro) → Layout → window.__AUTH_USER__ → Client Auth Store
 ## Components to Create
 
 ### `/src/lib/stores/auth.store.ts`
+
 Zustand store for client-side auth state.
 
 ```typescript
@@ -58,20 +63,23 @@ interface AuthState {
 Initialize from `window.__AUTH_USER__`
 
 **Logout Behavior:**
+
 - Call `/api/auth/logout`
 - Clear user from store (setUser(null))
 - Redirect to `/auth/login` (PRD REQ-AUTH-002, US-002)
 - Clear all client state
 
 ### `/src/components/auth/LoginForm.tsx`
+
 - Email + Password fields (password hidden with type="password")
 - POST to `/api/auth/login`
-- On success: 
+- On success:
   - Update auth store with user data
   - Redirect to `/dashboard` (PRD REQ-AUTH-001, US-001)
 - On error: Display "Invalid email or password"
 
 ### `/src/components/auth/RegisterForm.tsx`
+
 - Email + Password + Confirm Password
 - Validation (PRD REQ-AUTH-006):
   - Email must be valid format and unique
@@ -82,6 +90,7 @@ Initialize from `window.__AUTH_USER__`
 - On error: Display user-friendly message (e.g., "Email already exists")
 
 ### `/src/components/auth/UserMenu.tsx`
+
 - Show user email
 - Logout button (must be visible in all application views - PRD US-002)
 - On logout click: Call auth store logout function
@@ -92,6 +101,7 @@ Initialize from `window.__AUTH_USER__`
 ## API Endpoints to Create
 
 ### `/src/pages/api/auth/register.ts`
+
 ```typescript
 POST /api/auth/register
 Body: { email, password }
@@ -102,12 +112,14 @@ Error: { error: string } (400 for validation, 409 for duplicate email)
 Use `supabase.auth.signUp()`
 
 **Validation:**
+
 - Email must be valid format
 - Password minimum 8 characters
 - Return user-friendly error for duplicate email
 - New users start with 0 apartments
 
 ### `/src/pages/api/auth/login.ts`
+
 ```typescript
 POST /api/auth/login
 Body: { email, password }
@@ -118,19 +130,24 @@ Error: { error: string } (401 for invalid credentials)
 Use `supabase.auth.signInWithPassword()`
 
 **Error Handling:**
+
 - Return 401 for incorrect email/password
 - User-friendly message: "Invalid email or password"
 - Hide password field (type="password") in forms
 
 ### `/src/pages/api/auth/logout.ts`
+
 ```typescript
-POST /api/auth/logout
-Response: { success: true }
+POST / api / auth / logout;
+Response: {
+  success: true;
+}
 ```
 
 Use `supabase.auth.signOut()`
 
 **Behavior:**
+
 - Clear session from Supabase
 - Client should redirect to `/auth/login` after logout
 - Clear auth store on client
@@ -140,29 +157,34 @@ Use `supabase.auth.signOut()`
 ## Service Layer
 
 ### `/src/lib/services/auth.service.ts`
+
 ```typescript
 export const authService = {
   register: (supabase, email, password) => supabase.auth.signUp({ email, password }),
   login: (supabase, email, password) => supabase.auth.signInWithPassword({ email, password }),
-  logout: (supabase) => supabase.auth.signOut()
-}
+  logout: (supabase) => supabase.auth.signOut(),
+};
 ```
 
 **Note:** Supabase Auth automatically handles password hashing (PRD REQ-AUTH-001, REQ-AUTH-006). Passwords are never stored in plain text.
 
 ### `/src/lib/validation/auth.schemas.ts`
+
 Zod schemas:
+
 ```typescript
 export const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(1)
+  password: z.string().min(1),
 });
 
-export const registerSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-  confirmPassword: z.string()
-}).refine(data => data.password === data.confirmPassword);
+export const registerSchema = z
+  .object({
+    email: z.string().email(),
+    password: z.string().min(8),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword);
 ```
 
 ---
@@ -170,14 +192,17 @@ export const registerSchema = z.object({
 ## Files to Modify
 
 ### `/src/layouts/Layout.astro`
+
 1. Get user: `const { data: { user } } = await supabase.auth.getUser()`
 2. Pass to window: `window.__AUTH_USER__ = user`
 3. Pass to Header: `<Header user={user} />`
 
 ### `/src/components/Header.astro`
+
 Add UserMenu when authenticated
 
 ### `/src/env.d.ts`
+
 ```typescript
 interface Window {
   __AUTH_USER__?: { id: string; email: string } | null;
@@ -185,6 +210,7 @@ interface Window {
 ```
 
 ### `/src/types.ts`
+
 ```typescript
 export interface AuthUser {
   id: string;
@@ -208,32 +234,40 @@ export interface RegisterDTO extends LoginDTO {
 **All protected pages must redirect unauthenticated users to `/auth/login` (PRD US-002)**
 
 Add to all protected pages:
+
 ```typescript
 export const prerender = false;
 
-const { data: { user } } = await context.locals.supabase.auth.getUser();
-if (!user) return context.redirect('/auth/login');
+const {
+  data: { user },
+} = await context.locals.supabase.auth.getUser();
+if (!user) return context.redirect("/auth/login");
 ```
 
 **All protected API endpoints must return 401 Unauthorized**
 
 Add to all API endpoints:
+
 ```typescript
-const { data: { user } } = await context.locals.supabase.auth.getUser();
+const {
+  data: { user },
+} = await context.locals.supabase.auth.getUser();
 if (!user) {
-  return new Response(JSON.stringify({ error: 'Unauthorized' }), { 
+  return new Response(JSON.stringify({ error: "Unauthorized" }), {
     status: 401,
-    headers: { 'Content-Type': 'application/json' }
+    headers: { "Content-Type": "application/json" },
   });
 }
 ```
 
 **Pages to protect:**
+
 - `/src/pages/dashboard.astro`
 - `/src/pages/flats/**/*.astro`
 - `/src/pages/payment-types/**/*.astro`
 
 **API to protect:**
+
 - `/src/pages/api/dashboard.ts`
 - `/src/pages/api/flats/**/*.ts`
 - `/src/pages/api/payment-types/**/*.ts`
@@ -263,11 +297,13 @@ if (!user) {
 **Requirement:** Users must only see their own data (PRD US-003, REQ-SEC-001)
 
 **Implementation:**
+
 - RLS policies should already be configured in `/supabase/migrations/20260104120000_add_rls_policies.sql`
 - Verify policies exist for tables: `flats`, `payment_types`, `payments`
 - Each policy should filter by `user_id = auth.uid()`
 
 **Testing:**
+
 - User 1 (admin@flatmanager.local) should see only their 3 flats
 - User 2 (test@flatmanager.local) should see 0 flats
 - Attempting to access another user's flat ID should return 403/404
@@ -277,6 +313,7 @@ if (!user) {
 ## PRD Alignment & Clarifications
 
 ### ✅ Implemented in MVP
+
 - **User Registration** (PRD REQ-AUTH-006, Section 1 contradiction resolved)
   - Despite Section 1 overview stating "No registration", detailed requirements in REQ-AUTH-006 and US-006 specify full registration flow
   - Decision: Implement registration as per detailed requirements
@@ -289,6 +326,7 @@ if (!user) {
   - Migration seed file: `/supabase/migrations/20260103120500_seed_test_data.sql`
 
 ### ❌ Explicitly Out of MVP Scope
+
 - **Password Reset** (PRD Section 4.1, contradicts REQ-AUTH-005)
   - REQ-AUTH-005 mentions "possibility to reset password"
   - Section 4.1 lists "Password reset" as outside MVP scope
@@ -299,11 +337,13 @@ if (!user) {
 - **Login Attempt Limits** (PRD Section 4.2)
 
 ### Session Management
+
 - Session maintained until explicit logout (PRD REQ-AUTH-001)
 - Logout redirects to `/auth/login` (PRD REQ-AUTH-002, US-002)
 - Access to protected resources redirects to `/auth/login` (PRD US-002)
 
 ### Security Requirements
+
 - Passwords hashed by Supabase Auth (PRD REQ-AUTH-001, REQ-AUTH-006, REQ-SEC-001)
 - RLS isolates user data (PRD US-003, REQ-SEC-001)
 - No access to other users' data via API or UI (PRD REQ-SEC-001, US-003)
@@ -313,6 +353,7 @@ if (!user) {
 ## Test Users
 
 From seed data:
+
 - `admin@flatmanager.local` / `password123` (3 flats)
 - `test@flatmanager.local` / `password123` (0 flats)
 
@@ -321,6 +362,7 @@ From seed data:
 ## Implementation Checklist
 
 ### New Files
+
 - [ ] `/src/lib/stores/auth.store.ts` - Client auth state with logout redirect
 - [ ] `/src/components/auth/LoginForm.tsx` - Login with error handling
 - [ ] `/src/components/auth/RegisterForm.tsx` - Registration with validation
@@ -334,7 +376,8 @@ From seed data:
 - [ ] `/src/lib/validation/auth.schemas.ts` - Zod schemas for validation
 
 ### Modified Files
-- [ ] `/src/env.d.ts` - Add window.__AUTH_USER__ interface
+
+- [ ] `/src/env.d.ts` - Add window.**AUTH_USER** interface
 - [ ] `/src/types.ts` - Add AuthUser, LoginDTO, RegisterDTO types
 - [ ] `/src/layouts/Layout.astro` - Get user, pass to window and Header
 - [ ] `/src/components/Header.astro` - Add UserMenu when authenticated
@@ -348,6 +391,7 @@ From seed data:
 - [ ] `/src/pages/api/payments/**/*.ts` - Add auth check to all endpoints
 
 ### Verification
+
 - [ ] RLS policies exist in `/supabase/migrations/20260104120000_add_rls_policies.sql`
 - [ ] Test users seeded in `/supabase/migrations/20260103120500_seed_test_data.sql`
 - [ ] All forms show validation errors
@@ -356,6 +400,7 @@ From seed data:
 - [ ] Error messages user-friendly and in Polish (per PRD US-029)
 
 ### Testing
+
 - [ ] Register new user (PRD REQ-AUTH-006, US-006)
   - [ ] Email format validation
   - [ ] Password min 8 chars validation
@@ -382,4 +427,3 @@ From seed data:
   - [ ] User 1 sees only their 3 flats
   - [ ] User 2 sees 0 flats
   - [ ] Cannot access other user's data via API or URL manipulation
-

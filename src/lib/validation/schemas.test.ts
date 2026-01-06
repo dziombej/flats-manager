@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 import {
   createFlatSchema,
   updateFlatSchema,
@@ -6,14 +6,14 @@ import {
   updatePaymentTypeSchema,
   generatePaymentsSchema,
   paymentFiltersSchema,
-} from './schemas';
+} from "./schemas";
 
-describe('createFlatSchema', () => {
-  describe('valid inputs', () => {
-    it('should accept valid flat data', () => {
+describe("createFlatSchema", () => {
+  describe("valid inputs", () => {
+    it("should accept valid flat data", () => {
       const validData = {
-        name: 'Apartment 101',
-        address: '123 Main St, Warsaw',
+        name: "Apartment 101",
+        address: "123 Main St, Warsaw",
       };
 
       const result = createFlatSchema.safeParse(validData);
@@ -24,10 +24,10 @@ describe('createFlatSchema', () => {
       }
     });
 
-    it('should accept name with maximum length (100 characters)', () => {
+    it("should accept name with maximum length (100 characters)", () => {
       const validData = {
-        name: 'a'.repeat(100),
-        address: '123 Main St',
+        name: "a".repeat(100),
+        address: "123 Main St",
       };
 
       const result = createFlatSchema.safeParse(validData);
@@ -35,10 +35,10 @@ describe('createFlatSchema', () => {
       expect(result.success).toBe(true);
     });
 
-    it('should accept address with maximum length (200 characters)', () => {
+    it("should accept address with maximum length (200 characters)", () => {
       const validData = {
-        name: 'Apartment 101',
-        address: 'a'.repeat(200),
+        name: "Apartment 101",
+        address: "a".repeat(200),
       };
 
       const result = createFlatSchema.safeParse(validData);
@@ -46,10 +46,10 @@ describe('createFlatSchema', () => {
       expect(result.success).toBe(true);
     });
 
-    it('should accept name and address with special characters', () => {
+    it("should accept name and address with special characters", () => {
       const validData = {
-        name: 'Mieszkanie #1 - Centrum',
-        address: 'ul. Świętokrzyska 20/5, 00-002 Warszawa',
+        name: "Mieszkanie #1 - Centrum",
+        address: "ul. Świętokrzyska 20/5, 00-002 Warszawa",
       };
 
       const result = createFlatSchema.safeParse(validData);
@@ -58,66 +58,66 @@ describe('createFlatSchema', () => {
     });
   });
 
-  describe('invalid inputs', () => {
-    it('should reject empty name', () => {
+  describe("invalid inputs", () => {
+    it("should reject empty name", () => {
       const invalidData = {
-        name: '',
-        address: '123 Main St',
+        name: "",
+        address: "123 Main St",
       };
 
       const result = createFlatSchema.safeParse(invalidData);
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Name is required');
+        expect(result.error.errors[0].message).toBe("Name is required");
       }
     });
 
-    it('should reject empty address', () => {
+    it("should reject empty address", () => {
       const invalidData = {
-        name: 'Apartment 101',
-        address: '',
+        name: "Apartment 101",
+        address: "",
       };
 
       const result = createFlatSchema.safeParse(invalidData);
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Address is required');
+        expect(result.error.errors[0].message).toBe("Address is required");
       }
     });
 
-    it('should reject name exceeding 100 characters', () => {
+    it("should reject name exceeding 100 characters", () => {
       const invalidData = {
-        name: 'a'.repeat(101),
-        address: '123 Main St',
+        name: "a".repeat(101),
+        address: "123 Main St",
       };
 
       const result = createFlatSchema.safeParse(invalidData);
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Name must be at most 100 characters');
+        expect(result.error.errors[0].message).toBe("Name must be at most 100 characters");
       }
     });
 
-    it('should reject address exceeding 200 characters', () => {
+    it("should reject address exceeding 200 characters", () => {
       const invalidData = {
-        name: 'Apartment 101',
-        address: 'a'.repeat(201),
+        name: "Apartment 101",
+        address: "a".repeat(201),
       };
 
       const result = createFlatSchema.safeParse(invalidData);
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Address must be at most 200 characters');
+        expect(result.error.errors[0].message).toBe("Address must be at most 200 characters");
       }
     });
 
-    it('should reject missing name field', () => {
+    it("should reject missing name field", () => {
       const invalidData = {
-        address: '123 Main St',
+        address: "123 Main St",
       };
 
       const result = createFlatSchema.safeParse(invalidData);
@@ -125,9 +125,9 @@ describe('createFlatSchema', () => {
       expect(result.success).toBe(false);
     });
 
-    it('should reject missing address field', () => {
+    it("should reject missing address field", () => {
       const invalidData = {
-        name: 'Apartment 101',
+        name: "Apartment 101",
       };
 
       const result = createFlatSchema.safeParse(invalidData);
@@ -135,7 +135,7 @@ describe('createFlatSchema', () => {
       expect(result.success).toBe(false);
     });
 
-    it('should reject null values', () => {
+    it("should reject null values", () => {
       const invalidData = {
         name: null,
         address: null,
@@ -146,7 +146,7 @@ describe('createFlatSchema', () => {
       expect(result.success).toBe(false);
     });
 
-    it('should reject non-string values', () => {
+    it("should reject non-string values", () => {
       const invalidData = {
         name: 123,
         address: true,
@@ -159,10 +159,10 @@ describe('createFlatSchema', () => {
   });
 });
 
-describe('updateFlatSchema', () => {
-  it('should accept valid partial updates', () => {
+describe("updateFlatSchema", () => {
+  it("should accept valid partial updates", () => {
     const validData = {
-      name: 'Updated Name',
+      name: "Updated Name",
     };
 
     const result = updateFlatSchema.safeParse(validData);
@@ -170,10 +170,10 @@ describe('updateFlatSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('should accept both fields', () => {
+  it("should accept both fields", () => {
     const validData = {
-      name: 'Updated Name',
-      address: 'Updated Address',
+      name: "Updated Name",
+      address: "Updated Address",
     };
 
     const result = updateFlatSchema.safeParse(validData);
@@ -181,7 +181,7 @@ describe('updateFlatSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('should accept empty object (no updates)', () => {
+  it("should accept empty object (no updates)", () => {
     const validData = {};
 
     const result = updateFlatSchema.safeParse(validData);
@@ -189,9 +189,9 @@ describe('updateFlatSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('should reject empty strings when provided', () => {
+  it("should reject empty strings when provided", () => {
     const invalidData = {
-      name: '',
+      name: "",
     };
 
     const result = updateFlatSchema.safeParse(invalidData);
@@ -200,12 +200,12 @@ describe('updateFlatSchema', () => {
   });
 });
 
-describe('createPaymentTypeSchema', () => {
-  describe('valid inputs', () => {
-    it('should accept valid payment type data', () => {
+describe("createPaymentTypeSchema", () => {
+  describe("valid inputs", () => {
+    it("should accept valid payment type data", () => {
       const validData = {
-        name: 'Rent',
-        base_amount: 1500.50,
+        name: "Rent",
+        base_amount: 1500.5,
       };
 
       const result = createPaymentTypeSchema.safeParse(validData);
@@ -216,9 +216,9 @@ describe('createPaymentTypeSchema', () => {
       }
     });
 
-    it('should accept zero base amount', () => {
+    it("should accept zero base amount", () => {
       const validData = {
-        name: 'Free Service',
+        name: "Free Service",
         base_amount: 0,
       };
 
@@ -227,9 +227,9 @@ describe('createPaymentTypeSchema', () => {
       expect(result.success).toBe(true);
     });
 
-    it('should accept maximum base amount (999999.99)', () => {
+    it("should accept maximum base amount (999999.99)", () => {
       const validData = {
-        name: 'Expensive',
+        name: "Expensive",
         base_amount: 999999.99,
       };
 
@@ -238,9 +238,9 @@ describe('createPaymentTypeSchema', () => {
       expect(result.success).toBe(true);
     });
 
-    it('should accept integer amounts', () => {
+    it("should accept integer amounts", () => {
       const validData = {
-        name: 'Rent',
+        name: "Rent",
         base_amount: 1500,
       };
 
@@ -249,9 +249,9 @@ describe('createPaymentTypeSchema', () => {
       expect(result.success).toBe(true);
     });
 
-    it('should accept amounts with decimal places', () => {
+    it("should accept amounts with decimal places", () => {
       const validData = {
-        name: 'Utilities',
+        name: "Utilities",
         base_amount: 123.45,
       };
 
@@ -261,10 +261,10 @@ describe('createPaymentTypeSchema', () => {
     });
   });
 
-  describe('invalid inputs', () => {
-    it('should reject empty name', () => {
+  describe("invalid inputs", () => {
+    it("should reject empty name", () => {
       const invalidData = {
-        name: '',
+        name: "",
         base_amount: 100,
       };
 
@@ -272,13 +272,13 @@ describe('createPaymentTypeSchema', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Name is required');
+        expect(result.error.errors[0].message).toBe("Name is required");
       }
     });
 
-    it('should reject negative base amount', () => {
+    it("should reject negative base amount", () => {
       const invalidData = {
-        name: 'Rent',
+        name: "Rent",
         base_amount: -100,
       };
 
@@ -286,13 +286,13 @@ describe('createPaymentTypeSchema', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Base amount must be non-negative');
+        expect(result.error.errors[0].message).toBe("Base amount must be non-negative");
       }
     });
 
-    it('should reject base amount exceeding maximum (1000000)', () => {
+    it("should reject base amount exceeding maximum (1000000)", () => {
       const invalidData = {
-        name: 'Rent',
+        name: "Rent",
         base_amount: 1000000,
       };
 
@@ -300,13 +300,13 @@ describe('createPaymentTypeSchema', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Base amount must be less than 1,000,000');
+        expect(result.error.errors[0].message).toBe("Base amount must be less than 1,000,000");
       }
     });
 
-    it('should reject name exceeding 100 characters', () => {
+    it("should reject name exceeding 100 characters", () => {
       const invalidData = {
-        name: 'a'.repeat(101),
+        name: "a".repeat(101),
         base_amount: 100,
       };
 
@@ -315,10 +315,10 @@ describe('createPaymentTypeSchema', () => {
       expect(result.success).toBe(false);
     });
 
-    it('should reject non-number base amount', () => {
+    it("should reject non-number base amount", () => {
       const invalidData = {
-        name: 'Rent',
-        base_amount: '1500',
+        name: "Rent",
+        base_amount: "1500",
       };
 
       const result = createPaymentTypeSchema.safeParse(invalidData);
@@ -326,9 +326,9 @@ describe('createPaymentTypeSchema', () => {
       expect(result.success).toBe(false);
     });
 
-    it('should reject missing fields', () => {
+    it("should reject missing fields", () => {
       const invalidData = {
-        name: 'Rent',
+        name: "Rent",
       };
 
       const result = createPaymentTypeSchema.safeParse(invalidData);
@@ -338,10 +338,10 @@ describe('createPaymentTypeSchema', () => {
   });
 });
 
-describe('updatePaymentTypeSchema', () => {
-  it('should accept partial updates', () => {
+describe("updatePaymentTypeSchema", () => {
+  it("should accept partial updates", () => {
     const validData = {
-      name: 'Updated Name',
+      name: "Updated Name",
     };
 
     const result = updatePaymentTypeSchema.safeParse(validData);
@@ -349,7 +349,7 @@ describe('updatePaymentTypeSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('should accept empty object', () => {
+  it("should accept empty object", () => {
     const validData = {};
 
     const result = updatePaymentTypeSchema.safeParse(validData);
@@ -357,7 +357,7 @@ describe('updatePaymentTypeSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('should reject negative amounts when provided', () => {
+  it("should reject negative amounts when provided", () => {
     const invalidData = {
       base_amount: -100,
     };
@@ -368,9 +368,9 @@ describe('updatePaymentTypeSchema', () => {
   });
 });
 
-describe('generatePaymentsSchema', () => {
-  describe('valid inputs', () => {
-    it('should accept valid month and year', () => {
+describe("generatePaymentsSchema", () => {
+  describe("valid inputs", () => {
+    it("should accept valid month and year", () => {
       const validData = {
         month: 6,
         year: 2026,
@@ -384,7 +384,7 @@ describe('generatePaymentsSchema', () => {
       }
     });
 
-    it('should accept minimum month (1)', () => {
+    it("should accept minimum month (1)", () => {
       const validData = {
         month: 1,
         year: 2026,
@@ -395,7 +395,7 @@ describe('generatePaymentsSchema', () => {
       expect(result.success).toBe(true);
     });
 
-    it('should accept maximum month (12)', () => {
+    it("should accept maximum month (12)", () => {
       const validData = {
         month: 12,
         year: 2026,
@@ -406,7 +406,7 @@ describe('generatePaymentsSchema', () => {
       expect(result.success).toBe(true);
     });
 
-    it('should accept minimum year (1900)', () => {
+    it("should accept minimum year (1900)", () => {
       const validData = {
         month: 6,
         year: 1900,
@@ -417,7 +417,7 @@ describe('generatePaymentsSchema', () => {
       expect(result.success).toBe(true);
     });
 
-    it('should accept maximum year (2100)', () => {
+    it("should accept maximum year (2100)", () => {
       const validData = {
         month: 6,
         year: 2100,
@@ -429,8 +429,8 @@ describe('generatePaymentsSchema', () => {
     });
   });
 
-  describe('invalid inputs', () => {
-    it('should reject month less than 1', () => {
+  describe("invalid inputs", () => {
+    it("should reject month less than 1", () => {
       const invalidData = {
         month: 0,
         year: 2026,
@@ -440,11 +440,11 @@ describe('generatePaymentsSchema', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Month must be between 1 and 12');
+        expect(result.error.errors[0].message).toBe("Month must be between 1 and 12");
       }
     });
 
-    it('should reject month greater than 12', () => {
+    it("should reject month greater than 12", () => {
       const invalidData = {
         month: 13,
         year: 2026,
@@ -454,11 +454,11 @@ describe('generatePaymentsSchema', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Month must be between 1 and 12');
+        expect(result.error.errors[0].message).toBe("Month must be between 1 and 12");
       }
     });
 
-    it('should reject year less than 1900', () => {
+    it("should reject year less than 1900", () => {
       const invalidData = {
         month: 6,
         year: 1899,
@@ -468,11 +468,11 @@ describe('generatePaymentsSchema', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Year must be between 1900 and 2100');
+        expect(result.error.errors[0].message).toBe("Year must be between 1900 and 2100");
       }
     });
 
-    it('should reject year greater than 2100', () => {
+    it("should reject year greater than 2100", () => {
       const invalidData = {
         month: 6,
         year: 2101,
@@ -482,11 +482,11 @@ describe('generatePaymentsSchema', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('Year must be between 1900 and 2100');
+        expect(result.error.errors[0].message).toBe("Year must be between 1900 and 2100");
       }
     });
 
-    it('should reject decimal month', () => {
+    it("should reject decimal month", () => {
       const invalidData = {
         month: 6.5,
         year: 2026,
@@ -497,7 +497,7 @@ describe('generatePaymentsSchema', () => {
       expect(result.success).toBe(false);
     });
 
-    it('should reject decimal year', () => {
+    it("should reject decimal year", () => {
       const invalidData = {
         month: 6,
         year: 2026.5,
@@ -508,10 +508,10 @@ describe('generatePaymentsSchema', () => {
       expect(result.success).toBe(false);
     });
 
-    it('should reject string values', () => {
+    it("should reject string values", () => {
       const invalidData = {
-        month: '6',
-        year: '2026',
+        month: "6",
+        year: "2026",
       };
 
       const result = generatePaymentsSchema.safeParse(invalidData);
@@ -519,7 +519,7 @@ describe('generatePaymentsSchema', () => {
       expect(result.success).toBe(false);
     });
 
-    it('should reject missing fields', () => {
+    it("should reject missing fields", () => {
       const invalidData = {
         month: 6,
       };
@@ -529,7 +529,7 @@ describe('generatePaymentsSchema', () => {
       expect(result.success).toBe(false);
     });
 
-    it('should reject negative month', () => {
+    it("should reject negative month", () => {
       const invalidData = {
         month: -1,
         year: 2026,
@@ -540,7 +540,7 @@ describe('generatePaymentsSchema', () => {
       expect(result.success).toBe(false);
     });
 
-    it('should reject negative year', () => {
+    it("should reject negative year", () => {
       const invalidData = {
         month: 6,
         year: -2026,
@@ -553,8 +553,8 @@ describe('generatePaymentsSchema', () => {
   });
 });
 
-describe('paymentFiltersSchema', () => {
-  it('should accept all filter fields', () => {
+describe("paymentFiltersSchema", () => {
+  it("should accept all filter fields", () => {
     const validData = {
       month: 6,
       year: 2026,
@@ -566,7 +566,7 @@ describe('paymentFiltersSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('should accept partial filters', () => {
+  it("should accept partial filters", () => {
     const validData = {
       month: 6,
     };
@@ -576,7 +576,7 @@ describe('paymentFiltersSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('should accept empty object (no filters)', () => {
+  it("should accept empty object (no filters)", () => {
     const validData = {};
 
     const result = paymentFiltersSchema.safeParse(validData);
@@ -584,7 +584,7 @@ describe('paymentFiltersSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('should accept is_paid as false', () => {
+  it("should accept is_paid as false", () => {
     const validData = {
       is_paid: false,
     };
@@ -594,7 +594,7 @@ describe('paymentFiltersSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('should reject invalid month values', () => {
+  it("should reject invalid month values", () => {
     const invalidData = {
       month: 0,
     };
@@ -604,7 +604,7 @@ describe('paymentFiltersSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('should reject invalid year values', () => {
+  it("should reject invalid year values", () => {
     const invalidData = {
       year: 1899,
     };
@@ -614,9 +614,9 @@ describe('paymentFiltersSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('should reject non-boolean is_paid', () => {
+  it("should reject non-boolean is_paid", () => {
     const invalidData = {
-      is_paid: 'true',
+      is_paid: "true",
     };
 
     const result = paymentFiltersSchema.safeParse(invalidData);
@@ -624,4 +624,3 @@ describe('paymentFiltersSchema', () => {
     expect(result.success).toBe(false);
   });
 });
-

@@ -9,10 +9,7 @@ import { usePaymentGeneration } from "./hooks/usePaymentGeneration";
 import { usePaymentPreview } from "./hooks/usePaymentPreview";
 import { useNavigation } from "./hooks/useNavigation";
 import PaymentGenerationSuccess from "./PaymentGenerationSuccess";
-import {
-  paymentGenerationSchema,
-  type PaymentGenerationFormData,
-} from "../lib/validation/payment-generation.schema";
+import { paymentGenerationSchema, type PaymentGenerationFormData } from "../lib/validation/payment-generation.schema";
 
 interface GeneratePaymentsFormProps {
   flatId: string;
@@ -22,10 +19,8 @@ interface GeneratePaymentsFormProps {
   currentYear: number;
 }
 
-
 export default function GeneratePaymentsForm({
   flatId,
-  flatName,
   paymentTypes,
   currentMonth,
   currentYear,
@@ -38,7 +33,7 @@ export default function GeneratePaymentsForm({
     handleSubmit,
     watch,
     reset,
-    formState: { errors, isValid, isSubmitting },
+    formState: { errors, isValid },
   } = useForm<PaymentGenerationFormData>({
     resolver: zodResolver(paymentGenerationSchema),
     mode: "onChange",
@@ -52,7 +47,12 @@ export default function GeneratePaymentsForm({
   const formValues = watch();
 
   // Payment generation hook
-  const { generate, isGenerating, result, error: apiError } = usePaymentGeneration({
+  const {
+    generate,
+    isGenerating,
+    result,
+    error: apiError,
+  } = usePaymentGeneration({
     flatId,
   });
 
@@ -84,13 +84,7 @@ export default function GeneratePaymentsForm({
 
   // If success, show success state
   if (result) {
-    return (
-      <PaymentGenerationSuccess
-        result={result}
-        onViewPayments={handleViewPayments}
-        onReset={handleReset}
-      />
-    );
+    return <PaymentGenerationSuccess result={result} onViewPayments={handleViewPayments} onReset={handleReset} />;
   }
 
   // Main form
@@ -136,9 +130,7 @@ export default function GeneratePaymentsForm({
               <option value={11}>November</option>
               <option value={12}>December</option>
             </select>
-            {errors.month && (
-              <p className="mt-1 text-sm text-red-600">{errors.month.message}</p>
-            )}
+            {errors.month && <p className="mt-1 text-sm text-red-600">{errors.month.message}</p>}
           </div>
 
           {/* Year Input */}
@@ -155,9 +147,7 @@ export default function GeneratePaymentsForm({
               placeholder="YYYY"
               className="w-full"
             />
-            {errors.year && (
-              <p className="mt-1 text-sm text-red-600">{errors.year.message}</p>
-            )}
+            {errors.year && <p className="mt-1 text-sm text-red-600">{errors.year.message}</p>}
           </div>
         </div>
       </div>
@@ -166,17 +156,13 @@ export default function GeneratePaymentsForm({
       <div className="rounded-lg border bg-white p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Preview</h2>
         <p className="mb-4 text-sm text-gray-600">
-          The following payments will be generated for {getMonthName(formValues.month)}{" "}
-          {formValues.year}
+          The following payments will be generated for {getMonthName(formValues.month)} {formValues.year}
         </p>
 
         {/* Preview List */}
         <div className="space-y-2 mb-4">
           {preview.items.map((item) => (
-            <div
-              key={item.paymentTypeId}
-              className="flex items-center justify-between rounded-md bg-gray-50 px-4 py-3"
-            >
+            <div key={item.paymentTypeId} className="flex items-center justify-between rounded-md bg-gray-50 px-4 py-3">
               <span className="font-medium text-gray-900">{item.paymentTypeName}</span>
               <span className="text-gray-700">{item.formattedAmount}</span>
             </div>
@@ -189,9 +175,7 @@ export default function GeneratePaymentsForm({
             <span className="text-lg font-semibold text-blue-900">
               Total ({preview.summary.count} payment{preview.summary.count !== 1 ? "s" : ""})
             </span>
-            <span className="text-xl font-bold text-blue-900">
-              {preview.summary.formattedTotalAmount}
-            </span>
+            <span className="text-xl font-bold text-blue-900">{preview.summary.formattedTotalAmount}</span>
           </div>
         </div>
       </div>
@@ -218,4 +202,3 @@ export default function GeneratePaymentsForm({
     </form>
   );
 }
-

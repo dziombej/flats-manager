@@ -17,7 +17,7 @@ export const useNavigation = (): NavigationHook => {
   };
 
   const goToFlats = () => {
-    window.location.href = '/flats';
+    window.location.href = "/flats";
   };
 
   const goToFlatWithParams = (flatId: string, params: Record<string, string | number>) => {
@@ -45,4 +45,3 @@ export const useNavigation = (): NavigationHook => {
     reload,
   };
 };
-

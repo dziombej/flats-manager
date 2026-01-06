@@ -17,8 +17,18 @@ export const formatCurrency = (amount: number): string => {
  */
 export const getMonthName = (month: number): string => {
   const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
   return monthNames[month - 1] || "";
 };
@@ -40,4 +50,3 @@ export const formatMonthYear = (month: number, year: number): string => {
 export const formatDate = (date: string | Date): string => {
   return new Date(date).toLocaleDateString();
 };
-

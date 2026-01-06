@@ -4,10 +4,15 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useFormState } from "./hooks/useFormState";
 import { useNavigation } from "./hooks/useNavigation";
-import type { CreatePaymentTypeCommand, UpdatePaymentTypeCommand, PaymentTypeDto, ValidationErrorResponseDto } from "../types";
+import type {
+  CreatePaymentTypeCommand,
+  UpdatePaymentTypeCommand,
+  PaymentTypeDto,
+  ValidationErrorResponseDto,
+} from "../types";
 
 interface PaymentTypeFormProps {
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   flatId: string;
   paymentTypeId?: string;
   initialData?: {
@@ -59,124 +64,135 @@ export default function PaymentTypeForm({ mode, flatId, paymentTypeId, initialDa
   const baseAmountErrorId = useId();
   const formErrorId = useId();
 
-  const {
-    formData,
-    errors,
-    isSubmitting,
-    isSuccess,
-    updateField,
-    setErrors,
-    setSubmitting,
-    setSuccess,
-    validate,
-  } = useFormState<PaymentTypeFormData>({
-    initialData: {
-      name: initialData?.name || '',
-      baseAmount: initialData?.base_amount?.toString() || '',
+  const { formData, errors, isSubmitting, isSuccess, updateField, setErrors, setSubmitting, setSuccess, validate } =
+    useFormState<PaymentTypeFormData>({
+      initialData: {
+        name: initialData?.name || "",
+        baseAmount: initialData?.base_amount?.toString() || "",
+      },
+      validate: validatePaymentTypeForm,
+    });
+
+  const handleNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateField("name", e.target.value);
     },
-    validate: validatePaymentTypeForm,
-  });
+    [updateField]
+  );
 
-  const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    updateField('name', e.target.value);
-  }, [updateField]);
-
-  const handleBaseAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    updateField('baseAmount', e.target.value);
-  }, [updateField]);
+  const handleBaseAmountChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateField("baseAmount", e.target.value);
+    },
+    [updateField]
+  );
 
   const handleCancel = useCallback(() => {
     navigation.goToFlat(flatId);
   }, [flatId, navigation]);
 
-  const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-    // Client-side validation
-    if (!validate()) {
-      // Focus first invalid field
-      if (errors.name) {
-        document.getElementById(nameId)?.focus();
-      } else if (errors.base_amount) {
-        document.getElementById(baseAmountId)?.focus();
-      }
-      return;
-    }
-
-    // Start submission
-    setSubmitting(true);
-
-    try {
-      // Construct command
-      const command: CreatePaymentTypeCommand | UpdatePaymentTypeCommand = {
-        name: formData.name.trim(),
-        base_amount: parseFloat(formData.baseAmount.trim()),
-      };
-
-      // API call
-      const url = mode === 'create'
-        ? `/api/flats/${flatId}/payment-types`
-        : `/api/payment-types/${paymentTypeId}`;
-      const method = mode === 'create' ? 'POST' : 'PUT';
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(command),
-      });
-
-      if (!response.ok) {
-        // Handle error responses
-        if (response.status === 400) {
-          const errorData: ValidationErrorResponseDto = await response.json();
-          setErrors({
-            ...errorData.details,
-            form: errorData.details ? undefined : errorData.error,
-          });
-          return;
-        } else if (response.status === 401) {
-          navigation.goToLogin(window.location.pathname);
-          return;
-        } else if (response.status === 404) {
-          setErrors({
-            form: "Payment type not found or you don't have permission to edit it.",
-          });
-          return;
-        } else {
-          const errorData = await response.json().catch(() => ({ error: 'An error occurred' }));
-          setErrors({
-            form: errorData.error || 'An error occurred while saving. Please try again.',
-          });
-          return;
+      // Client-side validation
+      if (!validate()) {
+        // Focus first invalid field
+        if (errors.name) {
+          document.getElementById(nameId)?.focus();
+        } else if (errors.base_amount) {
+          document.getElementById(baseAmountId)?.focus();
         }
+        return;
       }
 
-      // Success
-      const result: PaymentTypeDto = await response.json();
+      // Start submission
+      setSubmitting(true);
 
-      if (mode === 'create') {
-        navigation.goToFlat(flatId);
-      } else {
-        setSuccess(true);
-        updateField('name', result.name);
-        updateField('baseAmount', result.base_amount.toString());
+      try {
+        // Construct command
+        const command: CreatePaymentTypeCommand | UpdatePaymentTypeCommand = {
+          name: formData.name.trim(),
+          base_amount: parseFloat(formData.baseAmount.trim()),
+        };
 
-        // Hide success message after 3 seconds
-        setTimeout(() => {
-          setSuccess(false);
-        }, 3000);
+        // API call
+        const url = mode === "create" ? `/api/flats/${flatId}/payment-types` : `/api/payment-types/${paymentTypeId}`;
+        const method = mode === "create" ? "POST" : "PUT";
+
+        const response = await fetch(url, {
+          method,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(command),
+        });
+
+        if (!response.ok) {
+          // Handle error responses
+          if (response.status === 400) {
+            const errorData: ValidationErrorResponseDto = await response.json();
+            setErrors({
+              ...errorData.details,
+              form: errorData.details ? undefined : errorData.error,
+            });
+            return;
+          } else if (response.status === 401) {
+            navigation.goToLogin(window.location.pathname);
+            return;
+          } else if (response.status === 404) {
+            setErrors({
+              form: "Payment type not found or you don't have permission to edit it.",
+            });
+            return;
+          } else {
+            const errorData = await response.json().catch(() => ({ error: "An error occurred" }));
+            setErrors({
+              form: errorData.error || "An error occurred while saving. Please try again.",
+            });
+            return;
+          }
+        }
+
+        // Success
+        const result: PaymentTypeDto = await response.json();
+
+        if (mode === "create") {
+          navigation.goToFlat(flatId);
+        } else {
+          setSuccess(true);
+          updateField("name", result.name);
+          updateField("baseAmount", result.base_amount.toString());
+
+          // Hide success message after 3 seconds
+          setTimeout(() => {
+            setSuccess(false);
+          }, 3000);
+        }
+      } catch {
+        setErrors({
+          form: "Network error. Please check your connection and try again.",
+        });
+      } finally {
+        setSubmitting(false);
       }
-    } catch (error) {
-      console.error('Network error:', error);
-      setErrors({
-        form: 'Network error. Please check your connection and try again.',
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  }, [mode, flatId, paymentTypeId, formData, errors, nameId, baseAmountId, validate, setSubmitting, setSuccess, setErrors, updateField, navigation]);
+    },
+    [
+      mode,
+      flatId,
+      paymentTypeId,
+      formData,
+      errors,
+      nameId,
+      baseAmountId,
+      validate,
+      setSubmitting,
+      setSuccess,
+      setErrors,
+      updateField,
+      navigation,
+    ]
+  );
 
   const isFormValid = formData.name.trim().length > 0 && formData.baseAmount.trim().length > 0;
 
@@ -194,7 +210,7 @@ export default function PaymentTypeForm({ mode, flatId, paymentTypeId, initialDa
       )}
 
       {/* Success Message (Edit Mode) */}
-      {isSuccess && mode === 'edit' && (
+      {isSuccess && mode === "edit" && (
         <div
           role="status"
           className="bg-green-50 dark:bg-green-950/30 border border-green-500 text-green-700 dark:text-green-400 px-4 py-3 rounded-md"
@@ -218,16 +234,13 @@ export default function PaymentTypeForm({ mode, flatId, paymentTypeId, initialDa
           placeholder="e.g., Rent, Utilities, Internet"
           maxLength={100}
           disabled={isSubmitting}
-          autoFocus
         />
         {errors.name && (
           <p id={nameErrorId} className="text-sm text-destructive">
             {errors.name}
           </p>
         )}
-        <p className="text-xs text-muted-foreground">
-          {formData.name.length}/100 characters
-        </p>
+        <p className="text-xs text-muted-foreground">{formData.name.length}/100 characters</p>
       </div>
 
       {/* Base Amount Field */}
@@ -253,36 +266,27 @@ export default function PaymentTypeForm({ mode, flatId, paymentTypeId, initialDa
             {errors.base_amount}
           </p>
         )}
-        <p className="text-xs text-muted-foreground">
-          The default amount for this payment type
-        </p>
+        <p className="text-xs text-muted-foreground">The default amount for this payment type</p>
       </div>
 
       {/* Form Actions */}
       <div className="flex gap-3 pt-4">
-        <Button
-          type="submit"
-          disabled={isSubmitting || !isFormValid}
-        >
+        <Button type="submit" disabled={isSubmitting || !isFormValid}>
           {isSubmitting ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              {mode === 'create' ? 'Creating...' : 'Saving...'}
+              {mode === "create" ? "Creating..." : "Saving..."}
             </>
+          ) : mode === "create" ? (
+            "Create Payment Type"
           ) : (
-            mode === 'create' ? 'Create Payment Type' : 'Save Changes'
+            "Save Changes"
           )}
         </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleCancel}
-          disabled={isSubmitting}
-        >
+        <Button type="button" variant="outline" onClick={handleCancel} disabled={isSubmitting}>
           Cancel
         </Button>
       </div>
     </form>
   );
 }
-

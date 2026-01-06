@@ -1,8 +1,6 @@
 import { useState, useCallback } from "react";
 
-export interface FormErrors {
-  [key: string]: string | undefined;
-}
+export type FormErrors = Record<string, string | undefined>;
 
 export interface UseFormStateOptions<T> {
   initialData: T;
@@ -14,7 +12,7 @@ export interface UseFormStateReturn<T> {
   errors: FormErrors;
   isSubmitting: boolean;
   isSuccess: boolean;
-  updateField: (field: keyof T, value: any) => void;
+  updateField: (field: keyof T, value: T[keyof T]) => void;
   setErrors: (errors: FormErrors) => void;
   setSubmitting: (isSubmitting: boolean) => void;
   setSuccess: (isSuccess: boolean) => void;
@@ -26,7 +24,7 @@ export interface UseFormStateReturn<T> {
  * Generic form state management hook
  * Handles form data, validation, errors, and submission state
  */
-export function useFormState<T extends Record<string, any>>({
+export function useFormState<T extends Record<string, unknown>>({
   initialData,
   validate,
 }: UseFormStateOptions<T>): UseFormStateReturn<T> {
@@ -35,7 +33,7 @@ export function useFormState<T extends Record<string, any>>({
   const [isSubmitting, setSubmitting] = useState(false);
   const [isSuccess, setSuccess] = useState(false);
 
-  const updateField = useCallback((field: keyof T, value: any) => {
+  const updateField = useCallback((field: keyof T, value: T[keyof T]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => ({ ...prev, [field]: undefined }));
   }, []);
@@ -66,4 +64,3 @@ export function useFormState<T extends Record<string, any>>({
     reset,
   };
 }
-

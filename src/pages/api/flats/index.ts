@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import type { FlatsResponseDto, CreateFlatCommand, FlatDto, ValidationErrorResponseDto } from "../../../types";
+import type { FlatsResponseDto, CreateFlatCommand, ValidationErrorResponseDto } from "../../../types";
 import { FlatsService } from "../../../lib/services/flats.service";
 
 /**
@@ -39,7 +39,6 @@ export const GET: APIRoute = async ({ locals }) => {
     error: authError,
   } = await supabase.auth.getUser();
 
-
   if (authError || !user) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
@@ -48,7 +47,6 @@ export const GET: APIRoute = async ({ locals }) => {
   }
 
   try {
-
     const flatsService = new FlatsService(supabase);
 
     const flats = await flatsService.getAllFlats(user.id);
@@ -60,9 +58,7 @@ export const GET: APIRoute = async ({ locals }) => {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
-  } catch (error) {
-    console.error("Error in GET /api/flats:", error);
-
+  } catch {
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
@@ -101,7 +97,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     let body: unknown;
     try {
       body = await request.json();
-    } catch (error) {
+    } catch {
       return new Response(JSON.stringify({ error: "Invalid JSON in request body" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
@@ -140,9 +136,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       status: 201,
       headers: { "Content-Type": "application/json" },
     });
-  } catch (error) {
-    console.error("Error in POST /api/flats:", error);
-
+  } catch {
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

@@ -41,15 +41,15 @@ export default function LoginForm() {
   const formErrorId = useId();
 
   const [formState, setFormState] = useState<LoginFormState>({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
     errors: {},
     isSubmitting: false,
   });
 
   const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setFormState(prev => ({
+    setFormState((prev) => ({
       ...prev,
       email: value,
       errors: {
@@ -61,7 +61,7 @@ export default function LoginForm() {
 
   const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setFormState(prev => ({
+    setFormState((prev) => ({
       ...prev,
       password: value,
       errors: {
@@ -71,57 +71,59 @@ export default function LoginForm() {
     }));
   }, []);
 
-  const handleSubmit = useCallback(async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-    // Client-side validation
-    const validationErrors = validateForm(formState.email, formState.password);
-    if (Object.keys(validationErrors).length > 0) {
-      setFormState(prev => ({
-        ...prev,
-        errors: validationErrors,
-      }));
-      return;
-    }
-
-    setFormState(prev => ({
-      ...prev,
-      isSubmitting: true,
-      errors: {},
-    }));
-
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formState.email,
-          password: formState.password
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setFormState(prev => ({
+      // Client-side validation
+      const validationErrors = validateForm(formState.email, formState.password);
+      if (Object.keys(validationErrors).length > 0) {
+        setFormState((prev) => ({
           ...prev,
-          errors: { form: data.error || 'Invalid email or password' },
-          isSubmitting: false,
+          errors: validationErrors,
         }));
         return;
       }
 
-      // On success: Perform server-side page reload to update auth state
-      window.location.href = '/dashboard';
-    } catch (error) {
-      console.error('Login error:', error);
-      setFormState(prev => ({
+      setFormState((prev) => ({
         ...prev,
-        errors: { form: 'An error occurred. Please try again.' },
-        isSubmitting: false,
+        isSubmitting: true,
+        errors: {},
       }));
-    }
-  }, [formState.email, formState.password]);
+
+      try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: formState.email,
+            password: formState.password,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setFormState((prev) => ({
+            ...prev,
+            errors: { form: data.error || "Invalid email or password" },
+            isSubmitting: false,
+          }));
+          return;
+        }
+
+        // On success: Perform server-side page reload to update auth state
+        window.location.href = "/dashboard";
+      } catch {
+        setFormState((prev) => ({
+          ...prev,
+          errors: { form: "An error occurred. Please try again." },
+          isSubmitting: false,
+        }));
+      }
+    },
+    [formState.email, formState.password]
+  );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
@@ -185,14 +187,9 @@ export default function LoginForm() {
       </div>
 
       {/* Submit button */}
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={formState.isSubmitting}
-      >
-        {formState.isSubmitting ? 'Logging in...' : 'Log in'}
+      <Button type="submit" className="w-full" disabled={formState.isSubmitting}>
+        {formState.isSubmitting ? "Logging in..." : "Log in"}
       </Button>
     </form>
   );
 }
-

@@ -1,4 +1,4 @@
-import type { Page, Locator } from '@playwright/test';
+import type { Page, Locator } from "@playwright/test";
 
 /**
  * Page Object Model for the Login page
@@ -15,15 +15,15 @@ export class LoginPage {
     this.page = page;
     this.emailInput = page.getByLabel(/email/i);
     this.passwordInput = page.getByLabel(/password/i);
-    this.submitButton = page.getByRole('button', { name: /log in|sign in/i });
-    this.errorMessage = page.getByRole('alert');
+    this.submitButton = page.getByRole("button", { name: /log in|sign in/i });
+    this.errorMessage = page.getByRole("alert");
   }
 
   /**
    * Navigate to the login page
    */
   async goto() {
-    await this.page.goto('/auth/login');
+    await this.page.goto("/auth/login");
   }
 
   /**
@@ -46,7 +46,6 @@ export class LoginPage {
    * Get the error message text
    */
   async getErrorText(): Promise<string> {
-    return await this.errorMessage.textContent() || '';
+    return (await this.errorMessage.textContent()) || "";
   }
 }
-

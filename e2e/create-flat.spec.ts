@@ -1,25 +1,20 @@
-import { test, expect } from './fixtures/test';
-import {
-  HeaderNavigationPage,
-  FlatFormPage,
-  FlatDetailPage,
-  DashboardPage,
-} from './page-objects';
+import { test, expect } from "./fixtures/test";
+import { HeaderNavigationPage, FlatFormPage, FlatDetailPage, DashboardPage } from "./page-objects";
 
 /**
  * E2E Test: Create Flat Flow
  * Tests the complete flow of creating a new flat and verifying it on dashboard
  */
-test.describe('Create Flat Flow', () => {
-  test('should create a new flat and verify it appears on dashboard', async ({ authenticatedPage: page }) => {
+test.describe("Create Flat Flow", () => {
+  test("should create a new flat and verify it appears on dashboard", async ({ authenticatedPage: page }) => {
     // Arrange
     const headerNav = new HeaderNavigationPage(page);
     const flatForm = new FlatFormPage(page);
     const flatDetail = new FlatDetailPage(page);
     const dashboard = new DashboardPage(page);
 
-    const testFlatName = 'NazwaTest';
-    const testFlatAddress = 'TestowyAdres 54';
+    const testFlatName = "NazwaTest";
+    const testFlatAddress = "TestowyAdres 54";
 
     // Navigate to dashboard (assuming user is already logged in)
     await dashboard.goto();
@@ -61,14 +56,14 @@ test.describe('Create Flat Flow', () => {
 
     if (flatId) {
       await expect(dashboard.getFlatCardName(flatId)).toHaveText(testFlatName);
-      await expect(dashboard.getFlatCardStatus(flatId)).toHaveText('Paid');
+      await expect(dashboard.getFlatCardStatus(flatId)).toHaveText("Paid");
 
       const totalDebtText = await dashboard.getFlatCardTotalDebt(flatId).textContent();
       expect(totalDebtText).toMatch(/0[,.]00\s*zł/);
     }
   });
 
-  test('should validate required fields', async ({ authenticatedPage: page }) => {
+  test("should validate required fields", async ({ authenticatedPage: page }) => {
     // Arrange
     const flatForm = new FlatFormPage(page);
 
@@ -80,7 +75,7 @@ test.describe('Create Flat Flow', () => {
     expect(isDisabled).toBe(true);
   });
 
-  test('should allow canceling flat creation', async ({ authenticatedPage: page }) => {
+  test("should allow canceling flat creation", async ({ authenticatedPage: page }) => {
     // Arrange
     const headerNav = new HeaderNavigationPage(page);
     const flatForm = new FlatFormPage(page);
@@ -89,38 +84,37 @@ test.describe('Create Flat Flow', () => {
     await flatForm.gotoCreate();
 
     // Fill in some data
-    await flatForm.fillForm('Test Cancel', 'Cancel Address');
+    await flatForm.fillForm("Test Cancel", "Cancel Address");
 
     // Act - Click cancel
     await flatForm.cancel();
 
     // Assert - Should redirect to flats list
-    await page.waitForURL('**/flats');
+    await page.waitForURL("**/flats");
   });
 });
 
 /**
  * E2E Test: Edit and Delete Flat Flow
  */
-test.describe('Edit and Delete Flat Flow', () => {
+test.describe("Edit and Delete Flat Flow", () => {
   let createdFlatId: string;
 
   test.beforeEach(async ({ authenticatedPage: page }) => {
     // Create a test flat before each test
     const flatForm = new FlatFormPage(page);
-    const flatDetail = new FlatDetailPage(page);
 
     await flatForm.gotoCreate();
-    await flatForm.createFlat('Test Flat for Edit', 'Edit Test Address 123');
+    await flatForm.createFlat("Test Flat for Edit", "Edit Test Address 123");
 
     // Wait for redirect and capture flat ID
     await page.waitForURL(/\/flats\/([a-f0-9-]+)$/);
     const url = page.url();
     const match = url.match(/\/flats\/([a-f0-9-]+)$/);
-    createdFlatId = match ? match[1] : '';
+    createdFlatId = match ? match[1] : "";
   });
 
-  test('should edit a flat successfully', async ({ authenticatedPage: page }) => {
+  test("should edit a flat successfully", async ({ authenticatedPage: page }) => {
     // Arrange
     const headerNav = new HeaderNavigationPage(page);
     const flatDetail = new FlatDetailPage(page);
@@ -132,8 +126,8 @@ test.describe('Edit and Delete Flat Flow', () => {
     await flatDetail.clickEdit();
 
     // Update the flat details
-    const updatedName = 'Updated Flat Name';
-    const updatedAddress = 'Updated Address 456';
+    const updatedName = "Updated Flat Name";
+    const updatedAddress = "Updated Address 456";
 
     // Fill the form
     await flatForm.fillForm(updatedName, updatedAddress);
@@ -156,7 +150,7 @@ test.describe('Edit and Delete Flat Flow', () => {
     await expect(flatDetail.address).toHaveText(updatedAddress);
   });
 
-  test('should delete a flat successfully', async ({ authenticatedPage: page }) => {
+  test("should delete a flat successfully", async ({ authenticatedPage: page }) => {
     // Arrange
     const flatDetail = new FlatDetailPage(page);
     const dashboard = new DashboardPage(page);
@@ -173,14 +167,14 @@ test.describe('Edit and Delete Flat Flow', () => {
     await flatDetail.confirmDelete();
 
     // Assert - Should redirect to dashboard
-    await page.waitForURL('**/dashboard**');
+    await page.waitForURL("**/dashboard**");
 
     // Verify flat no longer exists on dashboard
     const hasCard = await dashboard.hasFlatCard(createdFlatId);
     expect(hasCard).toBe(false);
   });
 
-  test('should cancel flat deletion', async ({ authenticatedPage: page }) => {
+  test("should cancel flat deletion", async ({ authenticatedPage: page }) => {
     // Arrange
     const flatDetail = new FlatDetailPage(page);
 
@@ -198,4 +192,3 @@ test.describe('Edit and Delete Flat Flow', () => {
     expect(page.url()).toContain(createdFlatId);
   });
 });
-

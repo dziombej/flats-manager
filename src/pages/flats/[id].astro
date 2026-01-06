@@ -1,11 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import type {
-  FlatDto,
-  PaymentTypesResponseDto,
-  PaymentsResponseDto,
-  FlatDetailViewModel,
-} from "../../types";
+import type { FlatDto, PaymentTypesResponseDto, PaymentsResponseDto, FlatDetailViewModel } from "../../types";
 import { transformFlatDetailData } from "../../lib/flat-detail-transformers";
 import FlatDetailHeader from "../../components/FlatDetailHeader";
 import PaymentTypesSection from "../../components/PaymentTypesSection";
@@ -46,52 +41,43 @@ try {
   }
 
   flat = await flatResponse.json();
-} catch (error) {
-  console.error("Error fetching flat:", error);
+} catch {
   return Astro.redirect("/dashboard?error=fetch_failed");
 }
 
 // Fetch payment types
 let paymentTypesData: PaymentTypesResponseDto;
 try {
-  const paymentTypesResponse = await fetch(
-    `${Astro.url.origin}/api/flats/${id}/payment-types`,
-    {
-      headers: {
-        Cookie: Astro.request.headers.get("Cookie") || "",
-      },
-    }
-  );
+  const paymentTypesResponse = await fetch(`${Astro.url.origin}/api/flats/${id}/payment-types`, {
+    headers: {
+      Cookie: Astro.request.headers.get("Cookie") || "",
+    },
+  });
 
   if (!paymentTypesResponse.ok) {
     throw new Error("Failed to fetch payment types");
   }
 
   paymentTypesData = await paymentTypesResponse.json();
-} catch (error) {
-  console.error("Error fetching payment types:", error);
+} catch {
   paymentTypesData = { payment_types: [] };
 }
 
 // Fetch payments (default: unpaid only)
 let paymentsData: PaymentsResponseDto;
 try {
-  const paymentsResponse = await fetch(
-    `${Astro.url.origin}/api/flats/${id}/payments?is_paid=false`,
-    {
-      headers: {
-        Cookie: Astro.request.headers.get("Cookie") || "",
-      },
-    }
-  );
+  const paymentsResponse = await fetch(`${Astro.url.origin}/api/flats/${id}/payments?is_paid=false`, {
+    headers: {
+      Cookie: Astro.request.headers.get("Cookie") || "",
+    },
+  });
 
   if (!paymentsResponse.ok) {
     throw new Error("Failed to fetch payments");
   }
 
   paymentsData = await paymentsResponse.json();
-} catch (error) {
-  console.error("Error fetching payments:", error);
+} catch {
   paymentsData = { payments: [] };
 }
 
@@ -109,17 +95,13 @@ const viewModel: FlatDetailViewModel = transformFlatDetailData(
     <nav class="mb-6 text-sm">
       <ol class="flex items-center space-x-2 text-muted-foreground">
         <li>
-          <a href="/dashboard" class="hover:text-foreground transition-colors">
-            Dashboard
-          </a>
+          <a href="/dashboard" class="hover:text-foreground transition-colors"> Dashboard </a>
         </li>
         <li>
           <span class="mx-2">/</span>
         </li>
         <li>
-          <a href="/dashboard" class="hover:text-foreground transition-colors">
-            Flats
-          </a>
+          <a href="/dashboard" class="hover:text-foreground transition-colors"> Flats </a>
         </li>
         <li>
           <span class="mx-2">/</span>
@@ -138,10 +120,12 @@ const viewModel: FlatDetailViewModel = transformFlatDetailData(
         <div class="bg-card text-card-foreground rounded-lg border p-6" data-test-id="flat-detail-total-debt">
           <h3 class="text-sm font-medium text-muted-foreground mb-2">Total Debt</h3>
           <p class="text-3xl font-bold">
-            {new Intl.NumberFormat("pl-PL", {
-              style: "currency",
-              currency: "PLN",
-            }).format(viewModel.stats.totalDebt)}
+            {
+              new Intl.NumberFormat("pl-PL", {
+                style: "currency",
+                currency: "PLN",
+              }).format(viewModel.stats.totalDebt)
+            }
           </p>
         </div>
 
@@ -152,7 +136,10 @@ const viewModel: FlatDetailViewModel = transformFlatDetailData(
         </div>
 
         <!-- Pending Payments Count Card -->
-        <div class="bg-card text-card-foreground rounded-lg border p-6" data-test-id="flat-detail-pending-payments-count">
+        <div
+          class="bg-card text-card-foreground rounded-lg border p-6"
+          data-test-id="flat-detail-pending-payments-count"
+        >
           <h3 class="text-sm font-medium text-muted-foreground mb-2">Pending Payments</h3>
           <p class="text-3xl font-bold">{viewModel.stats.pendingPaymentsCount}</p>
         </div>
@@ -160,18 +147,9 @@ const viewModel: FlatDetailViewModel = transformFlatDetailData(
     </section>
 
     <!-- Payment Types Section -->
-    <PaymentTypesSection
-      paymentTypes={viewModel.paymentTypes}
-      flatId={flat.id}
-      client:load
-    />
+    <PaymentTypesSection paymentTypes={viewModel.paymentTypes} flatId={flat.id} client:load />
 
     <!-- Payments Section -->
-    <PaymentsSection
-      payments={viewModel.payments}
-      flatId={flat.id}
-      client:load
-    />
+    <PaymentsSection payments={viewModel.payments} flatId={flat.id} client:load />
   </main>
 </Layout>
-

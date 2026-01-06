@@ -1,4 +1,4 @@
-import type { Page, Locator } from '@playwright/test';
+import type { Page, Locator } from "@playwright/test";
 
 /**
  * Page Object Model for Dashboard Page
@@ -15,7 +15,7 @@ export class DashboardPage {
    * Navigate to the dashboard
    */
   async goto() {
-    await this.page.goto('/dashboard');
+    await this.page.goto("/dashboard");
   }
 
   /**
@@ -29,28 +29,28 @@ export class DashboardPage {
    * Get flat card name by flat ID
    */
   getFlatCardName(flatId: string): Locator {
-    return this.getFlatCard(flatId).getByTestId('flat-card-name');
+    return this.getFlatCard(flatId).getByTestId("flat-card-name");
   }
 
   /**
    * Get flat card address by flat ID
    */
   getFlatCardAddress(flatId: string): Locator {
-    return this.getFlatCard(flatId).getByTestId('flat-card-address');
+    return this.getFlatCard(flatId).getByTestId("flat-card-address");
   }
 
   /**
    * Get flat card status by flat ID
    */
   getFlatCardStatus(flatId: string): Locator {
-    return this.getFlatCard(flatId).getByTestId('flat-card-status');
+    return this.getFlatCard(flatId).getByTestId("flat-card-status");
   }
 
   /**
    * Get flat card total debt by flat ID
    */
   getFlatCardTotalDebt(flatId: string): Locator {
-    return this.getFlatCard(flatId).getByTestId('flat-card-total-debt');
+    return this.getFlatCard(flatId).getByTestId("flat-card-total-debt");
   }
 
   /**
@@ -71,35 +71,35 @@ export class DashboardPage {
    * Get flat card name text
    */
   async getFlatCardNameText(flatId: string): Promise<string> {
-    return await this.getFlatCardName(flatId).textContent() || '';
+    return (await this.getFlatCardName(flatId).textContent()) || "";
   }
 
   /**
    * Get flat card address text
    */
   async getFlatCardAddressText(flatId: string): Promise<string> {
-    return await this.getFlatCardAddress(flatId).textContent() || '';
+    return (await this.getFlatCardAddress(flatId).textContent()) || "";
   }
 
   /**
    * Get flat card status text
    */
   async getFlatCardStatusText(flatId: string): Promise<string> {
-    return await this.getFlatCardStatus(flatId).textContent() || '';
+    return (await this.getFlatCardStatus(flatId).textContent()) || "";
   }
 
   /**
    * Get flat card total debt text
    */
   async getFlatCardTotalDebtText(flatId: string): Promise<string> {
-    return await this.getFlatCardTotalDebt(flatId).textContent() || '';
+    return (await this.getFlatCardTotalDebt(flatId).textContent()) || "";
   }
 
   /**
    * Click on a flat card to navigate to its detail page
    */
   async clickFlatCard(flatId: string) {
-    const viewDetailsButton = this.getFlatCard(flatId).getByRole('button', { name: /view details/i });
+    const viewDetailsButton = this.getFlatCard(flatId).getByRole("button", { name: /view details/i });
     await viewDetailsButton.click();
     await this.page.waitForURL(`**/flats/${flatId}`);
   }
@@ -115,18 +115,13 @@ export class DashboardPage {
    * Wait for dashboard to load
    */
   async waitForLoad() {
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState("networkidle");
   }
 
   /**
    * Verify flat card details
    */
-  async verifyFlatCard(
-    flatId: string,
-    expectedName: string,
-    expectedStatus: string,
-    expectedDebt: string
-  ) {
+  async verifyFlatCard(flatId: string, expectedName: string, expectedStatus: string, expectedDebt: string) {
     const actualName = await this.getFlatCardNameText(flatId);
     const actualStatus = await this.getFlatCardStatusText(flatId);
     const actualDebt = await this.getFlatCardTotalDebtText(flatId);
@@ -153,15 +148,14 @@ export class DashboardPage {
 
     for (let i = 0; i < count; i++) {
       const card = allCards.nth(i);
-      const cardName = await card.getByTestId('flat-card-name').textContent();
+      const cardName = await card.getByTestId("flat-card-name").textContent();
 
       if (cardName?.trim() === name) {
-        const testId = await card.getAttribute('data-test-id');
-        return testId?.replace('flat-card-', '') || null;
+        const testId = await card.getAttribute("data-test-id");
+        return testId?.replace("flat-card-", "") || null;
       }
     }
 
     return null;
   }
 }
-

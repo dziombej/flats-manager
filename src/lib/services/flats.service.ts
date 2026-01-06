@@ -122,7 +122,6 @@ export class FlatsService {
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
-
     if (error) {
       console.error("[FlatsService.getAllFlats] Error details:", {
         message: error.message,
@@ -203,11 +202,7 @@ export class FlatsService {
    * Used by PUT /api/flats/:id
    * Returns null if flat not found or doesn't belong to user
    */
-  async updateFlat(
-    flatId: string,
-    userId: string,
-    command: UpdateFlatCommand
-  ): Promise<FlatDto | null> {
+  async updateFlat(flatId: string, userId: string, command: UpdateFlatCommand): Promise<FlatDto | null> {
     // Validate UUID formats
     if (!isValidUUID(flatId)) {
       console.error("[FlatsService.updateFlat] Invalid flat ID format:", flatId);
@@ -256,11 +251,7 @@ export class FlatsService {
       throw new Error(`Invalid user ID format: ${userId}`);
     }
 
-    const { error } = await this.supabase
-      .from("flats")
-      .delete()
-      .eq("id", flatId)
-      .eq("user_id", userId);
+    const { error } = await this.supabase.from("flats").delete().eq("id", flatId).eq("user_id", userId);
 
     if (error) {
       throw new Error(`Failed to delete flat: ${error.message}`);
@@ -325,10 +316,12 @@ export class FlatsService {
     // Fetch the payment type with a join to verify ownership through the flat
     const { data, error } = await this.supabase
       .from("payment_types")
-      .select(`
+      .select(
+        `
         *,
         flats!inner(user_id)
-      `)
+      `
+      )
       .eq("id", paymentTypeId)
       .eq("flats.user_id", userId)
       .single();
@@ -505,7 +498,8 @@ export class FlatsService {
       query = query.eq("is_paid", filters.is_paid);
     }
 
-    query = query.order("year", { ascending: false })
+    query = query
+      .order("year", { ascending: false })
       .order("month", { ascending: false })
       .order("created_at", { ascending: false });
 
@@ -652,4 +646,3 @@ export class FlatsService {
     return data;
   }
 }
-

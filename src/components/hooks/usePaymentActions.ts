@@ -15,11 +15,7 @@ interface UsePaymentActionsReturn {
  * Custom hook for payment actions
  * Handles marking payments as paid with optimistic updates
  */
-export function usePaymentActions({
-  flatId,
-  onSuccess,
-  onError,
-}: UsePaymentActionsOptions): UsePaymentActionsReturn {
+export function usePaymentActions({ onSuccess, onError }: UsePaymentActionsOptions): UsePaymentActionsReturn {
   const [markingPaymentId, setMarkingPaymentId] = useState<string | null>(null);
 
   const markAsPaid = useCallback(
@@ -51,4 +47,3 @@ export function usePaymentActions({
     markingPaymentId,
   };
 }
-

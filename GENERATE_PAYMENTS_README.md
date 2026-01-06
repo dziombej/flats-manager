@@ -49,6 +49,7 @@ src/
 ## Features Implemented
 
 ### 1. Page Structure (`generate.astro`)
+
 - Server-side authentication check
 - Flat ID validation (UUID format)
 - Data fetching:
@@ -64,6 +65,7 @@ src/
 ### 2. Form Component (`GeneratePaymentsForm.tsx`)
 
 #### State Management
+
 - **Form State**: Month, year, validation errors, submission status
 - **Success State**: Generation result display
 - **Default Values**: Pre-filled with current month and year
@@ -71,12 +73,14 @@ src/
 #### User Interface Sections
 
 **a) Date Selection Section**
+
 - Month dropdown (January-December)
 - Year number input (1900-2100)
 - Inline validation error messages
 - Clear labels and accessibility
 
 **b) Preview Section**
+
 - Real-time preview of payments to be generated
 - List of payment types with amounts
 - Summary card showing:
@@ -85,6 +89,7 @@ src/
 - Updates automatically as selections change
 
 **c) Form Actions**
+
 - Cancel button → returns to flat details
 - Generate button with:
   - Disabled state when form invalid
@@ -92,6 +97,7 @@ src/
   - Error handling with user feedback
 
 **d) Success State**
+
 - Checkmark icon with success message
 - Count of generated payments
 - Month/year confirmation
@@ -99,6 +105,7 @@ src/
 - "Generate More Payments" option
 
 #### Validation
+
 - Client-side validation:
   - Month: 1-12 (required)
   - Year: 1900-2100 (required)
@@ -106,6 +113,7 @@ src/
 - Server-side validation handled by API
 
 #### API Integration
+
 - POST `/api/flats/:flatId/payments/generate`
 - Request body: `{ month: number, year: number }`
 - Response handling:
@@ -115,6 +123,7 @@ src/
   - 500: Server error → show alert (TODO: use toast)
 
 #### Currency Formatting
+
 - Uses `Intl.NumberFormat` for Polish Zloty (PLN)
 - Format: "1 000,00 zł"
 - Locale: "pl-PL"
@@ -141,22 +150,26 @@ src/
 ## Edge Cases Handled
 
 ### No Payment Types
+
 - Clear error message displayed
 - Action button to return to flat details
 - Prevents form from rendering
 
 ### Validation Errors
+
 - Month out of range (1-12)
 - Year out of range (1900-2100)
 - Inline error messages
 - Generate button disabled
 
 ### Duplicate Payments
+
 - Handled server-side with `ON CONFLICT DO NOTHING`
 - API returns 409 with generated count
 - UI treats as success with informational message
 
 ### Network Errors
+
 - Form re-enabled after error
 - Error message displayed (alert for now)
 - User can retry without losing state
@@ -178,33 +191,39 @@ src/
 The following enhancements are planned for future iterations:
 
 ### 4. Enhanced Error Handling
+
 - Replace `alert()` with toast notifications
 - Implement retry logic for network errors
 - Better error messages with recovery actions
 
 ### 5. Payment Type Selection (Optional)
+
 - Allow users to select specific payment types
 - Select all / deselect all functionality
 - API enhancement to accept `payment_type_ids[]`
 
 ### 6. Advanced Features
+
 - Bulk generation for multiple months
 - Copy payments from previous month
 - Payment amount overrides
 - Notes/comments per payment
 
 ### 7. Accessibility Improvements
+
 - Screen reader testing
 - Keyboard navigation optimization
 - Focus management
 - Color contrast verification
 
 ### 8. Performance Optimizations
+
 - Debounce preview calculations
 - Lazy load success state animations
 - Optimize re-renders
 
 ### 9. Testing
+
 - Unit tests for validation logic
 - Integration tests for API calls
 - E2E tests for complete user flow
@@ -225,6 +244,7 @@ npm run dev
 ```
 
 The script tests:
+
 1. Generating payments for a valid month/year
 2. Attempting to generate duplicates (409 conflict)
 3. Invalid month validation (400 error)
@@ -234,6 +254,7 @@ The script tests:
 ## Dependencies
 
 ### Required
+
 - ✅ Astro 5
 - ✅ React 19
 - ✅ TypeScript 5
@@ -244,28 +265,33 @@ The script tests:
 - ✅ API endpoint: `GET /api/flats/:flatId/payment-types`
 
 ### Future
+
 - Toast notification system (for replacing alert())
 - Form library (React Hook Form + Zod) for enhanced validation
 
 ## Technical Decisions
 
 ### Why native `<select>` instead of Shadcn Select?
+
 - Simpler implementation for MVP
 - Better mobile experience
 - No accessibility concerns
 - Can upgrade later if needed
 
 ### Why `useMemo` for preview?
+
 - Prevents unnecessary recalculations
 - Performance optimization
 - Clean separation of derived state
 
 ### Why separate success state component?
+
 - Clear separation of concerns
 - Better UX with focused success message
 - Easy to test independently
 
 ### Why validate both client and server-side?
+
 - Client-side: Immediate user feedback
 - Server-side: Security and data integrity
 - Belt and suspenders approach
@@ -308,4 +334,3 @@ These limitations are by design for MVP and will be addressed in future iteratio
 **Implementation Date**: January 4, 2026  
 **Implementation Time**: ~1 hour  
 **Status**: Ready for testing and review
-

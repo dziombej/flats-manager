@@ -23,13 +23,13 @@ const user = Astro.locals.user;
     <ViewTransitions />
     <script is:inline>
       // Prevent flash of unstyled content (FOUC) by setting theme before page renders
-      (function() {
-        const savedTheme = localStorage.getItem('theme');
-        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      (function () {
+        const savedTheme = localStorage.getItem("theme");
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         const theme = savedTheme || systemTheme;
 
-        if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
+        if (theme === "dark") {
+          document.documentElement.classList.add("dark");
         }
       })();
     </script>

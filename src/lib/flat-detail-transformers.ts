@@ -76,4 +76,3 @@ export function transformFlatDetailData(
     payments: payments.map(transformPaymentToViewModel),
   };
 }
-

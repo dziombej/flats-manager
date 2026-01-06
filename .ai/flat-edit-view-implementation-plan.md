@@ -25,6 +25,7 @@ FlatFormPage.astro (Main page container)
 ```
 
 ### Component Hierarchy:
+
 1. **FlatFormPage.astro** - Server-rendered page wrapper that handles initial data loading for edit mode
 2. **FlatForm** - Client-side React component handling form state, validation, and submission
 
@@ -35,6 +36,7 @@ FlatFormPage.astro (Main page container)
 **Description**: Server-rendered Astro page that acts as a container for the flat form. In edit mode, it fetches the existing flat data from the API and passes it to the FlatForm component. In create mode, it renders an empty form.
 
 **Main elements**:
+
 - Layout wrapper with proper title
 - Breadcrumb navigation
 - Page header with dynamic title ("Add New Flat" or "Edit Flat")
@@ -44,11 +46,13 @@ FlatFormPage.astro (Main page container)
 
 **Handled events**: None (server-rendered)
 
-**Handled validation**: 
+**Handled validation**:
+
 - URL parameter validation (checking if `id` is a valid UUID in edit mode)
 - 404 handling if flat doesn't exist or doesn't belong to the user
 
 **Types**:
+
 - `FlatDto` - For fetched flat data in edit mode
 - `FlatFormViewModel` - View model passed to FlatForm component
 
@@ -59,6 +63,7 @@ FlatFormPage.astro (Main page container)
 **Description**: Interactive form component that handles user input for creating or editing a flat. Manages form state, performs client-side validation, submits data to the API, and handles success/error states.
 
 **Main elements**:
+
 - Form container with proper semantic HTML (`<form>` element)
 - Name input field (Input component from Shadcn/ui)
 - Address input field (Input component from Shadcn/ui)
@@ -69,12 +74,14 @@ FlatFormPage.astro (Main page container)
 - Loading state indicator during submission
 
 **Handled events**:
+
 - `onSubmit` - Form submission, prevents default, validates, and calls API
 - `onChange` for name field - Updates form state, clears field-specific errors
 - `onChange` for address field - Updates form state, clears field-specific errors
 - `onClick` on Cancel button - Navigates back to previous page
 
 **Handled validation**:
+
 - **Name field**:
   - Required: Must not be empty
   - Max length: 100 characters
@@ -88,6 +95,7 @@ FlatFormPage.astro (Main page container)
   - Submit button is enabled only when form is valid and not submitting
 
 **Types**:
+
 - `FlatFormProps` - Component props interface
 - `FlatFormState` - Form state interface
 - `CreateFlatCommand` - Request body for POST /api/flats
@@ -96,9 +104,10 @@ FlatFormPage.astro (Main page container)
 - `ValidationErrorResponseDto` - Error response with field-level validation errors
 
 **Props**:
+
 ```typescript
 interface FlatFormProps {
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   flatId?: string; // Required for edit mode
   initialData?: {
     name: string;
@@ -129,13 +138,14 @@ interface ValidationErrorResponseDto {
 The following new types need to be defined for this view:
 
 #### FlatFormViewModel
+
 ```typescript
 /**
  * Flat Form View Model
  * View model for flat form component
  */
 export interface FlatFormViewModel {
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   flatId?: string;
   initialName: string;
   initialAddress: string;
@@ -143,9 +153,10 @@ export interface FlatFormViewModel {
 ```
 
 #### FlatFormProps (Component-specific, in FlatForm.tsx)
+
 ```typescript
 interface FlatFormProps {
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   flatId?: string;
   initialData?: {
     name: string;
@@ -155,6 +166,7 @@ interface FlatFormProps {
 ```
 
 #### FlatFormState (Component-specific, in FlatForm.tsx)
+
 ```typescript
 interface FlatFormState {
   name: string;
@@ -177,7 +189,7 @@ State is managed locally within the `FlatForm` React component using the `useSta
 
 1. **formState** (FlatFormState)
    - Purpose: Manages all form-related state including field values, validation errors, submission status, and success state
-   - Initial value: 
+   - Initial value:
      - Create mode: `{ name: '', address: '', errors: {}, isSubmitting: false, isSuccess: false }`
      - Edit mode: `{ name: initialData.name, address: initialData.address, errors: {}, isSubmitting: false, isSuccess: false }`
    - Updates: On field changes, validation, submission, API response
@@ -197,6 +209,7 @@ State is managed locally within the `FlatForm` React component using the `useSta
 **Endpoint**: `POST /api/flats`
 
 **Request Type**: `CreateFlatCommand`
+
 ```typescript
 {
   name: string;
@@ -205,6 +218,7 @@ State is managed locally within the `FlatForm` React component using the `useSta
 ```
 
 **Success Response Type**: `FlatDto` (Status: 201 Created)
+
 ```typescript
 {
   id: string;
@@ -217,6 +231,7 @@ State is managed locally within the `FlatForm` React component using the `useSta
 ```
 
 **Error Response Type**: `ValidationErrorResponseDto` (Status: 400 Bad Request)
+
 ```typescript
 {
   error: "Validation failed";
@@ -228,6 +243,7 @@ State is managed locally within the `FlatForm` React component using the `useSta
 ```
 
 **Integration Steps**:
+
 1. Validate form client-side before submission
 2. Construct `CreateFlatCommand` from form state
 3. Send POST request with JSON body
@@ -241,6 +257,7 @@ State is managed locally within the `FlatForm` React component using the `useSta
 **Endpoint**: `PUT /api/flats/:id`
 
 **Request Type**: `UpdateFlatCommand`
+
 ```typescript
 {
   name: string;
@@ -249,6 +266,7 @@ State is managed locally within the `FlatForm` React component using the `useSta
 ```
 
 **Success Response Type**: `FlatDto` (Status: 200 OK)
+
 ```typescript
 {
   id: string;
@@ -261,6 +279,7 @@ State is managed locally within the `FlatForm` React component using the `useSta
 ```
 
 **Error Response Type**: `ValidationErrorResponseDto` (Status: 400 Bad Request)
+
 ```typescript
 {
   error: "Validation failed";
@@ -272,6 +291,7 @@ State is managed locally within the `FlatForm` React component using the `useSta
 ```
 
 **Integration Steps**:
+
 1. Validate form client-side before submission
 2. Construct `UpdateFlatCommand` from form state
 3. Send PUT request to `/api/flats/${flatId}` with JSON body
@@ -284,25 +304,29 @@ State is managed locally within the `FlatForm` React component using the `useSta
 ## 8. User Interactions
 
 ### 8.1. Typing in Name Field
+
 - **Trigger**: User types in the name input field
 - **Action**: Update `formState.name` with new value
 - **Validation**: Clear any existing error for the name field
 - **Visual Feedback**: Remove error styling from the field
 
 ### 8.2. Typing in Address Field
+
 - **Trigger**: User types in the address input field
 - **Action**: Update `formState.address` with new value
 - **Validation**: Clear any existing error for the address field
 - **Visual Feedback**: Remove error styling from the field
 
 ### 8.3. Clicking Cancel Button
+
 - **Trigger**: User clicks the Cancel button
-- **Action**: 
+- **Action**:
   - Create mode: Navigate to `/flats` (flats list)
   - Edit mode: Navigate to `/flats/[id]` (flat details page)
 - **Confirmation**: No confirmation dialog in MVP
 
 ### 8.4. Submitting Form
+
 - **Trigger**: User clicks Submit button or presses Enter in form
 - **Pre-validation**: Check all fields meet validation requirements
 - **Action if invalid**: Display field-specific error messages, focus first invalid field
@@ -317,8 +341,9 @@ State is managed locally within the `FlatForm` React component using the `useSta
 - **Error behavior**: Display errors inline, re-enable submit button
 
 ### 8.5. Viewing Validation Errors
+
 - **Trigger**: Form submission with invalid data or API validation error
-- **Display**: 
+- **Display**:
   - Field-level errors appear below respective input fields in red text
   - Input fields with errors have red border (aria-invalid attribute)
   - General form errors appear at the top of the form
@@ -329,7 +354,8 @@ State is managed locally within the `FlatForm` React component using the `useSta
 ### 9.1. Client-Side Validation (Pre-submission)
 
 #### Name Field Validation
-- **Required check**: 
+
+- **Required check**:
   - Condition: `name.trim().length === 0`
   - Error message: "Name is required"
   - When checked: On form submission, optionally on blur
@@ -339,6 +365,7 @@ State is managed locally within the `FlatForm` React component using the `useSta
   - When checked: On form submission, optionally on input (character counter)
 
 #### Address Field Validation
+
 - **Required check**:
   - Condition: `address.trim().length === 0`
   - Error message: "Address is required"
@@ -351,6 +378,7 @@ State is managed locally within the `FlatForm` React component using the `useSta
 ### 9.2. Form-Level Validation
 
 #### Submit Button State
+
 - **Enabled when**:
   - All required fields are filled
   - No validation errors present
@@ -363,6 +391,7 @@ State is managed locally within the `FlatForm` React component using the `useSta
 ### 9.3. Server-Side Validation (API Response)
 
 The API performs the same validation and may return additional errors:
+
 - Field-specific errors are displayed next to the respective fields
 - Unknown errors are displayed as general form errors
 - Validation error response structure is handled via `ValidationErrorResponseDto`
@@ -370,11 +399,13 @@ The API performs the same validation and may return additional errors:
 ### 9.4. Edit Mode Specific Conditions
 
 #### Flat Existence Check (Server-side in Astro page)
+
 - **Condition**: Flat with given ID exists and belongs to current user
 - **Check location**: In Astro page component, before rendering form
 - **Failure behavior**: Display 404 page or redirect to flats list with error message
 
 #### Flat ID Validation
+
 - **Condition**: `id` parameter is a valid UUID format
 - **Check location**: In Astro page component
 - **Failure behavior**: Display 400 error or redirect to flats list
@@ -384,14 +415,16 @@ The API performs the same validation and may return additional errors:
 ### 10.1. Client-Side Errors
 
 #### Validation Errors
+
 - **Scenario**: User submits form with invalid data
-- **Handling**: 
+- **Handling**:
   - Display field-specific errors below inputs
   - Set `aria-invalid` on invalid fields
   - Focus first invalid field
   - Keep submit button disabled until errors are resolved
 
 #### Network Errors
+
 - **Scenario**: API request fails due to network issues
 - **Handling**:
   - Catch fetch errors
@@ -402,6 +435,7 @@ The API performs the same validation and may return additional errors:
 ### 10.2. Server-Side Errors
 
 #### 400 Bad Request (Validation Error)
+
 - **Scenario**: Server-side validation fails
 - **Handling**:
   - Parse `ValidationErrorResponseDto`
@@ -410,12 +444,14 @@ The API performs the same validation and may return additional errors:
   - Re-enable submit button
 
 #### 401 Unauthorized
+
 - **Scenario**: User is not authenticated
 - **Handling**:
   - Redirect to login page with return URL: `/login?returnTo=/flats/new` or `/login?returnTo=/flats/[id]/edit`
   - Display message: "Your session has expired. Please log in again."
 
 #### 404 Not Found (Edit Mode Only)
+
 - **Scenario**: Flat doesn't exist or doesn't belong to user
 - **Handling**:
   - Display error message: "Flat not found or you don't have permission to edit it."
@@ -423,6 +459,7 @@ The API performs the same validation and may return additional errors:
   - Optionally redirect to `/flats` after 3 seconds
 
 #### 500 Internal Server Error
+
 - **Scenario**: Server error during processing
 - **Handling**:
   - Display general error message: "An error occurred while saving. Please try again."
@@ -433,29 +470,35 @@ The API performs the same validation and may return additional errors:
 ### 10.3. Edge Cases
 
 #### Concurrent Edit Protection
+
 - **Scenario**: In edit mode, another user edits the same flat simultaneously (unlikely but possible)
 - **MVP Handling**: No special handling - last write wins
 - **Future**: Implement optimistic locking with `updated_at` timestamp check
 
 #### Empty Spaces in Fields
+
 - **Scenario**: User enters only spaces in name or address
 - **Handling**: Trim values before validation, treat as empty if only whitespace
 
 #### Special Characters
+
 - **Scenario**: User enters special characters, emojis, or non-Latin characters
 - **Handling**: Allow all characters (no restriction in MVP), database handles UTF-8
 
 #### Browser Back Button
+
 - **Scenario**: User clicks back after successful creation/edit
 - **Handling**: Standard browser behavior, no special handling in MVP
 
 ## 11. Implementation Steps
 
 ### Step 1: Create Type Definitions
+
 1. Add `FlatFormViewModel` to `src/types.ts`
 2. Create `src/components/FlatForm.tsx` with local type definitions (`FlatFormProps`, `FlatFormState`)
 
 ### Step 2: Create FlatForm React Component
+
 1. Create `src/components/FlatForm.tsx`
 2. Import required dependencies:
    - React hooks: `useState`, `useEffect`
@@ -482,6 +525,7 @@ The API performs the same validation and may return additional errors:
     - Success state (for edit mode)
 
 ### Step 3: Create Astro Page for Create Mode
+
 1. Create `src/pages/flats/new.astro`
 2. Import `Layout` component
 3. Import `FlatForm` component
@@ -494,6 +538,7 @@ The API performs the same validation and may return additional errors:
    - FlatForm component with `client:load` directive, mode="create"
 
 ### Step 4: Create Astro Page for Edit Mode
+
 1. Create `src/pages/flats/[id]/edit.astro`
 2. Import `Layout` component
 3. Import `FlatForm` component
@@ -514,6 +559,7 @@ The API performs the same validation and may return additional errors:
 12. Add loading skeleton (optional, for better UX)
 
 ### Step 5: Update Navigation Links
+
 1. Update "Add New Flat" button in `src/pages/flats/index.astro`:
    - Change href to `/flats/new`
 2. Add "Edit" button/link in flat details page (`src/pages/flats/[id].astro`):
@@ -521,6 +567,7 @@ The API performs the same validation and may return additional errors:
 3. Update dashboard to include "Add Flat" action if not present
 
 ### Step 6: Add Styling
+
 1. Ensure consistent styling with existing pages
 2. Use Tailwind classes for layout and spacing
 3. Apply Shadcn/ui component styles
@@ -530,6 +577,7 @@ The API performs the same validation and may return additional errors:
 7. Ensure responsive design (desktop only in MVP, min-width: 1024px)
 
 ### Step 7: Testing
+
 1. **Create Mode Tests**:
    - Empty form submission (should show validation errors)
    - Valid form submission (should create flat and redirect)
@@ -556,18 +604,21 @@ The API performs the same validation and may return additional errors:
    - Rapid form submissions (should prevent with disabled state)
 
 ### Step 8: Error Handling Enhancement
+
 1. Implement proper error message display
 2. Add error boundary for React component (optional)
 3. Add console logging for debugging
 4. Test all error scenarios (400, 401, 404, 500)
 
 ### Step 9: Documentation
+
 1. Update README with new routes
 2. Document component props and usage
 3. Add JSDoc comments to functions
 4. Update API documentation if needed
 
 ### Step 10: Final Review
+
 1. Code review for best practices
 2. Lint and format code (ESLint, Prettier)
 3. Check TypeScript errors
@@ -575,4 +626,3 @@ The API performs the same validation and may return additional errors:
 5. Test integration with existing features (dashboard, flats list, flat details)
 6. Performance check (component should be lightweight)
 7. Security review (ensure no XSS vulnerabilities, proper input sanitization)
-

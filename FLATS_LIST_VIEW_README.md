@@ -7,21 +7,26 @@ The Flats List View provides a comprehensive display of all flats owned by the a
 ## 📁 Files Created
 
 ### Pages
+
 - **`src/pages/flats/index.astro`** - Main flats list page with server-side data fetching
 
 ### Components
+
 - **`src/components/FlatsListGrid.tsx`** - React component for responsive grid layout
 - **`src/components/FlatsListSkeleton.tsx`** - Loading skeleton component
 
 ### Services/Transformers
+
 - **`src/lib/flats-list-transformers.ts`** - View model transformations for flats data
 
 ### Testing
+
 - **`test-flats-list.sh`** - Basic integration test script
 
 ## 🎯 Features Implemented
 
 ### ✅ Core Features
+
 - [x] Server-side data fetching from `/api/flats`
 - [x] Responsive grid layout (1/2/3 columns based on screen size)
 - [x] Individual flat cards with hover and focus states
@@ -31,6 +36,7 @@ The Flats List View provides a comprehensive display of all flats owned by the a
 - [x] Loading skeleton for better UX
 
 ### ✅ Accessibility
+
 - [x] Semantic HTML with proper heading structure
 - [x] ARIA labels for screen readers
 - [x] Keyboard navigation support
@@ -39,6 +45,7 @@ The Flats List View provides a comprehensive display of all flats owned by the a
 - [x] Proper list/listitem roles
 
 ### ✅ Styling
+
 - [x] Tailwind utility classes
 - [x] Responsive breakpoints (mobile-first)
 - [x] Hover and focus states
@@ -87,6 +94,7 @@ The Flats List View provides a comprehensive display of all flats owned by the a
 ## 🎨 View Models
 
 ### FlatCardViewModel
+
 ```typescript
 {
   id: string;
@@ -106,6 +114,7 @@ The Flats List View provides a comprehensive display of all flats owned by the a
 ```
 
 ### FlatsListViewModel
+
 ```typescript
 {
   flats: FlatCardViewModel[];
@@ -136,11 +145,13 @@ The Flats List View provides a comprehensive display of all flats owned by the a
 ## 🔗 User Interactions
 
 ### Primary Actions
+
 1. **View Flat Details** - Click on any flat card → Navigate to `/flats/:id`
 2. **Add New Flat** - Click "Add New Flat" button → Navigate to `/flats/new`
 3. **Navigate to Dashboard** - Click breadcrumb link → Navigate to `/dashboard`
 
 ### Interactive States
+
 - **Hover**: Card shadow increases, border highlights, name color changes
 - **Focus**: Ring indicator appears around card
 - **Keyboard**: Tab through cards, Enter to navigate
@@ -148,15 +159,18 @@ The Flats List View provides a comprehensive display of all flats owned by the a
 ## 🛠️ Technical Details
 
 ### API Integration
+
 - **Endpoint**: `GET /api/flats`
 - **Response**: `FlatsResponseDto` with array of `FlatDto`
 - **Error Handling**: Try-catch with fallback error state
 
 ### Authentication
+
 - Currently using TODO comments (auth not fully implemented in MVP)
 - Ready for Supabase auth integration when available
 
 ### Performance
+
 - Server-side rendering for initial load
 - React hydration for interactivity (`client:load`)
 - Minimal JavaScript bundle
@@ -164,6 +178,7 @@ The Flats List View provides a comprehensive display of all flats owned by the a
 ## 🧪 Testing
 
 ### Manual Testing Checklist
+
 - [ ] Page loads at `/flats`
 - [ ] API data fetches correctly
 - [ ] Cards display with correct data
@@ -179,7 +194,9 @@ The Flats List View provides a comprehensive display of all flats owned by the a
 - [ ] Hover states work correctly
 
 ### Automated Testing
+
 Run the test script:
+
 ```bash
 ./test-flats-list.sh
 ```
@@ -187,6 +204,7 @@ Run the test script:
 ## 🚀 Future Enhancements
 
 ### Post-MVP Features
+
 - [ ] Search functionality
 - [ ] Sort options (by name, address, date)
 - [ ] Filter by status (overdue, paid)
@@ -198,6 +216,7 @@ Run the test script:
 - [ ] Payment statistics per flat
 
 ### Performance Optimizations
+
 - [ ] Virtual scrolling for very large lists
 - [ ] Image lazy loading
 - [ ] Optimistic UI updates
@@ -206,17 +225,20 @@ Run the test script:
 ## 📝 Notes
 
 ### Known Limitations
+
 1. **Debt Calculation**: Currently set to 0 as the `/api/flats` endpoint doesn't join with payments table. For accurate debt, users should check the dashboard or individual flat details.
 2. **Authentication**: Auth checks are commented out pending full Supabase auth implementation.
 3. **Tenant Info**: Not available in current database schema (MVP simplification).
 
 ### Design Decisions
+
 1. **Server-Side Rendering**: Chosen for better SEO and initial load performance
 2. **React for Cards**: Provides better interactivity and future extensibility
 3. **Minimal Client State**: Keeps implementation simple for MVP
 4. **No Pagination**: Assumes users manage 2-10 flats; can add later if needed
 
 ## 📚 Related Documentation
+
 - [Implementation Plan](.ai/flats-list-view-implementation-plan.md)
 - [Tech Stack](.ai/tech-stack.md)
 - [UI Components Guide](.cursor/rules/ui-shadcn-helper.mdc)
@@ -225,4 +247,3 @@ Run the test script:
 ## ✨ Summary
 
 This implementation successfully delivers a functional, accessible, and responsive Flats List View that meets all core requirements from the implementation plan. The view is ready for integration with the rest of the application and can be extended with additional features in future iterations.
-

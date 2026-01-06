@@ -43,11 +43,13 @@ supabase db push
 The seed migration creates two test users. You must first create these users in Supabase Auth:
 
 ### User 1: Admin (with sample data)
+
 - **Email:** admin@flatmanager.local
 - **Password:** password123
 - **Data:** 3 flats with payment types
 
 ### User 2: Test (empty state)
+
 - **Email:** test@flatmanager.local
 - **Password:** password123
 - **Data:** No flats (for testing empty dashboard)
@@ -57,18 +59,21 @@ The seed migration creates two test users. You must first create these users in 
 Before running migrations, create test users using Supabase Auth:
 
 ### Option 1: Supabase Dashboard
+
 1. Go to Authentication → Users
 2. Click "Add user" → "Create new user"
 3. Enter email and password for each test user
 4. Confirm email (disable email confirmation in development)
 
 ### Option 2: SQL (after enabling Auth)
+
 ```sql
 -- This requires appropriate Auth permissions
 -- Better to use Supabase Dashboard or API
 ```
 
 ### Option 3: API Call
+
 ```bash
 # Sign up user 1
 curl -X POST 'http://localhost:54321/auth/v1/signup' \
@@ -95,7 +100,7 @@ curl -X POST 'http://localhost:54321/auth/v1/signup' \
 auth.users (Supabase Auth)
     ↓ 1:1
 public.profiles
-    
+
 auth.users
     ↓ 1:N
 public.flats
@@ -129,14 +134,17 @@ All tables have Row Level Security (RLS) enabled. Users can only access their ow
 ## Troubleshooting
 
 ### Migration fails with "relation already exists"
+
 - Migrations are idempotent where possible, but some operations may fail on re-run
 - Use `supabase db reset` to start fresh in development
 
 ### Seed data doesn't appear
+
 - Ensure test users exist in `auth.users` before running seed migration
 - Check that emails match exactly: `admin@flatmanager.local` and `test@flatmanager.local`
 
 ### RLS policies blocking queries
+
 - Ensure you're using authenticated Supabase client
 - Verify `auth.uid()` returns the expected user ID
 - Check that foreign key relationships are correct
@@ -146,4 +154,3 @@ All tables have Row Level Security (RLS) enabled. Users can only access their ow
 - [Supabase CLI Documentation](https://supabase.com/docs/guides/cli)
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 - [Project Database Plan](../../.ai/db-plan.md)
-

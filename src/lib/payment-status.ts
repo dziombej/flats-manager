@@ -29,4 +29,3 @@ export function getPaymentBadgeLabel(payment: PaymentViewModel): string {
   if (payment.isOverdue) return "Overdue";
   return "Pending";
 }
-

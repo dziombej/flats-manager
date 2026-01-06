@@ -34,7 +34,12 @@ const { user } = Astro.props;
         </a>
 
         <nav class="hidden md:flex items-center gap-6" role="navigation" aria-label="Main navigation">
-          <a href="/dashboard" data-test-id="dashboard-link" class="text-sm font-medium hover:text-primary transition-colors" aria-current="page">
+          <a
+            href="/dashboard"
+            data-test-id="dashboard-link"
+            class="text-sm font-medium hover:text-primary transition-colors"
+            aria-current="page"
+          >
             Dashboard
           </a>
           <a href="/flats" class="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">

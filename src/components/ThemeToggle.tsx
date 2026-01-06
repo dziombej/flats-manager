@@ -11,9 +11,7 @@ export default function ThemeToggle() {
   // Load theme from localStorage on mount
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
-    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     const initialTheme = savedTheme || systemTheme;
 
     setTheme(initialTheme);
@@ -85,4 +83,3 @@ export default function ThemeToggle() {
     </button>
   );
 }
-
