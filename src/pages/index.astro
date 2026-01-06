@@ -7,8 +7,10 @@
 import Layout from "../layouts/Layout.astro";
 
 export const prerender = false;
-const { data: { user } } = await Astro.locals.supabase.auth.getUser();
-if (user) return Astro.redirect('/dashboard');
+const {
+  data: { user },
+} = await Astro.locals.supabase.auth.getUser();
+if (user) return Astro.redirect("/dashboard");
 ---
 
 <Layout title="Welcome - Flats Manager" showHeader={false}>
