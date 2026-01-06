@@ -61,6 +61,8 @@ jobs:
 
     env:
       CF_PAGES: true
+      SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.PUBLIC_SUPABASE_KEY }}
 
     steps:
       - name: Checkout Code
