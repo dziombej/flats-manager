@@ -14,9 +14,11 @@ const PUBLIC_PATHS = [
 
 export const onRequest = defineMiddleware(async (context, next) => {
   // Create Supabase client with SSR support
+  // Access Cloudflare runtime env if available (production), otherwise fallback to import.meta.env (local dev)
   const supabase = createSupabaseServerClient({
     cookies: context.cookies,
     headers: context.request.headers,
+    env: context.locals.runtime?.env,
   });
 
   // Store supabase client in locals

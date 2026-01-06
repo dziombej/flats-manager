@@ -19,8 +19,16 @@ function parseCookieHeader(cookieHeader: string): { name: string; value: string 
   });
 }
 
-export const createSupabaseServerClient = (context: { headers: Headers; cookies: AstroCookies }) => {
-  const supabase = createServerClient<Database>(import.meta.env.SUPABASE_URL, import.meta.env.SUPABASE_KEY, {
+export const createSupabaseServerClient = (context: {
+  headers: Headers;
+  cookies: AstroCookies;
+  env?: Record<string, string>;
+}) => {
+  // Try to get env from Cloudflare runtime context first, fallback to import.meta.env
+  const supabaseUrl = context.env?.SUPABASE_URL ?? import.meta.env.SUPABASE_URL;
+  const supabaseKey = context.env?.SUPABASE_KEY ?? import.meta.env.SUPABASE_KEY;
+
+  const supabase = createServerClient<Database>(supabaseUrl, supabaseKey, {
     cookies: {
       getAll() {
         return parseCookieHeader(context.headers.get("Cookie") ?? "");
