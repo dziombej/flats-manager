@@ -11,9 +11,6 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
 
-    env:
-      NODE_ENV: production
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -24,8 +21,6 @@ jobs:
           node-version: 20
 
       - name: Install Dependencies
-        env:
-          NODE_ENV: development
         run: npm install
 
       - name: Run Unit Tests
@@ -35,6 +30,8 @@ jobs:
         run: npm run test:e2e
 
       - name: Build for Production
+        env:
+          NODE_ENV: production
         run: npm run build
 
       - name: Upload Test Results
