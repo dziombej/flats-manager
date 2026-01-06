@@ -30,7 +30,7 @@ jobs:
         run: npm install vitest --save-dev
 
       - name: Current directory
-        run: pwd
+        run: ls -al
 
       - name: Run Unit Tests
         run: npm run test:run
