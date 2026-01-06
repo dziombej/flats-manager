@@ -85,5 +85,14 @@ export default tseslint.config(
     rules: {
       "prettier/prettier": "off",
     },
+  },
+  // Enable Node.js globals for config files
+  {
+    files: ["*.config.{js,mjs,ts}", "*.config.*.{js,mjs,ts}"],
+    languageOptions: {
+      globals: {
+        process: "readonly",
+      },
+    },
   }
 );
