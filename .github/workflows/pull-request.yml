@@ -101,6 +101,7 @@ jobs:
       - name: Run E2E Tests
         run: npm run test:e2e
         env:
+          NODE_ENV: test
           CI: true
 
       - name: Upload Playwright Report
