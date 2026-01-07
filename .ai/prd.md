@@ -596,187 +596,187 @@ Acceptance criteria:
 - During generation, all payment types assigned to apartment are taken
 - No ability to filter by status
 
-### 5.4. Generowanie i zarządzanie opłatami
+### 5.4. Payment Generation and Management
 
-US-015: Generowanie miesięcznych opłat jednym kliknięciem
-Jako właściciel chcę wygenerować wszystkie opłaty dla mieszkania na dany miesiąc jednym kliknięciem, aby zaoszczędzić czas
+US-015: Monthly Payment Generation with One Click
+As a landlord I want to generate all payments for apartment for given month with one click, to save time
 
-Kryteria akceptacji:
+Acceptance criteria:
 
-- Przycisk "Generuj opłaty" jest dostępny na stronie szczegółów mieszkania
-- Formularz wyboru zawiera: miesiąc (1-12), rok (liczba całkowita)
-- Po zatwierdzeniu system tworzy Payment dla każdego PaymentType mieszkania
-- Kwota Payment jest kopiowana z base_amount w momencie generowania
-- Wszystkie wygenerowane opłaty mają domyślnie is_paid = false
-- Po generowaniu opłaty są widoczne na liście
-- Komunikat sukcesu pokazuje liczbę wygenerowanych opłat
+- "Generate payments" button is available on apartment details page
+- Selection form contains: month (1-12), year (integer)
+- After confirmation system creates Payment for each PaymentType of apartment
+- Payment amount is copied from base_amount at generation time
+- All generated payments have default is_paid = false
+- After generation payments are visible on list
+- Success message shows number of generated payments
 
-US-016: Zapobieganie duplikatom opłat
-Jako właściciel nie mogę wygenerować ponownie opłaty dla tego samego typu i miesiąca, aby uniknąć duplikatów
+US-016: Preventing Payment Duplicates
+As a landlord I cannot generate payment again for same type and month, to avoid duplicates
 
-Kryteria akceptacji:
+Acceptance criteria:
 
-- Constraint w bazie: unique(payment_type_id, month, year)
-- Próba wygenerowania duplikatu zwraca błąd z bazy danych
-- Komunikat błędu informuje o istnieniu opłaty dla danego miesiąca
-- Brak sprawdzania duplikatów w UI przed wysłaniem (uproszczenie MVP)
-- Częściowe generowanie: jeśli jeden typ ma duplikat, reszta jest generowana
+- Constraint in database: unique(payment_type_id, month, year)
+- Attempt to generate duplicate returns database error
+- Error message informs about existence of payment for given month
+- No duplicate checking in UI before sending (MVP simplification)
+- Partial generation: if one type has duplicate, rest is generated
 
-US-017: Przeglądanie wygenerowanych opłat
-Jako właściciel chcę zobaczyć listę wygenerowanych opłat dla mieszkania, aby wiedzieć co jest do zapłacenia
+US-017: Browsing Generated Payments
+As a landlord I want to see list of generated payments for apartment, to know what needs to be paid
 
-Kryteria akceptacji:
+Acceptance criteria:
 
-- Lista opłat jest widoczna na stronie szczegółów mieszkania
-- Dla każdej opłaty pokazane są: nazwa typu, kwota, miesiąc/rok, status (opłacona/nieopłacona)
-- Domyślnie wyświetlane są wszystkie nieopłacone opłaty
-- Opłaty opłacone są wizualnie odróżnione (np. przekreślone, szare, zielony badge)
-- Lista jest sortowana po dacie (miesiąc/rok) malejąco
+- Payment list is visible on apartment details page
+- For each payment shown: type name, amount, month/year, status (paid/unpaid)
+- By default all unpaid payments are displayed
+- Paid payments are visually distinguished (e.g., strikethrough, gray, green badge)
+- List is sorted by date (month/year) descending
 
-US-018: Oznaczanie opłaty jako opłaconej
-Jako właściciel chcę oznaczyć nieopłaconą opłatę jako opłaconą, aby śledzić stan płatności
+US-018: Marking Payment as Paid
+As a landlord I want to mark unpaid payment as paid, to track payment status
 
-Kryteria akceptacji:
+Acceptance criteria:
 
-- Przycisk/checkbox "Oznacz jako opłacona" jest dostępny dla nieopłaconych opłat
-- Po kliknięciu system ustawia is_paid = true i paid_at = current timestamp
-- Zmiana statusu jest natychmiastowa i widoczna na liście
-- Zadłużenie na dashboardzie aktualizuje się automatycznie
-- Komunikat sukcesu potwierdza zmianę statusu
-- Opłata jest wizualnie oznaczona jako opłacona
+- "Mark as paid" button/checkbox is available for unpaid payments
+- After clicking system sets is_paid = true and paid_at = current timestamp
+- Status change is immediate and visible on list
+- Debt on dashboard updates automatically
+- Success message confirms status change
+- Payment is visually marked as paid
 
-US-019: Ochrona przed edycją opłaconej opłaty
-Jako właściciel nie mogę edytować opłaty która została już opłacona, aby zachować integralność danych finansowych
+US-019: Protection Against Editing Paid Payment
+As a landlord I cannot edit payment that was already paid, to maintain financial data integrity
 
-Kryteria akceptacji:
+Acceptance criteria:
 
-- Przycisk edycji jest ukryty/zablokowany dla opłat z is_paid = true
-- Próba edycji opłaconej opłaty wyświetla komunikat: "Nie można edytować opłaconej opłaty"
-- Brak możliwości zmiany kwoty opłaconej opłaty przez UI
-- Brak możliwości zmiany statusu z opłacona na nieopłacona w MVP
+- Edit button is hidden/disabled for payments with is_paid = true
+- Attempt to edit paid payment displays message: "Cannot edit paid payment"
+- No possibility to change amount of paid payment through UI
+- No possibility to change status from paid to unpaid in MVP
 
-### 5.5. Dashboard i raportowanie
+### 5.5. Dashboard and Reporting
 
-US-022: Dashboard jako domyślny widok po zalogowaniu
-Jako właściciel chcę zobaczyć dashboard zaraz po zalogowaniu, aby natychmiast mieć przegląd sytuacji
+US-022: Dashboard as Default View After Login
+As a landlord I want to see dashboard right after login, to immediately have overview of situation
 
-Kryteria akceptacji:
+Acceptance criteria:
 
-- Po zalogowaniu użytkownik jest automatycznie przekierowany na dashboard
-- Dashboard jest domyślną stroną główną aplikacji
-- Możliwy jest powrót do dashboardu z każdej strony (link w nawigacji)
+- After login user is automatically redirected to dashboard
+- Dashboard is the default home page of application
+- Return to dashboard from any page is possible (link in navigation)
 
-US-023: Przegląd zadłużenia wszystkich mieszkań
-Jako właściciel chcę zobaczyć zadłużenie per mieszkanie na dashboardzie, aby szybko zidentyfikować problematyczne lokale
+US-023: Overview of Debt for All Apartments
+As a landlord I want to see debt per apartment on dashboard, to quickly identify problematic properties
 
-Kryteria akceptacji:
+Acceptance criteria:
 
-- Dashboard wyświetla listę mieszkań z zadłużeniem
-- Zadłużenie = suma kwot (amount) gdzie is_paid = false dla danego mieszkania
-- Zadłużenie jest wyświetlane w formacie: "1 234.56 PLN"
-- Mieszkanie bez zadłużenia pokazuje "0.00 PLN"
-- Zadłużenie jest obliczane dynamicznie przy każdym ładowaniu
-- Mieszkania z największym zadłużeniem można łatwo zidentyfikować
+- Dashboard displays list of apartments with debt
+- Debt = sum of amounts (amount) where is_paid = false for given apartment
+- Debt is displayed in format: "1 234.56 PLN"
+- Apartment without debt shows "0.00 PLN"
+- Debt is calculated dynamically on each load
+- Apartments with highest debt can be easily identified
 
-US-024: Niezależność metryk od filtra czasowego
-Jako właściciel chcę aby zadłużenie na dashboardzie pokazywało całkowitą sumę nieopłaconych opłat niezależnie od wybranego filtru, aby mieć pełny obraz sytuacji
+US-024: Metrics Independence from Time Filter
+As a landlord I want debt on dashboard to show total sum of unpaid payments regardless of selected filter, to have full picture of situation
 
-Kryteria akceptacji:
+Acceptance criteria:
 
-- Zadłużenie na dashboardzie nie zmienia się po zastosowaniu filtru czasowego
-- Zadłużenie zawsze oblicza sumę wszystkich nieopłaconych opłat (bez ograniczenia czasowego)
-- Filtr po miesiącu/roku wpływa tylko na widok listy opłat
-- Metryki dashboardu są całkowicie niezależne od filtrów
+- Debt on dashboard does not change after applying time filter
+- Debt always calculates sum of all unpaid payments (without time limitation)
+- Month/year filter affects only payment list view
+- Dashboard metrics are completely independent from filters
 
-US-025: Filtrowanie opłat po miesiącu i roku
-Jako właściciel chcę filtrować opłaty po miesiącu i roku, aby analizować konkretny okres
+US-025: Filtering Payments by Month and Year
+As a landlord I want to filter payments by month and year, to analyze specific period
 
-Kryteria akceptacji:
+Acceptance criteria:
 
-- Formularz filtra zawiera: miesiąc (1-12), rok (liczba całkowita)
-- Po zastosowaniu filtru wyświetlane są tylko opłaty z wybranego miesiąca/roku
-- Możliwe jest resetowanie filtru do widoku domyślnego (wszystkie nieopłacone)
-- Filtr dotyczy tylko widoku opłat, nie wpływa na zadłużenie
-- Filtr jest zachowywany podczas nawigacji w ramach mieszkania
-- Stan filtru jest widoczny dla użytkownika
+- Filter form contains: month (1-12), year (integer)
+- After applying filter only payments from selected month/year are displayed
+- Resetting filter to default view (all unpaid) is possible
+- Filter affects only payment view, does not affect debt
+- Filter is preserved during navigation within apartment
+- Filter state is visible to user
 
-US-026: Domyślny widok wszystkich nieopłaconych opłat
-Jako właściciel chcę aby domyślnie wyświetlane były wszystkie nieopłacone opłaty bez ograniczenia czasowego, aby widzieć pełny obraz zaległości
+US-026: Default View of All Unpaid Payments
+As a landlord I want all unpaid payments to be displayed by default without time limitation, to see full picture of arrears
 
-Kryteria akceptacji:
+Acceptance criteria:
 
-- Po wejściu na stronę mieszkania wyświetlane są wszystkie opłaty z is_paid = false
-- Brak domyślnego filtru czasowego
-- Użytkownik widzi wszystkie zaległości niezależnie od miesiąca
-- Możliwe jest zastosowanie filtru aby zawęzić widok do konkretnego okresu
+- After entering apartment page all payments with is_paid = false are displayed
+- No default time filter
+- User sees all arrears regardless of month
+- Filter can be applied to narrow view to specific period
 
-US-027: Szybki dostęp do szczegółów mieszkania z dashboardu
-Jako właściciel chcę kliknąć w mieszkanie na dashboardzie, aby szybko przejść do szczegółów i akcji
+US-027: Quick Access to Apartment Details from Dashboard
+As a landlord I want to click on apartment on dashboard, to quickly go to details and actions
 
-Kryteria akceptacji:
+Acceptance criteria:
 
-- Każde mieszkanie na liście jest klikalnym linkiem
-- Kliknięcie przenosi do strony szczegółów mieszkania
-- Z poziomu szczegółów możliwy jest powrót do dashboardu
-- Nawigacja jest intuicyjna i spójna w całej aplikacji
+- Each apartment on list is a clickable link
+- Click takes to apartment details page
+- From details level return to dashboard is possible
+- Navigation is intuitive and consistent throughout application
 
-### 5.6. Walidacja i obsługa błędów
+### 5.6. Validation and Error Handling
 
-US-028: Walidacja formularzy przed zapisem
-Jako użytkownik chcę aby system walidował dane przed zapisem, aby uniknąć błędów
+US-028: Form Validation Before Saving
+As a user I want system to validate data before saving, to avoid errors
 
-Kryteria akceptacji:
+Acceptance criteria:
 
-- Wszystkie pola wymagane muszą być wypełnione (walidacja)
-- Kwoty (base_amount, amount) muszą być >= 0 (check constraint + walidacja UI)
-- Miesiąc musi być w zakresie 1-12 (walidacja)
-- Rok musi być liczbą całkowitą (walidacja)
-- Data płatności może być w przyszłości (brak ograniczenia)
-- Błędy walidacji są wyświetlane przy odpowiednich polach
-- Formularz nie jest wysyłany jeśli walidacja nie przeszła
+- All required fields must be filled (validation)
+- Amounts (base_amount, amount) must be >= 0 (check constraint + UI validation)
+- Month must be in range 1-12 (validation)
+- Year must be an integer (validation)
+- Payment date can be in future (no restriction)
+- Validation errors are displayed at appropriate fields
+- Form is not submitted if validation did not pass
 
-US-029: Zrozumiałe komunikaty błędów
-Jako użytkownik chcę otrzymywać zrozumiałe komunikaty błędów, aby wiedzieć co poszło nie tak
+US-029: Understandable Error Messages
+As a user I want to receive understandable error messages, to know what went wrong
 
-Kryteria akceptacji:
+Acceptance criteria:
 
-- Komunikaty błędów są w języku polskim
-- Przykłady: "Kwota nie może być ujemna", "Pole wymagane", "Miesiąc musi być od 1 do 12"
-- Błędy z bazy danych są tłumaczone na przyjazne komunikaty
-- Duplikat opłaty: "Opłata dla tego typu już istnieje w wybranym miesiącu"
-- Constraint violation: komunikat wyjaśnia co jest nie tak
-- Komunikaty są wyświetlane w widocznym miejscu
+- Error messages are in Polish
+- Examples: "Amount cannot be negative", "Required field", "Month must be from 1 to 12"
+- Database errors are translated to friendly messages
+- Payment duplicate: "Payment for this type already exists in selected month"
+- Constraint violation: message explains what is wrong
+- Messages are displayed in visible place
 
-US-030: Potwierdzenia pomyślnych akcji
-Jako użytkownik chcę otrzymywać potwierdzenia że akcja się powiodła, aby mieć pewność
+US-030: Confirmations of Successful Actions
+As a user I want to receive confirmations that action succeeded, to be sure
 
-Kryteria akceptacji:
+Acceptance criteria:
 
-- Po pomyślnej akcji wyświetlany jest komunikat sukcesu
-- Przykłady: "Mieszkanie dodane", "Opłata oznaczona jako opłacona", "Opłaty wygenerowane dla miesiąca X"
-- Komunikaty sukcesu są wizualnie odróżnione od błędów (np. kolor zielony)
-- Komunikat znika automatycznie po kilku sekundach lub po akcji użytkownika
+- After successful action success message is displayed
+- Examples: "Apartment added", "Payment marked as paid", "Payments generated for month X"
+- Success messages are visually distinguished from errors (e.g., green color)
+- Message disappears automatically after few seconds or after user action
 
-### 5.7. Seed data i inicjalizacja
+### 5.7. Seed Data and Initialization
 
-US-031: Automatyczne tworzenie danych testowych
-Jako deweloper/tester chcę aby system automatycznie tworzył dane testowe przy inicjalizacji, aby móc od razu przetestować funkcjonalności
+US-031: Automatic Creation of Test Data
+As a developer/tester I want system to automatically create test data on initialization, to be able to immediately test functionalities
 
-Kryteria akceptacji:
+Acceptance criteria:
 
-- Seed script tworzy 2 użytkowników testowych
-- User 1 (admin@flatmanager.local) ma 3 mieszkania
-  - Mieszkanie 1: "Żoliborz 1", "ul. Słowackiego 1"
+- Seed script creates 2 test users
+- User 1 (admin@flatmanager.local) has 3 apartments
+  - Apartment 1: "Żoliborz 1", "ul. Słowackiego 1"
     - PaymentType: "Czynsz", 1000 PLN
     - PaymentType: "Administracja", 200 PLN
-  - Mieszkanie 2: "Mokotów 2", "ul. Puławska 2"
+  - Apartment 2: "Mokotów 2", "ul. Puławska 2"
     - PaymentType: "Czynsz", 1500 PLN
-  - Mieszkanie 3: "Praga 3", "ul. Targowa 3"
+  - Apartment 3: "Praga 3", "ul. Targowa 3"
     - PaymentType: "Czynsz", 800 PLN
     - PaymentType: "Media", 150 PLN
-- User 2 (test@flatmanager.local) nie ma mieszkań
-- Seed script jest idempotentny (można uruchomić wielokrotnie)
-- Credentials są udokumentowane w README.md
+- User 2 (test@flatmanager.local) has no apartments
+- Seed script is idempotent (can be run multiple times)
+- Credentials are documented in README.md
 
 ### 5.8. Edge Cases and Alternative Scenarios
 

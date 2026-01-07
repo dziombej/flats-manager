@@ -1,42 +1,42 @@
-# Page Object Model (POM) - Dokumentacja
+# Page Object Model (POM) - Documentation
 
-## Przegląd
+## Overview
 
-Katalog `e2e/page-objects` zawiera klasy Page Object Model, które enkapsulują interakcje z kluczowymi elementami aplikacji Flats Manager. Każda klasa reprezentuje konkretny widok lub komponent aplikacji.
+The `e2e/page-objects` directory contains Page Object Model classes that encapsulate interactions with key elements of the Flats Manager application. Each class represents a specific view or component of the application.
 
-## Struktura
+## Structure
 
 ```
 e2e/page-objects/
 ├── index.ts                        # Barrel export
-├── header-navigation.page.ts       # Nawigacja w nagłówku
-├── flat-form.page.ts              # Formularz mieszkania
-├── flat-detail.page.ts            # Szczegóły mieszkania
+├── header-navigation.page.ts       # Header navigation
+├── flat-form.page.ts              # Flat form
+├── flat-detail.page.ts            # Flat details
 └── dashboard.page.ts              # Dashboard
 ```
 
-## Klasy POM
+## POM Classes
 
 ### 1. HeaderNavigationPage
 
-**Plik:** `header-navigation.page.ts`
+**File:** `header-navigation.page.ts`
 
-Enkapsuluje interakcje z głównym nagłówkiem nawigacyjnym.
+Encapsulates interactions with the main navigation header.
 
-**Locatory:**
+**Locators:**
 
-- `addFlatButton` - Przycisk "+ Add Flat"
-- `dashboardLink` - Link do dashboardu
-- `allFlatsLink` - Link do listy wszystkich mieszkań
+- `addFlatButton` - Button "+ Add Flat"
+- `dashboardLink` - Link to dashboard
+- `allFlatsLink` - Link to all flats list
 
-**Metody:**
+**Methods:**
 
-- `goToAddFlat()` - Przejdź do formularza tworzenia mieszkania
-- `goToDashboard()` - Przejdź do dashboardu
-- `goToAllFlats()` - Przejdź do listy mieszkań
-- `isAddFlatButtonVisible()` - Sprawdź widoczność przycisku Add Flat
+- `goToAddFlat()` - Go to flat creation form
+- `goToDashboard()` - Go to dashboard
+- `goToAllFlats()` - Go to flats list
+- `isAddFlatButtonVisible()` - Check Add Flat button visibility
 
-**Przykład użycia:**
+**Usage Example:**
 
 ```typescript
 const headerNav = new HeaderNavigationPage(page);
@@ -45,151 +45,151 @@ await headerNav.goToAddFlat();
 
 ### 2. FlatFormPage
 
-**Plik:** `flat-form.page.ts`
+**File:** `flat-form.page.ts`
 
-Enkapsuluje interakcje z formularzem tworzenia/edycji mieszkania.
+Encapsulates interactions with the flat creation/edit form.
 
-**Locatory:**
+**Locators:**
 
-- `form` - Element formularza
-- `nameInput` - Pole Name
-- `addressInput` - Pole Address
-- `submitButton` - Przycisk Submit
-- `cancelButton` - Przycisk Cancel
-- `nameError`, `addressError`, `formError` - Komunikaty błędów
-- `successMessage` - Komunikat sukcesu
+- `form` - Form element
+- `nameInput` - Name field
+- `addressInput` - Address field
+- `submitButton` - Submit button
+- `cancelButton` - Cancel button
+- `nameError`, `addressError`, `formError` - Error messages
+- `successMessage` - Success message
 
-**Metody:**
+**Methods:**
 
-- `gotoCreate()` - Przejdź do strony tworzenia
-- `gotoEdit(flatId)` - Przejdź do strony edycji
-- `fillForm(name, address)` - Wypełnij formularz
-- `submit()` - Wyślij formularz
-- `createFlat(name, address)` - Utwórz mieszkanie (wypełnij + wyślij)
-- `updateFlat(name, address)` - Zaktualizuj mieszkanie (wypełnij + wyślij)
-- `cancel()` - Anuluj formularz
-- `isFormVisible()` - Sprawdź widoczność formularza
-- `isSubmitDisabled()` - Sprawdź czy przycisk submit jest wyłączony
-- `hasNameError()`, `hasAddressError()`, `hasFormError()` - Sprawdź błędy
-- `hasSuccessMessage()` - Sprawdź komunikat sukcesu
-- `getFormErrorText()` - Pobierz tekst błędu formularza
-- `waitForRedirect(url)` - Poczekaj na przekierowanie
+- `gotoCreate()` - Go to creation page
+- `gotoEdit(flatId)` - Go to edit page
+- `fillForm(name, address)` - Fill form
+- `submit()` - Submit form
+- `createFlat(name, address)` - Create flat (fill + submit)
+- `updateFlat(name, address)` - Update flat (fill + submit)
+- `cancel()` - Cancel form
+- `isFormVisible()` - Check form visibility
+- `isSubmitDisabled()` - Check if submit button is disabled
+- `hasNameError()`, `hasAddressError()`, `hasFormError()` - Check errors
+- `hasSuccessMessage()` - Check success message
+- `getFormErrorText()` - Get form error text
+- `waitForRedirect(url)` - Wait for redirect
 
-**Przykład użycia:**
+**Usage Example:**
 
 ```typescript
 const flatForm = new FlatFormPage(page);
 await flatForm.gotoCreate();
-await flatForm.createFlat("Mieszkanie 1", "ul. Testowa 1");
+await flatForm.createFlat("Flat 1", "ul. Testowa 1");
 ```
 
 ### 3. FlatDetailPage
 
-**Plik:** `flat-detail.page.ts`
+**File:** `flat-detail.page.ts`
 
-Enkapsuluje interakcje ze stroną szczegółów mieszkania.
+Encapsulates interactions with the flat details page.
 
-**Locatory:**
+**Locators:**
 
-- `header` - Nagłówek strony
-- `name` - Nazwa mieszkania
-- `address` - Adres mieszkania
-- `editButton` - Przycisk Edit
-- `deleteButton` - Przycisk Delete
-- `totalDebtCard` - Karta Total Debt
-- `paymentTypesCountCard` - Karta Payment Types Count
-- `pendingPaymentsCountCard` - Karta Pending Payments Count
-- `deleteDialog` - Dialog potwierdzenia usunięcia
-- `deleteConfirmButton`, `deleteCancelButton` - Przyciski w dialogu
+- `header` - Page header
+- `name` - Flat name
+- `address` - Flat address
+- `editButton` - Edit button
+- `deleteButton` - Delete button
+- `totalDebtCard` - Total Debt card
+- `paymentTypesCountCard` - Payment Types Count card
+- `pendingPaymentsCountCard` - Pending Payments Count card
+- `deleteDialog` - Delete confirmation dialog
+- `deleteConfirmButton`, `deleteCancelButton` - Dialog buttons
 
-**Metody:**
+**Methods:**
 
-- `goto(flatId)` - Przejdź do strony szczegółów
-- `getName()`, `getAddress()` - Pobierz nazwę/adres
-- `getTotalDebt()` - Pobierz całkowite zadłużenie
-- `getPaymentTypesCount()` - Pobierz liczbę typów płatności
-- `getPendingPaymentsCount()` - Pobierz liczbę oczekujących płatności
-- `clickEdit()` - Kliknij Edit
-- `clickDelete()` - Kliknij Delete
-- `confirmDelete()` - Potwierdź usunięcie
-- `cancelDelete()` - Anuluj usunięcie
-- `isHeaderVisible()` - Sprawdź widoczność nagłówka
-- `isDeleteDialogVisible()` - Sprawdź widoczność dialogu usuwania
-- `verifyFlatDetails(name, address)` - Zweryfikuj szczegóły mieszkania
+- `goto(flatId)` - Go to details page
+- `getName()`, `getAddress()` - Get name/address
+- `getTotalDebt()` - Get total debt
+- `getPaymentTypesCount()` - Get payment types count
+- `getPendingPaymentsCount()` - Get pending payments count
+- `clickEdit()` - Click Edit
+- `clickDelete()` - Click Delete
+- `confirmDelete()` - Confirm deletion
+- `cancelDelete()` - Cancel deletion
+- `isHeaderVisible()` - Check header visibility
+- `isDeleteDialogVisible()` - Check delete dialog visibility
+- `verifyFlatDetails(name, address)` - Verify flat details
 
-**Przykład użycia:**
+**Usage Example:**
 
 ```typescript
 const flatDetail = new FlatDetailPage(page);
 await flatDetail.goto(flatId);
-await expect(flatDetail.name).toHaveText("Mieszkanie 1");
+await expect(flatDetail.name).toHaveText("Flat 1");
 await flatDetail.clickEdit();
 ```
 
 ### 4. DashboardPage
 
-**Plik:** `dashboard.page.ts`
+**File:** `dashboard.page.ts`
 
-Enkapsuluje interakcje z dashboardem.
+Encapsulates interactions with the dashboard.
 
-**Locatory (dynamiczne):**
+**Locators (dynamic):**
 
-- `getFlatCard(flatId)` - Karta mieszkania
-- `getFlatCardName(flatId)` - Nazwa na karcie
-- `getFlatCardAddress(flatId)` - Adres na karcie
-- `getFlatCardStatus(flatId)` - Status na karcie
-- `getFlatCardTotalDebt(flatId)` - Zadłużenie na karcie
-- `getAllFlatCards()` - Wszystkie karty
+- `getFlatCard(flatId)` - Flat card
+- `getFlatCardName(flatId)` - Name on card
+- `getFlatCardAddress(flatId)` - Address on card
+- `getFlatCardStatus(flatId)` - Status on card
+- `getFlatCardTotalDebt(flatId)` - Debt on card
+- `getAllFlatCards()` - All cards
 
-**Metody:**
+**Methods:**
 
-- `goto()` - Przejdź do dashboardu
-- `getFlatCard(flatId)` - Pobierz locator karty mieszkania
-- `hasFlatCard(flatId)` - Sprawdź czy karta istnieje
-- `getFlatCardNameText(flatId)` - Pobierz tekst nazwy
-- `getFlatCardAddressText(flatId)` - Pobierz tekst adresu
-- `getFlatCardStatusText(flatId)` - Pobierz tekst statusu
-- `getFlatCardTotalDebtText(flatId)` - Pobierz tekst zadłużenia
-- `clickFlatCard(flatId)` - Kliknij kartę mieszkania
-- `getFlatCardsCount()` - Pobierz liczbę kart
-- `waitForLoad()` - Poczekaj na załadowanie
-- `verifyFlatCard(flatId, name, status, debt)` - Zweryfikuj kartę
-- `findFlatCardIdByName(name)` - Znajdź ID karty po nazwie
+- `goto()` - Go to dashboard
+- `getFlatCard(flatId)` - Get flat card locator
+- `hasFlatCard(flatId)` - Check if card exists
+- `getFlatCardNameText(flatId)` - Get name text
+- `getFlatCardAddressText(flatId)` - Get address text
+- `getFlatCardStatusText(flatId)` - Get status text
+- `getFlatCardTotalDebtText(flatId)` - Get debt text
+- `clickFlatCard(flatId)` - Click flat card
+- `getFlatCardsCount()` - Get cards count
+- `waitForLoad()` - Wait for loading
+- `verifyFlatCard(flatId, name, status, debt)` - Verify card
+- `findFlatCardIdByName(name)` - Find card ID by name
 
-**Przykład użycia:**
+**Usage Example:**
 
 ```typescript
 const dashboard = new DashboardPage(page);
 await dashboard.goto();
-const flatId = await dashboard.findFlatCardIdByName("Mieszkanie 1");
+const flatId = await dashboard.findFlatCardIdByName("Flat 1");
 await expect(dashboard.getFlatCardStatus(flatId!)).toHaveText("Paid");
 ```
 
-## Wzorce użycia
+## Usage Patterns
 
 ### Arrange-Act-Assert (AAA)
 
-Wszystkie testy powinny stosować wzorzec AAA:
+All tests should follow the AAA pattern:
 
 ```typescript
 test("should create flat", async ({ page }) => {
-  // Arrange - Przygotuj obiekty POM i dane testowe
+  // Arrange - Prepare POM objects and test data
   const flatForm = new FlatFormPage(page);
   const testName = "Test Flat";
   const testAddress = "Test Address";
 
-  // Act - Wykonaj akcje
+  // Act - Execute actions
   await flatForm.gotoCreate();
   await flatForm.createFlat(testName, testAddress);
 
-  // Assert - Sprawdź wyniki
+  // Assert - Verify results
   await expect(page).toHaveURL(/\/flats\/[a-f0-9-]+$/);
 });
 ```
 
-### Kompozycja POM
+### POM Composition
 
-Łącz różne obiekty POM w jednym teście:
+Combine different POM objects in one test:
 
 ```typescript
 test("complete flow", async ({ page }) => {
@@ -208,108 +208,108 @@ test("complete flow", async ({ page }) => {
 });
 ```
 
-### Metody pomocnicze
+### Helper Methods
 
-POM zawierają metody pomocnicze do weryfikacji:
+POMs contain helper methods for verification:
 
 ```typescript
-// Zamiast:
+// Instead of:
 const name = await page.getByTestId("flat-detail-name").textContent();
 const address = await page.getByTestId("flat-detail-address").textContent();
 expect(name).toBe("Expected Name");
 expect(address).toBe("Expected Address");
 
-// Użyj:
+// Use:
 await flatDetail.verifyFlatDetails("Expected Name", "Expected Address");
 ```
 
-## Konwencje
+## Conventions
 
-### Nazewnictwo
+### Naming
 
-1. **Klasy:** `{Component}Page` (np. `FlatFormPage`, `DashboardPage`)
-2. **Pliki:** `{component}.page.ts` (kebab-case)
-3. **Locatory:** camelCase, opisowe (np. `addFlatButton`, `nameInput`)
-4. **Metody:**
-   - Akcje: czasowniki (np. `goto()`, `fillForm()`, `clickEdit()`)
-   - Gettery: `get{Property}()` (np. `getName()`, `getTotalDebt()`)
-   - Checkers: `is{State}()` lub `has{Property}()` (np. `isVisible()`, `hasError()`)
+1. **Classes:** `{Component}Page` (e.g., `FlatFormPage`, `DashboardPage`)
+2. **Files:** `{component}.page.ts` (kebab-case)
+3. **Locators:** camelCase, descriptive (e.g., `addFlatButton`, `nameInput`)
+4. **Methods:**
+   - Actions: verbs (e.g., `goto()`, `fillForm()`, `clickEdit()`)
+   - Getters: `get{Property}()` (e.g., `getName()`, `getTotalDebt()`)
+   - Checkers: `is{State}()` or `has{Property}()` (e.g., `isVisible()`, `hasError()`)
 
-### Locatory
+### Locators
 
-Preferuj `data-testid` dla stabilności:
+Prefer `data-testid` for stability:
 
 ```typescript
-// ✅ Dobre - stabilne
+// ✅ Good - stable
 this.nameInput = page.getByTestId("flat-name-input");
 
-// ❌ Unikaj - niestabilne
+// ❌ Avoid - unstable
 this.nameInput = page.locator('input[name="name"]');
 this.nameInput = page.locator(".form-input:nth-child(1)");
 ```
 
-### Metody
+### Methods
 
-Enkapsuluj powtarzalne sekwencje akcji:
+Encapsulate repeatable action sequences:
 
 ```typescript
-// Zamiast powtarzania w każdym teście:
+// Instead of repeating in each test:
 await nameInput.fill('Name');
 await addressInput.fill('Address');
 await submitButton.click();
 
-// Stwórz metodę:
+// Create a method:
 async createFlat(name: string, address: string) {
   await this.fillForm(name, address);
   await this.submit();
 }
 ```
 
-## Import i użycie
+## Import and Usage
 
-### Importowanie z barrel export
+### Importing from barrel export
 
 ```typescript
 import { HeaderNavigationPage, FlatFormPage, FlatDetailPage, DashboardPage } from "./page-objects";
 ```
 
-### Inicjalizacja w testach
+### Initialization in tests
 
 ```typescript
 test("my test", async ({ page }) => {
   const dashboard = new DashboardPage(page);
   const flatForm = new FlatFormPage(page);
 
-  // Użyj obiektów POM
+  // Use POM objects
   await dashboard.goto();
   await flatForm.gotoCreate();
 });
 ```
 
-## Testowanie
+## Testing
 
-Uruchom testy:
+Run tests:
 
 ```bash
-# Wszystkie testy E2E
+# All E2E tests
 npx playwright test
 
-# Konkretny plik
+# Specific file
 npx playwright test e2e/create-flat.spec.ts
 
-# Z UI
+# With UI
 npx playwright test --ui
 
-# Z debuggerem
+# With debugger
 npx playwright test --debug
 ```
 
-## Rozszerzanie POM
+## Extending POM
 
-Gdy dodajesz nowe komponenty:
+When adding new components:
 
-1. Utwórz nowy plik `{component}.page.ts` w `e2e/page-objects/`
-2. Zaimplementuj klasę wg wzorca istniejących POM
-3. Dodaj export do `index.ts`
-4. Użyj `data-testid` w komponentach
-5. Stwórz testy używające nowego POM
+1. Create new file `{component}.page.ts` in `e2e/page-objects/`
+2. Implement class following existing POM pattern
+3. Add export to `index.ts`
+4. Use `data-testid` in components
+5. Create tests using the new POM
