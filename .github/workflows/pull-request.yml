@@ -72,7 +72,8 @@ jobs:
 
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_KEY: ID=${{ secrets.E2E_USERNAME_ID }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
       E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
       E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
       BASE_URL: http://localhost:4321
@@ -101,8 +102,8 @@ jobs:
           SUPABASE_URL=${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
           E2E_USERNAME_ID=${{ secrets.E2E_USERNAME_ID }}
-          E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
-          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+          E2E_USERNAME=${{ secrets.E2E_USERNAME }}
+          E2E_PASSWORD=${{ secrets.E2E_PASSWORD }}
           BASE_URL=http://localhost:4321
           EOF
 
