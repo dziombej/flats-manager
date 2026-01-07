@@ -1,199 +1,199 @@
-Jako doświadczony inżynier QA, po dogłębnej analizie dostarczonego kodu i struktury projektu, przedstawiam kompleksowy plan testów dla aplikacji "Flats Manager".
+As an experienced QA engineer, after thorough analysis of the provided code and project structure, I present a comprehensive test plan for the "Flats Manager" application.
 
 ---
 
-# Plan Testów dla Projektu "Flats Manager"
+# Test Plan for "Flats Manager" Project
 
 ---
 
-## 1. Wprowadzenie i Cele Testowania
+## 1. Introduction and Testing Objectives
 
-### 1.1. Wprowadzenie
+### 1.1. Introduction
 
-Niniejszy dokument opisuje strategię, zakres, zasoby i harmonogram działań testowych dla aplikacji "Flats Manager". Aplikacja jest systemem webowym opartym o architekturę Astro z interaktywnymi komponentami React, przeznaczonym do zarządzania nieruchomościami na wynajem, w szczególności do śledzenia płatności i zadłużenia. Celem planu jest zapewnienie systematycznego podejścia do weryfikacji jakości oprogramowania.
+This document describes the strategy, scope, resources, and schedule of testing activities for the "Flats Manager" application. The application is a web system based on Astro architecture with interactive React components, designed for managing rental properties, specifically for tracking payments and debt. The plan's goal is to ensure a systematic approach to software quality verification.
 
-### 1.2. Cele Testowania
+### 1.2. Testing Objectives
 
-Głównym celem procesu testowego jest zapewnienie, że aplikacja "Flats Manager" spełnia wymagania biznesowe i techniczne oraz jest niezawodna, bezpieczna i użyteczna.
+The main goal of the testing process is to ensure that the "Flats Manager" application meets business and technical requirements and is reliable, secure, and usable.
 
-**Cele szczegółowe:**
+**Detailed objectives:**
 
-- **Weryfikacja funkcjonalna:** Potwierdzenie, że wszystkie funkcje, od uwierzytelniania po zarządzanie płatnościami, działają zgodnie ze specyfikacją.
-- **Zapewnienie bezpieczeństwa:** Weryfikacja, że dane użytkowników są odizolowane i zabezpieczone przed nieautoryzowanym dostępem.
-- **Ocena użyteczności (UX/UI):** Zapewnienie, że interfejs użytkownika jest intuicyjny, spójny i responsywny na różnych urządzeniach.
-- **Identyfikacja i raportowanie defektów:** Wczesne wykrywanie błędów w celu minimalizacji kosztów ich naprawy.
-- **Walidacja integralności danych:** Sprawdzenie, czy operacje na danych (np. obliczanie długu, generowanie płatności) dają poprawne i spójne wyniki.
-- **Potwierdzenie gotowości do wdrożenia:** Stwierdzenie, czy aplikacja osiągnęła poziom jakości umożliwiający jej wdrożenie na środowisko produkcyjne.
-
----
-
-## 2. Zakres Testów
-
-### 2.1. Funkcjonalności objęte testami
-
-Testy obejmą wszystkie kluczowe moduły i funkcjonalności aplikacji:
-
-- **Moduł Uwierzytelniania i Autoryzacji:**
-  - Rejestracja nowego użytkownika.
-  - Logowanie i wylogowywanie.
-  - Ochrona tras (middleware) - dostęp do poszczególnych sekcji aplikacji w zależności od statusu zalogowania.
-  - Przekierowania dla zalogowanych i niezalogowanych użytkowników.
-- **Moduł Zarządzania Mieszkaniami (Flats):**
-  - Tworzenie nowego mieszkania (CRUD - Create).
-  - Wyświetlanie listy mieszkań (CRUD - Read).
-  - Wyświetlanie szczegółów mieszkania (CRUD - Read).
-  - Edycja danych mieszkania (CRUD - Update).
-  - Usuwanie mieszkania wraz z powiązanymi danymi (płatności, typy płatności) (CRUD - Delete).
-- **Moduł Zarządzania Typami Płatności (Payment Types):**
-  - Dodawanie typów płatności (np. czynsz, media) do konkretnego mieszkania.
-  - Edycja istniejących typów płatności.
-  - Wyświetlanie listy typów płatności w szczegółach mieszkania.
-- **Moduł Zarządzania Płatnościami (Payments):**
-  - Generowanie miesięcznych płatności na podstawie zdefiniowanych typów.
-  - Wyświetlanie listy płatności z możliwością filtrowania.
-  - Oznaczanie płatności jako "zapłacona".
-  - Automatyczne oznaczanie płatności jako "zaległa" (overdue).
-- **Pulpit (Dashboard):**
-  - Wyświetlanie statystyk ogólnych (całkowita liczba mieszkań, łączne zadłużenie).
-  - Wyświetlanie siatki mieszkań z informacją o zadłużeniu.
-  - Funkcjonalności wyszukiwania, sortowania i filtrowania na liście mieszkań.
-- **Interfejs Użytkownika (UI):**
-  - Responsywność widoków na urządzeniach mobilnych i desktopowych.
-  - Przełącznik motywu (jasny/ciemny).
-  - Obsługa stanów ładowania (skeletons) i błędów.
-
-### 2.2. Funkcjonalności wyłączone z testów
-
-- Testowanie infrastruktury Supabase (wydajność bazy danych, działanie API Supabase).
-- Testowanie zewnętrznych bibliotek (np. Radix UI, clsx) poza kontekstem ich implementacji w aplikacji.
-- Testy penetracyjne i zaawansowane testy bezpieczeństwa (mogą być przedmiotem osobnego planu).
+- **Functional verification:** Confirmation that all functions, from authentication to payment management, work according to specification.
+- **Security assurance:** Verification that user data is isolated and protected from unauthorized access.
+- **Usability assessment (UX/UI):** Ensuring that the user interface is intuitive, consistent, and responsive across different devices.
+- **Defect identification and reporting:** Early detection of errors to minimize repair costs.
+- **Data integrity validation:** Checking whether data operations (e.g., debt calculation, payment generation) produce correct and consistent results.
+- **Deployment readiness confirmation:** Determining whether the application has achieved a quality level enabling its deployment to production environment.
 
 ---
 
-## 3. Typy Testów
+## 2. Test Scope
 
-W projekcie zostaną przeprowadzone następujące typy testów:
+### 2.1. Functionalities covered by tests
 
-- **Testy Jednostkowe (Unit Tests):**
-  - **Cel:** Weryfikacja poprawności działania pojedynczych komponentów React, funkcji pomocniczych (utils) i transformerów danych w izolacji.
-  - **Zakres:** Logika walidacji w formularzach, funkcje formatujące (`formatCurrency`), transformery danych (`transformFlatDetailData`), logika komponentów UI.
-- **Testy Integracyjne (Integration Tests):**
-  - **Cel:** Sprawdzenie poprawności współpracy pomiędzy różnymi częściami systemu.
-  - **Zakres:**
-    - Testowanie warstwy serwisowej (`FlatsService`, `AuthService`) z zamockowanym klientem Supabase w celu weryfikacji logiki biznesowej.
-    - Testowanie endpointów API w celu sprawdzenia walidacji, obsługi błędów i poprawnej komunikacji z warstwą serwisową.
-- **Testy End-to-End (E2E):**
-  - **Cel:** Symulacja rzeczywistych scenariuszy użycia aplikacji z perspektywy użytkownika końcowego, weryfikując cały przepływ danych od interfejsu po bazę danych.
-  - **Zakres:** Pełne ścieżki użytkownika, np. "rejestracja -> logowanie -> dodanie mieszkania -> dodanie typu płatności -> wygenerowanie płatności -> sprawdzenie długu na pulpicie -> opłacenie płatności -> wylogowanie".
-- **Testy Bezpieczeństwa (Security Tests):**
-  - **Cel:** Weryfikacja kluczowych aspektów bezpieczeństwa, zwłaszcza izolacji danych.
-  - **Zakres:** Testy E2E sprawdzające, czy użytkownik A nie ma dostępu (do odczytu, modyfikacji, usunięcia) do zasobów (mieszkań, płatności) użytkownika B.
-- **Testy Manualne i Eksploracyjne:**
-  - **Cel:** Weryfikacja użyteczności (UX), spójności wizualnej (UI) oraz odkrywanie nieprzewidzianych błędów.
-  - **Zakres:** Responsywność, działanie na różnych przeglądarkach, ogólna intuicyjność interfejsu.
-- **Testy Regresji:**
-  - **Cel:** Zapewnienie, że nowe zmiany nie zepsuły istniejących funkcjonalności.
-  - **Zakres:** Uruchamianie zautomatyzowanego zestawu testów (E2E i integracyjnych) po każdej większej zmianie w kodzie oraz przed każdym wdrożeniem.
+Tests will cover all key modules and application functionalities:
 
----
+- **Authentication and Authorization Module:**
+  - New user registration.
+  - Login and logout.
+  - Route protection (middleware) - access to individual application sections depending on login status.
+  - Redirects for logged-in and non-logged-in users.
+- **Flats Management Module:**
+  - Creating new flat (CRUD - Create).
+  - Displaying flats list (CRUD - Read).
+  - Displaying flat details (CRUD - Read).
+  - Editing flat data (CRUD - Update).
+  - Deleting flat along with related data (payments, payment types) (CRUD - Delete).
+- **Payment Types Management Module:**
+  - Adding payment types (e.g., rent, utilities) to specific flat.
+  - Editing existing payment types.
+  - Displaying payment types list in flat details.
+- **Payments Management Module:**
+  - Generating monthly payments based on defined types.
+  - Displaying payments list with filtering capability.
+  - Marking payment as "paid".
+  - Automatic marking of payments as "overdue".
+- **Dashboard:**
+  - Displaying general statistics (total number of flats, total debt).
+  - Displaying flats grid with debt information.
+  - Search, sort, and filter functionalities on flats list.
+- **User Interface (UI):**
+  - View responsiveness on mobile and desktop devices.
+  - Theme toggle (light/dark).
+  - Handling loading states (skeletons) and errors.
 
-## 4. Scenariusze Testowe (Przykładowe)
+### 2.2. Functionalities excluded from tests
 
-Poniżej przedstawiono kluczowe scenariusze testowe o wysokim priorytecie.
-
-| Moduł                        | ID Scenariusza | Opis                                                                                                                                                   | Priorytet |
-| :--------------------------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- | :-------- |
-| **Uwierzytelnianie**         | AUTH-01        | Użytkownik może pomyślnie zarejestrować konto, używając poprawnego emaila i hasła.                                                                     | Krytyczny |
-|                              | AUTH-02        | Użytkownik może zalogować się na istniejące konto i zostać przekierowany na pulpit.                                                                    | Krytyczny |
-|                              | AUTH-03        | Niezalogowany użytkownik, próbując wejść na `/dashboard`, jest przekierowywany na stronę logowania.                                                    | Krytyczny |
-|                              | AUTH-04        | System wyświetla czytelny komunikat błędu przy próbie logowania z niepoprawnymi danymi.                                                                | Wysoki    |
-| **Izolacja Danych**          | SEC-01         | Zalogowany użytkownik A, znając ID mieszkania użytkownika B, nie może wyświetlić jego szczegółów (ani przez UI, ani przez bezpośrednie zapytanie API). | Krytyczny |
-|                              | SEC-02         | Zalogowany użytkownik A nie może modyfikować ani usuwać danych należących do użytkownika B.                                                            | Krytyczny |
-| **Zarządzanie Mieszkaniami** | FLAT-01        | Użytkownik może utworzyć nowe mieszkanie, podając poprawną nazwę i adres.                                                                              | Krytyczny |
-|                              | FLAT-02        | Użytkownik może edytować dane istniejącego mieszkania.                                                                                                 | Wysoki    |
-|                              | FLAT-03        | Użytkownik może usunąć mieszkanie, co powoduje usunięcie wszystkich powiązanych z nim typów płatności i płatności.                                     | Wysoki    |
-| **Płatności**                | PAY-01         | Użytkownik może dodać nowy typ płatności (np. "Czynsz", 2000 PLN) do mieszkania.                                                                       | Krytyczny |
-|                              | PAY-02         | System poprawnie generuje płatności na wybrany miesiąc i rok dla wszystkich zdefiniowanych typów płatności.                                            | Krytyczny |
-|                              | PAY-03         | Kwota zadłużenia na pulpicie i w szczegółach mieszkania jest poprawnie obliczana jako suma wszystkich nieopłaconych płatności.                         | Krytyczny |
-|                              | PAY-04         | Użytkownik może oznaczyć płatność jako "zapłaconą", co aktualizuje jej status i kwotę długu.                                                           | Wysoki    |
-| **Pulpit**                   | DASH-01        | Filtry (wg statusu zadłużenia) i sortowanie (np. wg długu malejąco) na liście mieszkań działają poprawnie.                                             | Średni    |
+- Testing Supabase infrastructure (database performance, Supabase API operation).
+- Testing external libraries (e.g., Radix UI, clsx) beyond the context of their implementation in the application.
+- Penetration testing and advanced security testing (may be subject of a separate plan).
 
 ---
 
-## 5. Środowisko Testowe
+## 3. Test Types
 
-- **Środowisko deweloperskie (lokalne):** Używane przez deweloperów do uruchamiania testów jednostkowych i integracyjnych.
-- **Środowisko Staging:** Sklonowana infrastruktura produkcyjna z osobną instancją bazy danych Supabase. Środowisko to będzie używane do przeprowadzania testów E2E, manualnych i regresji. Baza danych na tym środowisku będzie regularnie czyszczona i wypełniana zdefiniowanym zestawem danych testowych (test data seed).
-- **Przeglądarki:** Testy będą wykonywane na najnowszych wersjach przeglądarek:
+The following test types will be conducted in the project:
+
+- **Unit Tests:**
+  - **Goal:** Verification of correct operation of individual React components, helper functions (utils), and data transformers in isolation.
+  - **Scope:** Validation logic in forms, formatting functions (`formatCurrency`), data transformers (`transformFlatDetailData`), UI components logic.
+- **Integration Tests:**
+  - **Goal:** Checking correct cooperation between different parts of the system.
+  - **Scope:**
+    - Testing service layer (`FlatsService`, `AuthService`) with mocked Supabase client to verify business logic.
+    - Testing API endpoints to check validation, error handling, and correct communication with service layer.
+- **End-to-End (E2E) Tests:**
+  - **Goal:** Simulation of real application usage scenarios from end user's perspective, verifying entire data flow from interface to database.
+  - **Scope:** Complete user paths, e.g., "registration -> login -> add flat -> add payment type -> generate payment -> check debt on dashboard -> pay payment -> logout".
+- **Security Tests:**
+  - **Goal:** Verification of key security aspects, especially data isolation.
+  - **Scope:** E2E tests checking whether user A has no access (to read, modify, delete) to resources (flats, payments) of user B.
+- **Manual and Exploratory Tests:**
+  - **Goal:** Verification of usability (UX), visual consistency (UI), and discovering unforeseen errors.
+  - **Scope:** Responsiveness, operation on different browsers, general interface intuitiveness.
+- **Regression Tests:**
+  - **Goal:** Ensuring that new changes haven't broken existing functionalities.
+  - **Scope:** Running automated test suite (E2E and integration) after each major code change and before each deployment.
+
+---
+
+## 4. Test Scenarios (Examples)
+
+Below are key test scenarios with high priority.
+
+| Module                       | Scenario ID | Description                                                                                                                                       | Priority |
+| :--------------------------- | :---------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :------- |
+| **Authentication**           | AUTH-01     | User can successfully register an account using valid email and password.                                                                         | Critical |
+|                              | AUTH-02     | User can log into existing account and be redirected to dashboard.                                                                                | Critical |
+|                              | AUTH-03     | Non-logged-in user trying to access `/dashboard` is redirected to login page.                                                                     | Critical |
+|                              | AUTH-04     | System displays readable error message when attempting to log in with incorrect credentials.                                                      | High     |
+| **Data Isolation**           | SEC-01      | Logged-in user A, knowing user B's flat ID, cannot view its details (neither through UI nor direct API request).                                  | Critical |
+|                              | SEC-02      | Logged-in user A cannot modify or delete data belonging to user B.                                                                                | Critical |
+| **Flats Management**         | FLAT-01     | User can create new flat by providing valid name and address.                                                                                     | Critical |
+|                              | FLAT-02     | User can edit existing flat data.                                                                                                                 | High     |
+|                              | FLAT-03     | User can delete flat, which results in deletion of all related payment types and payments.                                                        | High     |
+| **Payments**                 | PAY-01      | User can add new payment type (e.g., "Rent", 2000 PLN) to flat.                                                                                   | Critical |
+|                              | PAY-02      | System correctly generates payments for selected month and year for all defined payment types.                                                    | Critical |
+|                              | PAY-03      | Debt amount on dashboard and in flat details is correctly calculated as sum of all unpaid payments.                                               | Critical |
+|                              | PAY-04      | User can mark payment as "paid", which updates its status and debt amount.                                                                        | High     |
+| **Dashboard**                | DASH-01     | Filters (by debt status) and sorting (e.g., by debt descending) on flats list work correctly.                                                     | Medium   |
+
+---
+
+## 5. Test Environment
+
+- **Development environment (local):** Used by developers to run unit and integration tests.
+- **Staging environment:** Cloned production infrastructure with separate Supabase database instance. This environment will be used to conduct E2E, manual, and regression tests. The database on this environment will be regularly cleaned and populated with a defined set of test data (test data seed).
+- **Browsers:** Tests will be performed on the latest browser versions:
   - Google Chrome
   - Mozilla Firefox
   - Safari
 
 ---
 
-## 6. Narzędzia do Testowania
+## 6. Testing Tools
 
-- **Framework do testów jednostkowych i integracyjnych:** **Vitest** z **React Testing Library** do testowania komponentów React.
-- **Framework do testów E2E:** **Playwright** lub **Cypress** do automatyzacji scenariuszy w przeglądarce.
-- **Mockowanie API/Bazy Danych:** **`supabase-mock`** lub własne mocki do testowania warstwy serwisowej w izolacji.
-- **CI/CD:** **GitHub Actions** do automatycznego uruchamiania zestawów testów (jednostkowych, integracyjnych, E2E) po każdym pushu do gałęzi `main` oraz przy tworzeniu Pull Requestów.
-- **Zarządzanie Testami i Błędami:** **Jira** / **Asana** / **GitHub Issues** do tworzenia i śledzenia scenariuszy testowych oraz raportowania i zarządzania cyklem życia błędów.
-
----
-
-## 7. Harmonogram Testów
-
-Proces testowy będzie prowadzony równolegle z procesem deweloperskim w ramach sprintów.
-
-| Faza                               | Działania                                                                                                                                                                                      | Czas Trwania |
-| :--------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------- |
-| **W trakcie sprintu**              | Testowanie jednostkowe i integracyjne nowych funkcjonalności (przez deweloperów).<br>Tworzenie i aktualizacja testów E2E (przez QA).<br>Testy eksploracyjne nowych funkcjonalności (przez QA). | Ciągły       |
-| **Przed wdrożeniem (Code Freeze)** | Pełna regresja zautomatyzowana (E2E).<br>Kluczowe testy manualne (Smoke Tests).<br>Weryfikacja poprawionych błędów.                                                                            | 1-2 dni      |
-| **Po wdrożeniu**                   | Testy weryfikacyjne na środowisku produkcyjnym (Sanity Tests).                                                                                                                                 | 2-4 godziny  |
+- **Framework for unit and integration tests:** **Vitest** with **React Testing Library** for testing React components.
+- **Framework for E2E tests:** **Playwright** or **Cypress** for browser scenario automation.
+- **API/Database Mocking:** **`supabase-mock`** or custom mocks for testing service layer in isolation.
+- **CI/CD:** **GitHub Actions** for automatic running of test suites (unit, integration, E2E) after each push to `main` branch and when creating Pull Requests.
+- **Test and Bug Management:** **Jira** / **Asana** / **GitHub Issues** for creating and tracking test scenarios and reporting and managing bug lifecycle.
 
 ---
 
-## 8. Kryteria Akceptacji Testów
+## 7. Test Schedule
 
-### 8.1. Kryteria wejścia
+The testing process will be conducted in parallel with the development process within sprints.
 
-- Dostępna jest stabilna wersja aplikacji na środowisku Staging.
-- Wszystkie nowe funkcjonalności zostały zaimplementowane i przeszły testy jednostkowe.
-- Dostępna jest dokumentacja techniczna lub opis wymagań dla testowanych funkcjonalności.
-
-### 8.2. Kryteria wyjścia (Definition of Done)
-
-- **100%** wykonanych i zakończonych sukcesem scenariuszy testowych o priorytecie **Krytycznym**.
-- **95%** wykonanych i zakończonych sukcesem scenariuszy testowych o priorytecie **Wysokim**.
-- Brak znanych błędów o priorytecie **Krytycznym** i **Wysokim**.
-- Wszystkie znalezione błędy są zaraportowane i ocenione przez zespół.
-- Zautomatyzowane testy regresji kończą się sukcesem.
+| Phase                             | Activities                                                                                                                                                                               | Duration   |
+| :-------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- |
+| **During sprint**                 | Unit and integration testing of new functionalities (by developers).<br>Creating and updating E2E tests (by QA).<br>Exploratory testing of new functionalities (by QA).                 | Continuous |
+| **Before deployment (Code Freeze)** | Full automated regression (E2E).<br>Key manual tests (Smoke Tests).<br>Verification of fixed bugs.                                                                                      | 1-2 days   |
+| **After deployment**              | Verification tests on production environment (Sanity Tests).                                                                                                                             | 2-4 hours  |
 
 ---
 
-## 9. Role i Odpowiedzialności
+## 8. Test Acceptance Criteria
 
-| Rola                        | Odpowiedzialności                                                                                                                                                                                                                 |
-| :-------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Inżynier QA**             | Tworzenie i utrzymanie planu testów, projektowanie i implementacja testów automatycznych (integracyjnych, E2E), przeprowadzanie testów manualnych i eksploracyjnych, raportowanie i zarządzanie błędami, koordynacja procesu UAT. |
-| **Deweloperzy**             | Pisanie testów jednostkowych dla swojego kodu, poprawianie zgłoszonych błędów, wsparcie w analizie przyczyn błędów, dbanie o utrzymanie działania testów w CI/CD.                                                                 |
-| **Product Owner / Manager** | Definiowanie kryteriów akceptacji dla funkcjonalności, udział w testach akceptacyjnych użytkownika (UAT), priorytetyzacja naprawy błędów.                                                                                         |
+### 8.1. Entry Criteria
+
+- A stable version of the application is available on Staging environment.
+- All new functionalities have been implemented and passed unit tests.
+- Technical documentation or requirements description is available for tested functionalities.
+
+### 8.2. Exit Criteria (Definition of Done)
+
+- **100%** of test scenarios with **Critical** priority executed and completed successfully.
+- **95%** of test scenarios with **High** priority executed and completed successfully.
+- No known bugs with **Critical** and **High** priority.
+- All found bugs are reported and assessed by the team.
+- Automated regression tests complete successfully.
 
 ---
 
-## 10. Procedury Raportowania Błędów
+## 9. Roles and Responsibilities
 
-Każdy zidentyfikowany błąd musi zostać zaraportowany w systemie do śledzenia błędów (np. Jira) i powinien zawierać następujące informacje:
+| Role                       | Responsibilities                                                                                                                                                                                                                       |
+| :------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **QA Engineer**            | Creating and maintaining test plan, designing and implementing automated tests (integration, E2E), conducting manual and exploratory tests, reporting and managing bugs, coordinating UAT process.                                     |
+| **Developers**             | Writing unit tests for their code, fixing reported bugs, supporting bug root cause analysis, maintaining test functionality in CI/CD.                                                                                                  |
+| **Product Owner / Manager** | Defining acceptance criteria for functionalities, participating in User Acceptance Testing (UAT), prioritizing bug fixes.                                                                                                              |
 
-- **Tytuł:** Zwięzły i jednoznaczny opis problemu.
-- **Środowisko:** Gdzie błąd wystąpił (np. Staging, Chrome v1xx).
-- **Wersja aplikacji/Commit:** Identyfikator testowanej wersji.
-- **Priorytet/Waga (Severity/Priority):**
-  - **Krytyczny:** Blokuje działanie kluczowych funkcji, powoduje utratę danych.
-  - **Wysoki:** Znacząco utrudnia korzystanie z ważnej funkcji, ale istnieje obejście.
-  - **Średni:** Błąd w działaniu funkcji drugorzędnej lub problem UI/UX.
-  - **Niski:** Drobny błąd wizualny, literówka.
-- **Kroki do odtworzenia:** Numerowana lista kroków pozwalająca jednoznacznie odtworzyć błąd.
-- **Rezultat oczekiwany:** Jak system powinien się zachować.
-- **Rezultat aktualny:** Jak system faktycznie się zachował.
-- **Załączniki:** Zrzuty ekranu, nagrania wideo, logi z konsoli.
+---
+
+## 10. Bug Reporting Procedures
+
+Each identified bug must be reported in the bug tracking system (e.g., Jira) and should contain the following information:
+
+- **Title:** Concise and unambiguous problem description.
+- **Environment:** Where the bug occurred (e.g., Staging, Chrome v1xx).
+- **Application version/Commit:** Identifier of tested version.
+- **Priority/Severity:**
+  - **Critical:** Blocks operation of key functions, causes data loss.
+  - **High:** Significantly hinders use of important function, but workaround exists.
+  - **Medium:** Bug in secondary function operation or UI/UX issue.
+  - **Low:** Minor visual bug, typo.
+- **Steps to reproduce:** Numbered list of steps allowing unambiguous bug reproduction.
+- **Expected result:** How the system should behave.
+- **Actual result:** How the system actually behaved.
+- **Attachments:** Screenshots, video recordings, console logs.

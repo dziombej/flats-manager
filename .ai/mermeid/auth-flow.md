@@ -1,148 +1,148 @@
 # Authentication Flow - Flats Manager
 
-## Analiza Wymagań Autentykacji
+## Authentication Requirements Analysis
 
 <authentication_analysis>
 
-### 1. Przepływy autentykacji
+### 1. Authentication Flows
 
-Na podstawie analizy specyfikacji i kodu zidentyfikowano następujące przepływy:
+Based on the analysis of specifications and code, the following flows have been identified:
 
-1. **Rejestracja użytkownika** - nowy użytkownik tworzy konto
-2. **Logowanie** - użytkownik uwierzytelnia się w systemie
-3. **Wylogowanie** - użytkownik kończy sesję
-4. **Dostęp do chronionej strony** - weryfikacja sesji przy nawigacji
-5. **Wywołanie chronionego API** - weryfikacja tokenu w zapytaniu API
-6. **Auto-login w trybie developerskim** - automatyczne logowanie dla środowiska deweloperskiego
-7. **Odświeżanie tokenu** - proces odnawiania wygasłej sesji
+1. **User Registration** - new user creates an account
+2. **Login** - user authenticates in the system
+3. **Logout** - user ends the session
+4. **Protected Page Access** - session verification during navigation
+5. **Protected API Call** - token verification in API request
+6. **Auto-login in Developer Mode** - automatic login for development environment
+7. **Token Refresh** - process of renewing expired session
 
-### 2. Główni aktorzy i ich interakcje
+### 2. Main Actors and Their Interactions
 
-- **Użytkownik** - osoba korzystająca z aplikacji
-- **Przeglądarka** - środowisko wykonawcze klienta (React + Astro)
-- **Middleware Astro** - warstwa pośrednicząca sprawdzająca sesję
-- **Layout Component** - przekazuje stan autentykacji do klienta
-- **Astro API Endpoint** - endpointy backendu (/api/auth/_, /api/flats/_, etc.)
-- **Supabase Auth** - usługa autentykacji zarządzająca sesjami
-- **Auth Store (Zustand)** - kliencki stan autentykacji
-- **Baza Danych** - Supabase DB z politykami RLS
+- **User** - person using the application
+- **Browser** - client runtime environment (React + Astro)
+- **Astro Middleware** - intermediary layer checking session
+- **Layout Component** - passes authentication state to client
+- **Astro API Endpoint** - backend endpoints (/api/auth/_, /api/flats/_, etc.)
+- **Supabase Auth** - authentication service managing sessions
+- **Auth Store (Zustand)** - client-side authentication state
+- **Database** - Supabase DB with RLS policies
 
-### 3. Procesy weryfikacji i odświeżania tokenów
+### 3. Token Verification and Refresh Processes
 
-- **Weryfikacja w Middleware**: `supabase.auth.getUser()` przy każdym żądaniu
-- **Weryfikacja w API**: `supabase.auth.getUser()` w każdym endpoincie
-- **Token Storage**: Supabase automatycznie zarządza tokenami w cookies
-- **Auto-refresh**: Supabase SDK automatycznie odświeża tokeny przed wygaśnięciem
-- **RLS Policies**: Zabezpieczenie na poziomie bazy danych
+- **Verification in Middleware**: `supabase.auth.getUser()` on every request
+- **Verification in API**: `supabase.auth.getUser()` in every endpoint
+- **Token Storage**: Supabase automatically manages tokens in cookies
+- **Auto-refresh**: Supabase SDK automatically refreshes tokens before expiration
+- **RLS Policies**: Security at database level
 
-### 4. Opis kroków autentykacji
+### 4. Authentication Steps Description
 
-#### Rejestracja:
+#### Registration:
 
-1. Użytkownik wypełnia formularz (email, hasło, potwierdzenie hasła)
-2. React waliduje dane (Zod schema)
-3. POST do /api/auth/register
-4. Endpoint waliduje i wywołuje supabase.auth.signUp()
-5. Supabase tworzy użytkownika i profil
-6. Przekierowanie do strony logowania
+1. User fills out form (email, password, password confirmation)
+2. React validates data (Zod schema)
+3. POST to /api/auth/register
+4. Endpoint validates and calls supabase.auth.signUp()
+5. Supabase creates user and profile
+6. Redirect to login page
 
-#### Logowanie:
+#### Login:
 
-1. Użytkownik wprowadza dane logowania
-2. POST do /api/auth/login
-3. Endpoint wywołuje supabase.auth.signInWithPassword()
-4. Supabase zwraca sesję i ustawia cookies
-5. Layout pobiera user z getUser() i przekazuje do window.**AUTH_USER**
-6. Auth Store inicjalizuje się danymi użytkownika
-7. Przekierowanie do /dashboard
+1. User enters login credentials
+2. POST to /api/auth/login
+3. Endpoint calls supabase.auth.signInWithPassword()
+4. Supabase returns session and sets cookies
+5. Layout retrieves user from getUser() and passes to window.**AUTH_USER**
+6. Auth Store initializes with user data
+7. Redirect to /dashboard
 
-#### Dostęp do chronionej strony:
+#### Protected Page Access:
 
-1. Middleware sprawdza sesję (getUser)
-2. Jeśli brak sesji → redirect /auth/login
-3. Jeśli sesja OK → Layout przekazuje user do klienta
-4. Strona renderuje się z danymi użytkownika
+1. Middleware checks session (getUser)
+2. If no session → redirect /auth/login
+3. If session OK → Layout passes user to client
+4. Page renders with user data
 
-#### Wywołanie API:
+#### API Call:
 
-1. React wysyła request (np. GET /api/flats)
-2. Endpoint sprawdza auth (getUser)
-3. Jeśli brak auth → 401 Unauthorized
-4. Jeśli OK → wykonuje query z RLS policies
-5. Zwraca dane tylko tego użytkownika
+1. React sends request (e.g., GET /api/flats)
+2. Endpoint checks auth (getUser)
+3. If no auth → 401 Unauthorized
+4. If OK → executes query with RLS policies
+5. Returns data only for this user
 
 </authentication_analysis>
 
-## Diagram Sekwencyjny - Kompletny Przepływ Autentykacji
+## Sequence Diagram - Complete Authentication Flow
 
 ```mermaid
 sequenceDiagram
     autonumber
 
-    participant U as Użytkownik
-    participant B as Przeglądarka
+    participant U as User
+    participant B as Browser
     participant M as Middleware
     participant L as Layout
     participant AS as Auth Store
     participant API as Astro API
     participant SA as Supabase Auth
-    participant DB as Baza Danych
+    participant DB as Database
 
-    Note over U,DB: INICJALIZACJA APLIKACJI
+    Note over U,DB: APPLICATION INITIALIZATION
 
-    U->>B: Otwiera aplikację
+    U->>B: Opens application
     activate B
-    B->>M: Request do strony
+    B->>M: Request to page
     activate M
-    M->>SA: getUser() - sprawdź sesję
+    M->>SA: getUser() - check session
     activate SA
 
-    alt Tryb DEV i brak użytkownika
+    alt DEV mode and no user
         M->>SA: signInWithPassword(dev credentials)
-        SA-->>M: Auto-login sukces
+        SA-->>M: Auto-login success
         Note over M,SA: DEV_AUTO_LOGIN = true
     end
 
-    SA-->>M: Sesja lub null
+    SA-->>M: Session or null
     deactivate SA
-    M-->>L: Kontynuuj z context.locals.supabase
+    M-->>L: Continue with context.locals.supabase
     deactivate M
 
     activate L
-    L->>SA: getUser() - pobierz dane użytkownika
+    L->>SA: getUser() - fetch user data
     activate SA
-    SA-->>L: User data lub null
+    SA-->>L: User data or null
     deactivate SA
 
-    L->>B: Renderuj HTML z window.__AUTH_USER__
+    L->>B: Render HTML with window.__AUTH_USER__
     deactivate L
 
-    B->>AS: Inicjalizuj store z __AUTH_USER__
+    B->>AS: Initialize store with __AUTH_USER__
     activate AS
-    AS-->>B: Stan autentykacji gotowy
-    B-->>U: Wyświetl stronę
+    AS-->>B: Authentication state ready
+    B-->>U: Display page
     deactivate B
     deactivate AS
 
-    Note over U,DB: PRZEPŁYW REJESTRACJI
+    Note over U,DB: REGISTRATION FLOW
 
-    U->>B: Wypełnia formularz rejestracji
+    U->>B: Fills registration form
     activate B
-    B->>B: Walidacja Zod (email, hasło min 8 znaków)
+    B->>B: Zod validation (email, password min 8 chars)
 
-    alt Walidacja nieudana
-        B-->>U: Pokaż błędy walidacji
-    else Walidacja OK
+    alt Validation failed
+        B-->>U: Show validation errors
+    else Validation OK
         B->>API: POST /api/auth/register
         activate API
-        API->>API: Waliduj dane (registerSchema)
+        API->>API: Validate data (registerSchema)
         API->>SA: signUp(email, password)
         activate SA
 
-        SA->>DB: Utwórz użytkownika w auth.users
+        SA->>DB: Create user in auth.users
         activate DB
-        DB->>DB: Trigger tworzy rekord w profiles
-        DB-->>SA: Użytkownik utworzony
+        DB->>DB: Trigger creates record in profiles
+        DB-->>SA: User created
         deactivate DB
 
         SA-->>API: Success response
@@ -150,36 +150,36 @@ sequenceDiagram
         API-->>B: 200 OK
         deactivate API
 
-        B->>B: Przekieruj do /auth/login
-        B-->>U: Pokaż stronę logowania
+        B->>B: Redirect to /auth/login
+        B-->>U: Show login page
     end
     deactivate B
 
-    Note over U,DB: PRZEPŁYW LOGOWANIA
+    Note over U,DB: LOGIN FLOW
 
-    U->>B: Wprowadza dane logowania
+    U->>B: Enters login credentials
     activate B
-    B->>B: Walidacja Zod (loginSchema)
+    B->>B: Zod validation (loginSchema)
     B->>API: POST /api/auth/login
     activate API
 
-    API->>API: Waliduj dane
+    API->>API: Validate data
     API->>SA: signInWithPassword(email, password)
     activate SA
 
-    SA->>DB: Weryfikuj credentials
+    SA->>DB: Verify credentials
     activate DB
-    DB-->>SA: Dane użytkownika
+    DB-->>SA: User data
     deactivate DB
 
-    alt Nieprawidłowe dane
+    alt Invalid credentials
         SA-->>API: Error: Invalid credentials
         API-->>B: 401 Unauthorized
-        B-->>U: Pokaż błąd logowania
-    else Dane poprawne
-        SA->>SA: Generuj access/refresh tokens
+        B-->>U: Show login error
+    else Valid credentials
+        SA->>SA: Generate access/refresh tokens
         SA-->>API: Session + User data
-        Note over SA,API: Cookies ustawione automatycznie
+        Note over SA,API: Cookies set automatically
         deactivate SA
 
         API-->>B: 200 OK + user data
@@ -187,103 +187,103 @@ sequenceDiagram
 
         B->>AS: setUser(userData)
         activate AS
-        AS-->>B: Stan zaktualizowany
+        AS-->>B: State updated
         deactivate AS
 
-        B->>B: Przekieruj do /dashboard
-        B-->>U: Wyświetl dashboard
+        B->>B: Redirect to /dashboard
+        B-->>U: Display dashboard
     end
     deactivate B
 
-    Note over U,DB: DOSTĘP DO CHRONIONEJ STRONY
+    Note over U,DB: PROTECTED PAGE ACCESS
 
-    U->>B: Klika link do /flats
+    U->>B: Clicks link to /flats
     activate B
     B->>M: Request GET /flats
     activate M
 
-    M->>SA: getUser() - sprawdź sesję
+    M->>SA: getUser() - check session
     activate SA
 
-    alt Brak sesji lub token wygasł
+    alt No session or token expired
         SA-->>M: null
         M-->>B: Redirect 302 /auth/login
-        B-->>U: Przekieruj do logowania
-    else Sesja ważna
-        SA->>SA: Auto-refresh token jeśli potrzeba
+        B-->>U: Redirect to login
+    else Valid session
+        SA->>SA: Auto-refresh token if needed
         SA-->>M: User data
         deactivate SA
 
-        M->>L: Przekaż request
+        M->>L: Pass request
         deactivate M
         activate L
 
-        L->>SA: getUser() dla Layout
+        L->>SA: getUser() for Layout
         activate SA
         SA-->>L: User data
         deactivate SA
 
-        L->>B: Renderuj z user w window.__AUTH_USER__
+        L->>B: Render with user in window.__AUTH_USER__
         deactivate L
-        B-->>U: Wyświetl stronę /flats
+        B-->>U: Display /flats page
     end
     deactivate B
 
-    Note over U,DB: WYWOŁANIE CHRONIONEGO API
+    Note over U,DB: PROTECTED API CALL
 
-    U->>B: Akcja (np. "Dodaj mieszkanie")
+    U->>B: Action (e.g., "Add flat")
     activate B
-    B->>API: POST /api/flats + dane
+    B->>API: POST /api/flats + data
     activate API
 
-    API->>SA: getUser() - weryfikuj autoryzację
+    API->>SA: getUser() - verify authorization
     activate SA
 
-    alt Brak sesji
+    alt No session
         SA-->>API: null
         API-->>B: 401 Unauthorized
-        B->>AS: logout() - wyczyść stan
+        B->>AS: logout() - clear state
         activate AS
-        AS-->>B: Stan wyczyszczony
+        AS-->>B: State cleared
         deactivate AS
-        B->>B: Przekieruj do /auth/login
-        B-->>U: Redirect do logowania
-    else Sesja ważna
+        B->>B: Redirect to /auth/login
+        B-->>U: Redirect to login
+    else Valid session
         SA-->>API: User data
         deactivate SA
 
         API->>DB: INSERT flats (user_id = auth.uid())
         activate DB
 
-        Note over DB: RLS Policy sprawdza auth.uid()
+        Note over DB: RLS Policy checks auth.uid()
 
-        alt RLS Policy zezwala
-            DB-->>API: Dane zapisane
+        alt RLS Policy allows
+            DB-->>API: Data saved
             deactivate DB
-            API-->>B: 201 Created + dane
+            API-->>B: 201 Created + data
             deactivate API
 
-            B->>AS: Zaktualizuj stan (opcjonalnie)
+            B->>AS: Update state (optional)
             activate AS
             AS-->>B: OK
             deactivate AS
 
-            B-->>U: Pokaż sukces
-        else RLS Policy odmawia
+            B-->>U: Show success
+        else RLS Policy denies
             DB-->>API: Permission denied
             deactivate DB
             API-->>B: 403 Forbidden
             deactivate API
-            B-->>U: Pokaż błąd
+            B-->>U: Show error
         end
     end
     deactivate B
 
-    Note over U,DB: PRZEPŁYW WYLOGOWANIA
+    Note over U,DB: LOGOUT FLOW
 
-    U->>B: Klika "Wyloguj"
+    U->>B: Clicks "Logout"
     activate B
-    B->>AS: logout() - wywołaj akcję store
+    B->>AS: logout() - call store action
     activate AS
 
     AS->>API: POST /api/auth/logout
@@ -291,7 +291,7 @@ sequenceDiagram
     API->>SA: signOut()
     activate SA
 
-    SA->>SA: Usuń tokeny z cookies
+    SA->>SA: Remove tokens from cookies
     SA-->>API: Success
     deactivate SA
 
@@ -299,69 +299,69 @@ sequenceDiagram
     deactivate API
 
     AS->>AS: setUser(null)
-    AS-->>B: Stan wyczyszczony
+    AS-->>B: State cleared
     deactivate AS
 
-    B->>B: Przekieruj do /
-    B-->>U: Wyświetl landing page
+    B->>B: Redirect to /
+    B-->>U: Display landing page
     deactivate B
 
-    Note over U,DB: ODŚWIEŻANIE TOKENU (AUTOMATYCZNE)
+    Note over U,DB: TOKEN REFRESH (AUTOMATIC)
 
-    Note over B,SA: Token zbliża się do wygaśnięcia
+    Note over B,SA: Token approaching expiration
 
-    B->>SA: Automatyczne sprawdzenie przez SDK
+    B->>SA: Automatic check by SDK
     activate SA
 
-    SA->>SA: Wykryj wygasający access token
-    SA->>DB: Użyj refresh token
+    SA->>SA: Detect expiring access token
+    SA->>DB: Use refresh token
     activate DB
-    DB-->>SA: Nowy access token
+    DB-->>SA: New access token
     deactivate DB
 
-    SA->>SA: Zaktualizuj cookies
-    SA-->>B: Token odświeżony transparentnie
+    SA->>SA: Update cookies
+    SA-->>B: Token refreshed transparently
     deactivate SA
 
-    Note over B,SA: Użytkownik nie wie o odświeżeniu
+    Note over B,SA: User is unaware of refresh
 
 ```
 
-## Kluczowe Punkty Architektury
+## Key Architecture Points
 
-### 1. Zarządzanie Stanem
+### 1. State Management
 
-- **Server-side**: Middleware + API endpoints używają `supabase.auth.getUser()`
-- **Client-side**: Zustand store inicjalizowany z `window.__AUTH_USER__`
-- **Bridge**: Layout component przekazuje dane z serwera do klienta
+- **Server-side**: Middleware + API endpoints use `supabase.auth.getUser()`
+- **Client-side**: Zustand store initialized with `window.__AUTH_USER__`
+- **Bridge**: Layout component passes data from server to client
 
-### 2. Bezpieczeństwo
+### 2. Security
 
-- **Middleware**: Sprawdza sesję przed renderowaniem stron
-- **API Endpoints**: Weryfikują użytkownika w każdym żądaniu
-- **RLS Policies**: Zabezpieczenie na poziomie bazy danych
-- **Auto-refresh**: Supabase SDK automatycznie odświeża tokeny
+- **Middleware**: Checks session before rendering pages
+- **API Endpoints**: Verify user in every request
+- **RLS Policies**: Security at database level
+- **Auto-refresh**: Supabase SDK automatically refreshes tokens
 
-### 3. Przepływ Danych
+### 3. Data Flow
 
 ```
 Request → Middleware (getUser) → Layout (pass to client) →
 → Auth Store (client state) → React Components
 ```
 
-### 4. Obsługa Błędów
+### 4. Error Handling
 
-- **401 Unauthorized**: Redirect do `/auth/login`
-- **403 Forbidden**: Brak uprawnień (RLS)
-- **Walidacja**: Zod schemas po stronie klienta i serwera
+- **401 Unauthorized**: Redirect to `/auth/login`
+- **403 Forbidden**: No permissions (RLS)
+- **Validation**: Zod schemas on client and server side
 
-### 5. Tryb Deweloperski
+### 5. Developer Mode
 
-- Auto-login z testowymi credentials
-- Włączany przez `DEV_AUTO_LOGIN=true`
-- Używa użytkownika: `admin@flatmanager.local`
+- Auto-login with test credentials
+- Enabled by `DEV_AUTO_LOGIN=true`
+- Uses user: `admin@flatmanager.local`
 
-## Zastosowane Polityki RLS
+## Applied RLS Policies
 
 ```sql
 -- flats table
@@ -388,45 +388,45 @@ USING (
 );
 ```
 
-## Komponenty Do Zaimplementowania
+## Components To Implement
 
-### Nowe pliki (z auth-spec.md):
+### New files (from auth-spec.md):
 
 1. `/src/lib/stores/auth.store.ts` - Zustand store
-2. `/src/components/auth/LoginForm.tsx` - Formularz logowania
-3. `/src/components/auth/RegisterForm.tsx` - Formularz rejestracji
-4. `/src/components/auth/UserMenu.tsx` - Menu użytkownika
-5. `/src/pages/auth/login.astro` - Strona logowania
-6. `/src/pages/auth/register.astro` - Strona rejestracji
-7. `/src/pages/api/auth/register.ts` - Endpoint rejestracji
-8. `/src/pages/api/auth/login.ts` - Endpoint logowania
-9. `/src/pages/api/auth/logout.ts` - Endpoint wylogowania
-10. `/src/lib/services/auth.service.ts` - Serwis autentykacji
-11. `/src/lib/validation/auth.schemas.ts` - Schematy Zod
+2. `/src/components/auth/LoginForm.tsx` - Login form
+3. `/src/components/auth/RegisterForm.tsx` - Registration form
+4. `/src/components/auth/UserMenu.tsx` - User menu
+5. `/src/pages/auth/login.astro` - Login page
+6. `/src/pages/auth/register.astro` - Registration page
+7. `/src/pages/api/auth/register.ts` - Registration endpoint
+8. `/src/pages/api/auth/login.ts` - Login endpoint
+9. `/src/pages/api/auth/logout.ts` - Logout endpoint
+10. `/src/lib/services/auth.service.ts` - Authentication service
+11. `/src/lib/validation/auth.schemas.ts` - Zod schemas
 
-### Modyfikacje istniejących plików:
+### Modifications to existing files:
 
-1. `/src/layouts/Layout.astro` - Przekazywanie user do klienta
-2. `/src/components/Header.astro` - Dodanie UserMenu
+1. `/src/layouts/Layout.astro` - Passing user to client
+2. `/src/components/Header.astro` - Adding UserMenu
 3. `/src/pages/index.astro` - Landing page vs redirect
-4. `/src/env.d.ts` - Typy dla window.**AUTH_USER**
-5. `/src/types.ts` - Typy AuthUser, LoginDTO, RegisterDTO
+4. `/src/env.d.ts` - Types for window.**AUTH_USER**
+5. `/src/types.ts` - Types AuthUser, LoginDTO, RegisterDTO
 
-## Testowanie
+## Testing
 
-### Użytkownicy testowi:
+### Test users:
 
-- `admin@flatmanager.local` / `password123` (3 mieszkania)
-- `test@flatmanager.local` / `password123` (0 mieszkań)
+- `admin@flatmanager.local` / `password123` (3 flats)
+- `test@flatmanager.local` / `password123` (0 flats)
 
-### Scenariusze testowe:
+### Test scenarios:
 
-1. Rejestracja nowego użytkownika
-2. Logowanie z poprawnymi danymi
-3. Logowanie z błędnymi danymi
-4. Dostęp do chronionej strony bez logowania
-5. Wywołanie API bez autoryzacji
-6. Wylogowanie
-7. Auto-refresh tokenu
-8. RLS - próba dostępu do cudzych danych
-9. Auto-login w trybie DEV
+1. New user registration
+2. Login with correct credentials
+3. Login with incorrect credentials
+4. Access to protected page without login
+5. API call without authorization
+6. Logout
+7. Token auto-refresh
+8. RLS - attempt to access other user's data
+9. Auto-login in DEV mode
