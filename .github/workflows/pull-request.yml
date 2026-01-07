@@ -87,9 +87,9 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Create .env.test file
+      - name: Create environment files
         run: |
-          cat > .env.test << EOF
+          cat > .env << EOF
           SUPABASE_URL=${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
           E2E_USERNAME_ID=${{ secrets.E2E_USERNAME_ID }}
@@ -97,6 +97,7 @@ jobs:
           E2E_PASSWORD=${{ secrets.E2E_PASSWORD }}
           BASE_URL=http://localhost:4321
           EOF
+          cp .env .env.test
 
       - name: Run E2E Tests
         run: npm run test:e2e
