@@ -70,15 +70,6 @@ jobs:
     needs: lint
     environment: integration
 
-    env:
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
-      E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
-      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
-      BASE_URL: http://localhost:4321
-      NODE_ENV: test
-      CI: true
 
     steps:
       - name: Checkout Code
@@ -109,6 +100,8 @@ jobs:
 
       - name: Run E2E Tests
         run: npm run test:e2e
+        env:
+          CI: true
 
       - name: Upload Playwright Report
         if: always()
