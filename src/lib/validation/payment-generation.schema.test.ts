@@ -69,15 +69,27 @@ describe("paymentGenerationSchema", () => {
     });
 
     it("should reject non-number year", () => {
-      const result = paymentGenerationSchema.safeParse({ month: 1, year: "2024" });
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues[0].message).toBe("Year must be a number");
+      // Accepts string numbers
+      const resultStringNumber = paymentGenerationSchema.safeParse({ month: 1, year: "2024" });
+      expect(resultStringNumber.success).toBe(true);
+      // Rejects non-numeric strings
+      const resultNonNumeric = paymentGenerationSchema.safeParse({ month: 1, year: "twenty" });
+      expect(resultNonNumeric.success).toBe(false);
+      if (!resultNonNumeric.success) {
+        expect(resultNonNumeric.error.issues[0].message).toBe("Year must be a number");
       }
     });
 
     it("should reject missing year", () => {
       const result = paymentGenerationSchema.safeParse({ month: 1 });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toBe("Year is required");
+      }
+    });
+
+    it("should reject NaN year as required", () => {
+      const result = paymentGenerationSchema.safeParse({ month: 1, year: NaN });
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.issues[0].message).toBe("Year is required");
